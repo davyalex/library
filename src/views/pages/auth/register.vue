@@ -1,4 +1,5 @@
 <template>
+
   <div class="auth-wrapper auth-v2">
     <b-row class="auth-inner m-0">
 
@@ -51,22 +52,67 @@
           <!-- form -->
           <validation-observer ref="registerForm">
             <b-form class="auth-register-form mt-2">
-              <!-- username -->
+               <!-- Nom -->
               <b-form-group
-                label="Username"
-                label-for="register-username"
+                label="Nom"
+                label-for="nom"
               >
                 <validation-provider
                   #default="{ errors }"
-                  name="Username"
-                  rules="required"
+                  name="nom"
+                  rules="required|nom"
                 >
                   <b-form-input
-                    id="register-username"
-                    v-model="username"
-                    name="register-username"
+                    id="nom"
+                    v-model="nom"
                     :state="errors.length > 0 ? false:null"
-                    placeholder="johndoe"
+                    name="nom"
+                    placeholder="john"
+                  />
+                  <small class="text-danger">{{ errors[0] }}</small>
+                </validation-provider>
+              </b-form-group>
+
+
+              <!-- Prenoms -->
+              <b-form-group
+                label="Prenoms"
+                label-for="prenoms"
+              >
+                <validation-provider
+                  #default="{ errors }"
+                  name="prenoms"
+                  rules="required|prenoms"
+                >
+                  <b-form-input
+                    id="prenoms"
+                    v-model="prenoms"
+                    :state="errors.length > 0 ? false:null"
+                    name="login-email"
+                    placeholder="john"
+                  />
+                  <small class="text-danger">{{ errors[0] }}</small>
+                </validation-provider>
+              </b-form-group>
+
+
+              <!-- contact -->
+
+               <b-form-group
+                label="Contact"
+                label-for="contact"
+              >
+                <validation-provider
+                  #default="{ errors }"
+                  name="contact"
+                  rules="required|contact"
+                >
+                  <b-form-input
+                    id="contact"
+                    v-model="contact"
+                    :state="errors.length > 0 ? false:null"
+                    name="contact"
+                    placeholder="000 000 000"
                   />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
@@ -84,7 +130,7 @@
                 >
                   <b-form-input
                     id="register-email"
-                    v-model="userEmail"
+                    v-model="email"
                     name="register-email"
                     :state="errors.length > 0 ? false:null"
                     placeholder="john@example.com"
@@ -145,7 +191,7 @@
                 type="submit"
                 @click.prevent="validationForm"
               >
-                Sign up
+                Enregistrer
               </b-button>
             </b-form>
           </validation-observer>
@@ -233,8 +279,9 @@ export default {
   data() {
     return {
       status: '',
-      username: '',
-      userEmail: '',
+      nom: '',
+      prenoms: '',
+      email: '',
       password: '',
       sideImg: require('@/assets/images/pages/register-v2.svg'),
       // validation
@@ -270,6 +317,9 @@ export default {
         }
       })
     },
+    
+
+    
   },
 }
 /* eslint-disable global-require */
