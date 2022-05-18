@@ -13,7 +13,7 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/Home.vue'),
+      component: () => import('@/views/pages/Home.vue'),
       meta: {
         pageTitle: 'Home',
         breadcrumb: [
@@ -27,7 +27,7 @@ const router = new VueRouter({
     {
       path: '/second-page',
       name: 'second-page',
-      component: () => import('@/views/SecondPage.vue'),
+      component: () => import('@/views/pages/SecondPage.vue'),
       meta: {
         pageTitle: 'Second Page',
         breadcrumb: [
@@ -41,7 +41,16 @@ const router = new VueRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/Login.vue'),
+      component: () => import('@/views/pages/auth/Login.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/views/pages/auth/register.vue'),
       meta: {
         layout: 'full',
       },

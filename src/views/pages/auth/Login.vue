@@ -137,7 +137,7 @@
 
           <b-card-text class="text-center mt-2">
             <span>New on our platform? </span>
-            <b-link :to="{name:'page-auth-register-v2'}">
+            <b-link :to="{name:'register'}">
               <span>&nbsp;Create an account</span>
             </b-link>
           </b-card-text>
@@ -193,6 +193,8 @@ import {
 import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
+import URL from "@/views/pages/request";
+import axios from "axios";
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 export default {
@@ -211,6 +213,7 @@ export default {
     BForm,
     BButton,
     VuexyLogo,
+    axios,
     ValidationProvider,
     ValidationObserver,
   },
