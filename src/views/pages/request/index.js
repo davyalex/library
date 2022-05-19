@@ -19,6 +19,9 @@ const URL = {
   LOGIN: `${baseUrl}/login`,
   REGISTER: `${baseUrl}/register`,
   USER_CONNECTE: `${baseUrl}/user_connecte`,
+  LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
+  CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
+
 };
 
 export default URL;

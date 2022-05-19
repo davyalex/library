@@ -49,6 +49,15 @@ const router = new VueRouter({
     },
 
     {
+      path: '/etablissement',
+      name: 'etablissement',
+      component: () => import('@/views/pages/etablissements/listeEtablissement.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+
+    {
       path: '/register',
       name: 'register',
       component: () => import('@/views/pages/auth/register.vue'),

@@ -9,4 +9,10 @@ export default [
     route: 'second-page',
     icon: 'FileIcon',
   },
+
+  {
+    title: 'Etablissement',
+    route: 'etablissement',
+    icon: 'FileIcon',
+  },
 ]
