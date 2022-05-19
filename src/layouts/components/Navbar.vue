@@ -127,7 +127,7 @@ export default {
     }
   },
 
- async mounted(){
+  mounted(){
 
       try {
          const config = {
@@ -135,7 +135,7 @@ export default {
           Accept: "application/json",
         },
       };
-      await axios.get(URL.USER_CONNECTE, config).then((response) => {
+       axios.get(URL.USER_CONNECTE, config).then((response) => {
         this.user_connecte = response.data.user_connecte
         console.log(this.user_connecte);
       });

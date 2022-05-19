@@ -19,6 +19,8 @@ const URL = {
   LOGIN: `${baseUrl}/login`,
   REGISTER: `${baseUrl}/register`,
   USER_CONNECTE: `${baseUrl}/user_connecte`,
+  TYPEPARAMETRE: `${baseUrl}/type-parametre`,
+  TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
 };
 
 export default URL;
