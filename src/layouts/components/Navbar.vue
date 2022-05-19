@@ -30,7 +30,7 @@
         <template #button-content>
           <div class="d-sm-flex d-none user-nav">
             <p class="user-name font-weight-bolder mb-0">
-              John Doe
+             {{ user_connecte.nom }}  {{ user_connecte.prenoms }}
             </p>
             <span class="user-status">Admin</span>
           </div>
@@ -82,13 +82,13 @@
 
         <b-dropdown-divider />
 
-        <b-dropdown-item link-class="d-flex align-items-center">
+        <b-dropdown-item link-class="d-flex align-items-center" @click="deconnecter">
           <feather-icon
             size="16"
             icon="LogOutIcon"
             class="mr-50"
           />
-          <span>Logout</span>
+          <span>Deconnexion</span>
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
@@ -100,7 +100,8 @@ import {
   BLink, BNavbarNav, BNavItemDropdown, BDropdownItem, BDropdownDivider, BAvatar,
 } from 'bootstrap-vue'
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue'
-
+import axios from "axios";
+import URL from "@/views/pages/request";
 export default {
   components: {
     BLink,
@@ -109,7 +110,7 @@ export default {
     BDropdownItem,
     BDropdownDivider,
     BAvatar,
-
+    axios,
     // Navbar Components
     DarkToggler,
   },
@@ -119,5 +120,35 @@ export default {
       default: () => {},
     },
   },
+
+  data(){
+    return{
+       user_connecte: "",
+    }
+  },
+
+ async mounted(){
+
+      try {
+         const config = {
+        headers: {
+          Accept: "application/json",
+        },
+      };
+      await axios.get(URL.USER_CONNECTE, config).then((response) => {
+        this.user_connecte = response.data.user_connecte
+        console.log(this.user_connecte);
+      });
+      } catch (error) {
+        console.log(error);
+      }
+  },
+
+  methods:{
+      deconnecter() {
+      localStorage.clear();
+      this.$router.push("/login");
+    },
+  }
 }
 </script>

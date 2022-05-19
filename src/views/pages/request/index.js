@@ -18,6 +18,7 @@ export const APP_PROD = false
 const URL = {
   LOGIN: `${baseUrl}/login`,
   REGISTER: `${baseUrl}/register`,
+  USER_CONNECTE: `${baseUrl}/user_connecte`,
 };
 
 export default URL;

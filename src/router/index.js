@@ -15,13 +15,14 @@ const router = new VueRouter({
       name: 'home',
       component: () => import('@/views/pages/Home.vue'),
       meta: {
-        pageTitle: 'Home',
+        pageTitle: 'Dashboard',
         breadcrumb: [
           {
-            text: 'Home',
+            text: 'Dashboard',
             active: true,
           },
         ],
+        requiresAuth: true,
       },
     },
     {
@@ -69,6 +70,34 @@ const router = new VueRouter({
     },
   ],
 })
+
+
+router.beforeEach((to, from, next) => {
+	// Determine if the route requires authentication
+	if (to.matched.some((record) => record.meta.requiresAuth)) {
+		// Get value from somewhere to determine if the user is
+		// logged in or not
+		let isLoggedIn = false;
+		if (localStorage.getItem('token')) {
+			isLoggedIn = localStorage.getItem('connected');
+		}
+
+		// If user is not logged in, navigate to the named "login" route
+		// with a query string parameter indicating where to navigate to after
+		// successful login
+		if (!isLoggedIn) {
+			// Navigate to login route
+			next({
+				name: 'login',
+				query: { redirect: to.fullPath },
+			});
+		} else {
+			next();
+		}
+	} else {
+		next();
+	}
+});
 
 // ? For splash screen
 // Remove afterEach hook if you are not using splash screen

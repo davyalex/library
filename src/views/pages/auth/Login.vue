@@ -30,7 +30,7 @@
 
           <!-- form -->
           <validation-observer ref="loginValidation">
-            <b-form class="auth-login-form mt-2" @submit.prevent="handleSubmit">
+            <b-form class="auth-login-form mt-2" @submit.prevent>
               <!-- email -->
 
               <b-form-group label="Email" label-for="login-email">
@@ -104,7 +104,7 @@
                 type="submit"
                 variant="primary"
                 block
-                @click="validationForm"
+                @click="save"
               >
                 Connexion
               </b-button>
@@ -193,6 +193,7 @@ export default {
     axios,
     ValidationProvider,
     ValidationObserver,
+    setAuthHeader
   },
   mixins: [togglePasswordVisibility],
 
@@ -221,22 +222,18 @@ export default {
     },
   },
   methods: {
-    validationForm() {
-      this.$refs.loginValidation.validate().then((success) => {
-        if (success) {
-          this.$toast({
+   topEnd(){
+      this.$toast({
             component: ToastificationContent,
             props: {
-              title: "Form Submitted",
-              icon: "EditIcon",
+              title: "Connexion réussi",
+              icon: "UserIcon",
               variant: "success",
             },
           });
-        }
-      });
-    },
+   },
 
-    async handleSubmit() {
+    async save() {
 
       try {
         // e.preventDefault();
@@ -256,11 +253,18 @@ export default {
         // this.validatePassword();
         await axios.post(URL.LOGIN, data, config).then((response) => {
           this.userData = response.data;
-
+                  if (this.userData) {
+                    setAuthHeader(response.data[1]);
+                      localStorage.setItem('token', this.userData[1])
+                         this.topEnd();
+                  }
+                   if (localStorage.getItem("token")) {
+              localStorage.setItem("connected", true);
+              this.$router.push({ name: "home" });
+            }
           console.log(this.userData);
-          setAuthHeader(response.data.token);
         });
-          localStorage.setItem('token', this.userData.data)
+        
       } catch (error) {
         console.log(error);
       }

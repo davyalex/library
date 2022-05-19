@@ -31,22 +31,25 @@
 
           <!-- form -->
           <validation-observer ref="registerForm">
-            <b-form class="auth-register-form mt-2">
+            <b-form class="auth-register-form mt-2" @submit.prevent>
               <!-- Nom -->
               <b-form-group label="Nom" label-for="nom">
                 <validation-provider
                   #default="{ errors }"
                   name="nom"
-                  rules="required|nom"
+                  rules="required"
                 >
                   <b-form-input
-                    id="nom"
                     v-model="nom"
+                    @input="validateNom"
                     :state="errors.length > 0 ? false : null"
-                    name="nom"
                     placeholder="john"
                   />
-                  <small class="text-danger">{{ errors[0] }}</small>
+                  <small v-if="valideNom"
+                    class="text-danger"
+                  >
+                    Veuillez entrer un nom
+                  </small>
                 </validation-provider>
               </b-form-group>
 
@@ -55,35 +58,47 @@
                 <validation-provider
                   #default="{ errors }"
                   name="prenoms"
-                  rules="required|prenoms"
+                  rules="required"
                 >
                   <b-form-input
                     id="prenoms"
                     v-model="prenoms"
+                    @input="validatePrenom"
                     :state="errors.length > 0 ? false : null"
-                    name="login-email"
+                    name="prenoms"
                     placeholder="john"
                   />
-                  <small class="text-danger">{{ errors[0] }}</small>
+                  <small
+                     v-if="validePrenom"
+                    class="text-danger"
+                  >
+                    Veuillez entrer un prenom
+                  </small>
                 </validation-provider>
               </b-form-group>
 
               <!-- contact -->
 
-              <b-form-group label="Contact" label-for="contact">
+              <b-form-group label="phone" label-for="phone">
                 <validation-provider
                   #default="{ errors }"
-                  name="contact"
-                  rules="required|contact"
+                  name="phone"
+                  rules="required"
                 >
                   <b-form-input
                     id="contact"
-                    v-model="contact"
+                    type="tel"
+                    v-model="phone"
+                    @input="validatePhone"
                     :state="errors.length > 0 ? false : null"
                     name="contact"
                     placeholder="000 000 000"
                   />
-                  <small class="text-danger">{{ errors[0] }}</small>
+                  <small v-if="validePhone"
+                    class="text-danger"
+                  >
+                    Veuillez entrer un numero de telephone
+                  </small>
                 </validation-provider>
               </b-form-group>
 
@@ -92,16 +107,27 @@
                 <validation-provider
                   #default="{ errors }"
                   name="Email"
-                  rules="required|email"
+                  rules="required"
                 >
                   <b-form-input
                     id="register-email"
+                    type="email"
                     v-model="email"
+                    @input="validateEmail"
                     name="register-email"
                     :state="errors.length > 0 ? false : null"
-                    placeholder="john@example.com"
+                    placeholder="xxx@example.com"
                   />
-                  <small class="text-danger">{{ errors[0] }}</small>
+                  <small v-if="valideEmail"
+                    class="text-danger"
+                  >
+                    Veuillez entrer un email valide
+                  </small>
+                   <small v-if="email_exist===true"
+                    class="text-danger"
+                  >
+                    Email entré existe déjà!
+                  </small>
                 </validation-provider>
               </b-form-group>
 
@@ -120,6 +146,7 @@
                       id="register-password"
                       v-model="password"
                       class="form-control-merge"
+                      @input="validatePassword"
                       :type="passwordFieldType"
                       :state="errors.length > 0 ? false : null"
                       name="register-password"
@@ -133,11 +160,16 @@
                       />
                     </b-input-group-append>
                   </b-input-group>
-                  <small class="text-danger">{{ errors[0] }}</small>
+                  <small
+               v-if="validePassword"
+                    class="text-danger"
+                  >
+                    Vous devez renseigner le mot de passe
+                  </small>
                 </validation-provider>
               </b-form-group>
 
-              <b-form-group>
+              <!-- <b-form-group>
                 <b-form-checkbox
                   id="register-privacy-policy"
                   v-model="status"
@@ -146,23 +178,28 @@
                   I agree to
                   <b-link>privacy policy & terms</b-link>
                 </b-form-checkbox>
-              </b-form-group>
+              </b-form-group> -->
 
               <b-button
                 variant="primary"
                 block
                 type="submit"
                 @click.prevent="save"
+                :disabled="loading === true ? true : false"
               >
-                Enregistrer
+                <div
+                  v-if="loading === true"
+                  class="spinner-border text-light"
+                ></div>
+                <span v-else> Enregistrer</span>
               </b-button>
             </b-form>
           </validation-observer>
 
           <p class="text-center mt-2">
-            <span>Already have an account?</span>
-            <b-link :to="{ name: 'auth-login-v2' }">
-              <span>&nbsp;Sign in instead</span>
+            <span>Avez-vous déjà un compte?</span>
+            <b-link :to="{ name: 'login' }">
+              <span>&nbsp;Connectez-vous</span>
             </b-link>
           </p>
 
@@ -194,7 +231,6 @@
 
 <script>
 /* eslint-disable global-require */
-import { ValidationProvider, ValidationObserver } from "vee-validate";
 import VuexyLogo from "@core/layouts/components/Logo.vue";
 import {
   BRow,
@@ -211,11 +247,15 @@ import {
   BCardTitle,
   BCardText,
 } from "bootstrap-vue";
+import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+
 import { togglePasswordVisibility } from "@core/mixins/ui/forms";
 import store from "@/store/index";
 import axios from "axios";
-import URL, { APP_HOST } from '@/views/pages/request';
+import setAuthHeader from "../../../auth/jwt/token";
+import URL, { APP_HOST } from "@/views/pages/request";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 
 export default {
@@ -237,20 +277,33 @@ export default {
     // validations
     ValidationProvider,
     ValidationObserver,
+    setAuthHeader,
   },
   mixins: [togglePasswordVisibility],
+   directives: {
+    // "b-modal": VBModal,
+    Ripple,
+  },
   data() {
     return {
       status: "",
       nom: "",
       prenoms: "",
       email: "",
-      contact: "",
+      phone: "",
       password: "",
       sideImg: require("@/assets/images/pages/register-v2.svg"),
       // validation
       required,
       email,
+      valideNom:false,
+      validePrenom:false,
+      validePhone:false,
+      valideEmail:false,
+      validePassword:false,
+      // valideStatus: false,
+      loading: false,
+      // email_exist:false,
     };
   },
   computed: {
@@ -267,43 +320,117 @@ export default {
     },
   },
   methods: {
-    validationForm() {
-      this.$refs.registerForm.validate().then((success) => {
-        if (success) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: "Form Submitted",
-              icon: "EditIcon",
-              variant: "success",
-            },
-          });
-        }
+    //validation
+    validateEmail() {
+      // valid email regex pattern
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      if (!this.email.match(emailPattern)) {
+        this.valideEmail = true;
+      } else {
+        this.valideEmail = false;
+      }
+    },
+    validatePassword() {
+      if (!this.password) {
+        this.validePassword = true;
+      } else {
+        this.validePassword = false;
+      }
+    },
+    validateNom() {
+      if (!this.nom) {
+        this.valideNom = true;
+      } else {
+        this.valideNom = false;
+      }
+    },
+    validatePrenom() {
+      if (!this.prenoms) {
+        this.validePrenom = true;
+      } else {
+        this.validePrenom = false;
+      }
+    },
+
+      validatePhone() {
+      if (!this.phone) {
+        this.validePhone = true;
+      } else {
+        this.validePhone = false;
+      }
+    },
+    // validateStatus() {
+    //   if (this.status == false || !this.status) {
+    //     this.valideStatus = true;
+    //     this.erreur = true;
+    //     console.log("selectione");
+    //   } else {
+    //     this.valideStatus = false;
+    //     this.erreur = false;
+    //   }
+    // },
+
+    topEnd() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: "Inscription réussi",
+          icon: "UserIcon",
+          variant: "success",
+        },
       });
     },
 
     async save() {
       try {
-
-         const config = {
+        this.validateEmail();
+        this.validateNom();
+        this.validatePrenom();
+         this.validatePhone();
+        this.validatePassword();
+        const config = {
           headers: {
-            Accept: 'application/json',
+            Accept: "application/json",
           },
         };
-
-        const data = {
+       
+        if (this.nom || this.prenoms || this.phone || this.email || this.password) {
+       const data = {
           nom: this.nom,
           prenoms: this.prenoms,
           email: this.email,
-          contact: this.contact,
+          phone: this.phone,
           password: this.password,
         };
-        await axios.post(URL.REGISTER, data, config).then((response) => {
-          this.userData = response.data;
-          cosole.log(this.userData);
+          this.loading = true;
+        // console.log(data);
+           await axios.post(URL.REGISTER, data, config).then((response) => {
+          if (response.data) {
+           
+            this.loading = false;
+            this.nom = "",
+              this.prenoms = "",
+              this.phone = "",
+              this.email = "",
+              this.password = "",
+              this.topEnd();
+            this.userData = response.data;
+            console.log(this.userData);
+            setAuthHeader(response.data.token);
+            localStorage.setItem("token", this.userData.token);
+            if (localStorage.getItem("token")) {
+              localStorage.setItem("connected", true);
+              this.$router.push({ name: "home" });
+            }
+          }
         });
+
+        }
+       
+      
+     
       } catch (error) {
-        this.marche = false;
+        this.loading = false;
         console.log(error);
       }
     },
