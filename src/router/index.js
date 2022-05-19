@@ -26,17 +26,18 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/second-page',
-      name: 'second-page',
-      component: () => import('@/views/pages/SecondPage.vue'),
+      path: '/type-parametre',
+      name: 'type-parametre',
+      component: () => import('@/views/pages/type-parametre/index.vue'),
       meta: {
-        pageTitle: 'Second Page',
+        pageTitle: 'Parametre',
         breadcrumb: [
           {
-            text: 'Second Page',
+            text: 'Type-parametre',
             active: true,
           },
         ],
+        // requiresAuth: true,
       },
     },
     {

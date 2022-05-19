@@ -1,13 +1,13 @@
 export default [
   {
-    title: 'Home',
+    title: 'Dashboard',
     route: 'home',
     icon: 'HomeIcon',
   },
   {
-    title: 'Second Page',
-    route: 'second-page',
-    icon: 'FileIcon',
+    title: 'Parametre',
+    route: 'type-parametre',
+    icon: 'SettingsIcon',
   },
 
   {
