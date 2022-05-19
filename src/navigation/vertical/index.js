@@ -9,4 +9,10 @@ export default [
     route: 'type-parametre',
     icon: 'SettingsIcon',
   },
+
+  {
+    title: 'Etablissement',
+    route: 'etablissement',
+    icon: 'FileIcon',
+  },
 ]

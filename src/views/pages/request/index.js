@@ -21,6 +21,9 @@ const URL = {
   USER_CONNECTE: `${baseUrl}/user_connecte`,
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
   TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
+  LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
+  CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
+
 };
 
 export default URL;
