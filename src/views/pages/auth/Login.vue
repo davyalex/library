@@ -24,8 +24,8 @@
           <b-card-title title-tag="h2" class="font-weight-bold mb-1">
             Welcome to Vuexy! 👋
           </b-card-title>
-          <b-card-text class="mb-2">
-            Please sign-in to your account and start the adventure
+          <b-card-text class="mb-2 text-center" v-if="error_login">
+           <span class="text-danger"> {{ msg_error }}</span>
           </b-card-text>
 
           <!-- form -->
@@ -206,6 +206,8 @@ export default {
       // validation rulesimport store from '@/store/index'
       required,
       email,
+      error_login:false,
+      msg_error:""
     };
   },
   computed: {
@@ -233,6 +235,17 @@ export default {
           });
    },
 
+     topEndError(){
+      this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: "Erreur de connexion",
+              icon: "UserIcon",
+              variant: "danger",
+            },
+          });
+   },
+
     async save() {
 
       try {
@@ -256,13 +269,23 @@ export default {
                   if (this.userData) {
                     setAuthHeader(response.data[1]);
                       localStorage.setItem('token', this.userData[1])
-                         this.topEnd();
                   }
                    if (localStorage.getItem("token")) {
               localStorage.setItem("connected", true);
               this.$router.push({ name: "home" });
             }
+            if (this.userData ==="mauvaises informations entrées") {
+              this.error_login = true;
+               this.topEndError();
+              this.msg_error = "Email ou mot de passe incorrect"
+               localStorage.setItem("connected", false);
+              this.$router.push({ name: "login" });
+            }else{
+                this.error_login = false;
+                 this.topEnd();
+            }
           console.log(this.userData);
+
         });
         
       } catch (error) {
