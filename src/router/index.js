@@ -28,6 +28,7 @@ const router = new VueRouter({
     {
       path: '/type-parametre',
       name: 'type-parametre',
+      
       component: () => import('@/views/pages/type-parametre/index.vue'),
       meta: {
         pageTitle: 'Parametre',
@@ -37,7 +38,24 @@ const router = new VueRouter({
             active: true,
           },
         ],
-        // requiresAuth: true,
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/parametre/:slug',
+      // path: '/parametre/:slug',
+      // name: 'parametre',
+      component: () => import('@/views/pages/parametre/index.vue'),
+      meta: {
+        pageTitle: 'Parametre',
+        breadcrumb: [
+          {
+            text: 'parametre',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
       },
     },
     {
@@ -99,7 +117,7 @@ const router = new VueRouter({
     },
 
     {
-      path: '/register',
+      path: '/register/:role',
       name: 'register',
       component: () => import('@/views/pages/auth/register.vue'),
       meta: {

@@ -7,11 +7,10 @@
       ok-title="Créer"
       cancel-title="Annuler"
       centered
-      title="Nouveau type parametre"
-      @ok="save"
+      title="Nouveau parametre"
+      @ok="save()"
     >
       <b-form>
-          <div class="text-center">  <span class="text-danger" v-if="msgError"> {{ msgError }} </span></div>
         <b-form-group label="" label-for="register-nom">
           <label for="">Title <span class="p-0 text-danger h6">*</span></label>
           <validation-provider
@@ -46,6 +45,25 @@
           </validation-provider>
         </b-form-group>
 
+        <b-form-group
+          label=""
+          label-for="register-nom"
+          v-if="
+            typePara.title === 'diocese' || typePara.title === 'localisation'
+          "
+        >
+          <label for="">Quartier</label>
+          <validation-provider #default="{ errors }" name="nom" rules="">
+            <b-form-input
+              id="register-nom"
+              v-model="quartier"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+          </validation-provider>
+        </b-form-group>
+
         <b-form-group label="Description" label-for="register-description">
           <b-form-textarea
             id="textarea"
@@ -62,8 +80,10 @@
     <div class="tableau">
       <b-card no-body class="py-1">
         <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvelle taxe -->
+
         <b-row class="py-2 px-2">
           <!-- Per Page -->
+
           <b-col
             cols="12"
             md="6"
@@ -80,7 +100,7 @@
 
             <b-button variant="primary" v-b-modal.v-b-modal.modal-add>
               <feather-icon icon="PlusIcon" class="mx-auto" />
-              Nouveau type parametre
+              Ajouter un parametre
             </b-button>
           </b-col>
 
@@ -92,7 +112,7 @@
                   <feather-icon icon="SearchIcon" />
                 </b-input-group-prepend>
                 <b-form-input
-                  v-model="filtreTypeParametre"
+                  v-model="filtreParametre"
                   class="d-inline-block mr-1"
                   placeholder="Rechercher par : title, description, date..."
                 />
@@ -101,26 +121,28 @@
           </b-col>
         </b-row>
 
-        <!-- Le tableau affichant les typeParametre -->
+        <!-- Le tableau affichant les Parametre -->
+        <span class="text-center text-bold"
+          >Parametre pour : {{ titleParms[0].title }}</span
+        >
         <b-table
           hover
           responsive
           :per-page="perPage"
           :current-page="currentPage"
-          :items="typeParametre"
+          :items="Parametre"
           :fields="tableColumns"
-          :filter="filtreTypeParametre"
+          :filter="filtreParametre"
           show-empty
           empty-text=""
           class="bg-white"
         >
-         <template #cell(created_at)="data">
-          {{ format_date(data.item.created_at) }}
-        </template>
+          <template #cell(created_at)="data">
+            {{ format_date(data.item.created_at) }}
+          </template>
 
-            <template #cell(actions)="data">
+          <template #cell(actions)="data">
             <div class="text-nowrap py-1">
-
               <!-- Dropdown -->
               <b-dropdown
                 variant="link"
@@ -136,12 +158,12 @@
                   />
                 </template>
 
- <b-dropdown-item
-                  @click="addParametre(data.item.id, data.item.slug)"
+                <!-- <b-dropdown-item
+                  @click="addParametre(data.item.id)"
                 >
                   <feather-icon icon="PlusIcon" />
                   <span class="align-middle ml-50">Ajouter un parametre</span>
-                </b-dropdown-item>
+                </b-dropdown-item> -->
 
                 <b-dropdown-item
                   v-b-modal.modal-reglement
@@ -152,9 +174,9 @@
                 </b-dropdown-item>
 
                 <b-dropdown-item @click="destroy(data.item.id)">
-												<feather-icon icon="TrashIcon" />
-												<span class="align-middle ml-50"> Supprimer</span>
-											</b-dropdown-item>
+                  <feather-icon icon="TrashIcon" />
+                  <span class="align-middle ml-50"> Supprimer</span>
+                </b-dropdown-item>
               </b-dropdown>
             </div>
           </template>
@@ -221,8 +243,7 @@ import {
   BTable,
   BFormTextarea,
   BDropdown,
-  BDropdownItem
-  
+  BDropdownItem,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -231,8 +252,7 @@ import vSelect from "vue-select";
 import URL from "@/views/pages/request";
 import axios from "axios";
 import moment from "moment";
-import flatPickr from  "vue-flatpickr-component";
-import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import flatPickr from "vue-flatpickr-component";
 
 export default {
   components: {
@@ -262,8 +282,7 @@ export default {
     BInputGroupAppend,
     BFormTextarea,
     BDropdown,
-      BDropdownItem
-
+    BDropdownItem,
   },
   directives: {
     Ripple,
@@ -273,10 +292,15 @@ export default {
       title: "",
       subtitle: "",
       description: "",
+      quartier: "",
 
       valideTitle: false,
-   msgError :"",
-      typeParametre: [],
+
+      typePara: [],
+
+      Parametre: [],
+
+      titleParms: {},
       perPage: 30,
       currentPage: 1,
       pTotal: 0,
@@ -288,18 +312,32 @@ export default {
         { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
-      filtreTypeParametre: "",
+      filtreParametre: "",
       perPageOptions: [30, 50, 100],
     };
-  },
+  },  
 
   async mounted() {
-    document.title = "type-parametre";
+    document.title = "parametre";
+    console.log(this.$route.params.id);
+    this.typePara = JSON.parse(localStorage.getItem("typeParametre"));
+    this.titleParms = this.typePara.filter((parms) => 
+       parms.id === parseInt(this.$route.params.id)
+    )
+    console.log("loca", this.titleParms);
     try {
-      await axios.get(URL.TYPEPARAMETRE).then((response) => {
-        this.typeParametre = response.data.liste;
-        console.log('liste',this.typeParametre);
-        this.pTotal = this.typeParametre.length;
+      await axios.get(URL.PARAMETRE).then((response) => {
+        this.Parametre = response.data.parametre;
+        console.log("List Parm", this.Parametre);
+        const listParametre = this.Parametre.filter(
+          (item) => item.type_parametre_id === parseInt(this.$route.params.id)
+        );
+
+        
+
+        this.Parametre = listParametre;
+        this.pTotal = this.Parametre.length;
+        console.log("All", this.Parametre);
       });
     } catch (error) {
       console.log(error);
@@ -307,95 +345,57 @@ export default {
   },
 
   methods: {
+    //envoi des infos en localStorage
 
-       topEnd() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: "Enregistrement réussi",
-          icon: "ThumbsUpIcon",
-          variant: "success",
-        },
-      });
-    },
-
-     topEndE() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: "Erreur",
-          icon: "ThumbsDownIcon",
-          variant: "danger",
-        },
-      });
-    },
-//envoi des infos en localStorage
-
-        addParametre(id,slug){
-            	const currectTp = this.typeParametre.filter(
-				(item) => item.id === id
-			);
-
-			localStorage.setItem('typeParametre', JSON.stringify(currectTp[0]));
-			this.$router.push(`/parametre/${slug}`);
-        },
-
-       format_date(value) {
+    format_date(value) {
       if (value) {
         return moment(String(value)).format("DD-MM-YYYY");
       }
     },
-//
-validateTitle(){
-    if (!this.title) {
-        this.valideTitle = true
-    } else {
-          this.valideTitle = false
-    }
-},
+    //
+    validateTitle() {
+      if (!this.title) {
+        this.valideTitle = true;
+      } else {
+        this.valideTitle = false;
+      }
+    },
 
     async save(bvModalEvt) {
       try {
-          this.validateTitle()
+        this.validateTitle();
 
         const config = {
           headers: {
             Accept: "application/json",
           },
         };
-            if (this.title) {
-                const data = {
-          title: this.title,
-          subtitle: this.subtitle,
-          description: this.description,
-        };
-                console.log(data);
-        await axios
-          .post(URL.TYPEPARAMETRE_STORE, data, this.config)
-          .then((response) => {
-         
-          this.userData = response.data.type_parametre;
-           this.msgError = response.data.error
-            if (this.userData) {
-                 this.topEnd()
-                this.typeParametre.unshift( this.userData);
-            //
-            this.title = "";
-            this.subtitle = "";
-            this.description = "";
-            }else if(this.msgError !==""){
-                this.topEndE()
-               bvModalEvt.preventDefault();
-            }
-
-            
-          });  
-            }
-      
+        if (this.validateTitle) {
+          bvModalEvt.preventDefault();
+        } else {
+          const data = {
+            title: this.title,
+            subtitle: this.subtitle,
+            quartier: this.quartier,
+            description: this.description,
+            type_parametre: this.$route.params.id,
+          };
+          console.log("dat", data);
+          await axios
+            .post(URL.PARAMETRE_STORE, data, this.config)
+            .then((response) => {
+              this.userData = response.data;
+              console.log(this.userData);
+              this.Parametre.unshift(this.userData);
+              //
+              this.title = "";
+              this.subtitle = "";
+              this.description = "";
+            });
+        }
       } catch (error) {
         console.log(error);
       }
-       bvModalEvt.preventDefault();
     },
   },
 };

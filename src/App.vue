@@ -22,6 +22,8 @@ import useAppConfig from '@core/app-config/useAppConfig'
 import { useWindowSize, useCssVar } from '@vueuse/core'
 
 import store from '@/store'
+import URL from "@/views/pages/request";
+import axios from "axios";
 
 const LayoutVertical = () => import('@/layouts/vertical/LayoutVertical.vue')
 const LayoutHorizontal = () => import('@/layouts/horizontal/LayoutHorizontal.vue')
@@ -46,6 +48,20 @@ export default {
     contentLayoutType() {
       return this.$store.state.appConfig.layout.type
     },
+  },
+  
+//stockage des type parametre dans local storage
+   async mounted() {
+    try {
+      await axios.get(URL.TYPEPARAMETRE).then((response) => {
+        this.typeParametre = response.data.liste;
+          if (this.typeParametre) {
+          localStorage.setItem('typeParametre', JSON.stringify(this.typeParametre));
+          }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
   beforeCreate() {
     // Set colors in theme
