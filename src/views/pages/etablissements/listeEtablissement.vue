@@ -1,254 +1,417 @@
 <template>
-  <validation-observer ref="simpleRules">
-    <b-form  @submit.prevent>
-      <b-card>
-        <b-row>
-          <b-col class="3">
-            <b-form-group label-for="title">
-            <label for="title">Nom de l'etablissement <span class="p-0 text-danger h6"> *</span></label>
-
-              <validation-provider
-                #default="{ errors }"
-                name="tilte"
-                rules="required"
-              >
-                <b-form-input
-                  id="tilte"
-                  type="text"
-                  v-model="tilte"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="EPP - Etablissement "
-                />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-
-          <!-- <b-col class="3">
-            <b-form-group label="" label-for="Commune">
-              <label for="Commune">Commune <span class="p-0 text-danger h6"> *</span></label>
-              <validation-provider
-                #default="{ errors }"
-                name="commune"
-                rules="required"
-              >
-                <b-form-input
-                  id="ommune"
-                  type="text"
-                  v-model="commune_id"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="Cocody"
-                />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-          </b-col> -->
-          <b-col class="3">
-            <b-form-group label="" label-for="quartier">
-              <label for="quartier">Quartier <span class="p-0 text-danger h6"> *</span></label>
-
-              <validation-provider
-                #default="{ errors }"
-                name="quartier"
-                rules="required"
-              >
-                <b-form-input
-                  id="quartier"
-                  v-model="quartier"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="Abatta"
-                />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col class="3"
-            ><b-form-group label="" label-for="phone">
-              <label for="phone">Contact <span class="p-0 text-danger h6"> *</span></label>
-
-              <validation-provider
-                #default="{ errors }"
-                name="phone"
-                rules="required"
-              >
-                <b-form-input
-                  id="phone"
-                  type="text"
-                  v-model="phone"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="000 0000 000"
-                />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-
-          <b-col class="3"
-            ><b-form-group label="" label-for="email">
-              <label for="email">Email <span class="p-0 text-danger h6"> *</span></label>
-              <validation-provider
-                #default="{ errors }"
-                name="email"
-                rules="required"
-              >
-                <b-form-input
-                  id="email"
-                  type="email"
-                  v-model="email"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="exemple@gmail.com"
-                />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group></b-col
+  <div class="">
+    <!-- Tableau pour afficher les taxes -->
+    <div class="tableau">
+      <b-card no-body class="py-1">
+        <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvelle taxe -->
+        <b-row class="px-2">
+          <!-- Per Page -->
+          <b-col
+            cols="12"
+            md="6"
+            class="d-flex align-items-center justify-content-start mb-1 mb-md-0 mt-1"
           >
-          <!-- <b-col class="3">
-            <label for="">Type d'enseignement<span class="p-0 text-danger h6"> *</span></label>
-            <validation-provider #default="{}" name="enseignement_id" rules="required">
-              <v-select
-                v-model="enseignement_id"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
-                placeholder="Selectionner un sedec"
-              />
+            <label>Entrées</label>
+            <v-select
+              v-model="perPage"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              :options="perPageOptions"
+              :clearable="false"
+              class="per-page-selector d-inline-block ml-50 mr-1"
+            />
 
-              <small :class="valideRole ? 'block' : 'none'" class="text-danger">
-                Veuillez selectionner l'enseignement
-              </small>
-            </validation-provider>
-          </b-col> -->
+            <b-button variant="primary">
+              <feather-icon icon="PlusIcon" class="mx-auto" />
+              <!-- Ajouter un etablissement -->
+              <b-link :to="{ name: 'create' }">
+                <span class="text-white">Ajouter un etablissement </span>
+              </b-link>
+            </b-button>
+
+            <!-- <b-link :to="{ name: 'register' }">
+              <span>&nbsp;Créer un compte</span>
+            </b-link> -->
+          </b-col>
+
+          <!-- Search -->
+          <b-col cols="12" md="6" class="mt-1">
+            <div class="d-flex align-items-center justify-content-end">
+              <b-input-group class="input-group-merge">
+                <b-input-group-prepend is-text>
+                  <feather-icon icon="SearchIcon" />
+                </b-input-group-prepend>
+                <b-form-input
+                  v-model="filtreetablissement"
+                  class="d-inline-block mr-1"
+                  placeholder="Rechercher par : titre de propection, motif, date..."
+                />
+              </b-input-group>
+            </div>
+          </b-col>
         </b-row>
 
-        <!-- <b-row>
-          <b-col class="6">
-            <label for="">Diocèse <span class="p-0 text-danger h6"> *</span></label>
-            <validation-provider #default="{}" name="diocese_id" rules="required">
-              <v-select
-                v-model="sedec_id"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
-                placeholder="Selectionner le diocèse"
+        <!-- Le tableau affichant les typeParametre -->
+        <b-table
+          hover
+          responsive
+          primary-key="id"
+          :per-page="perPage"
+          :current-page="currentPage"
+          :items="etablissement"
+          :fields="tableColumns"
+          :filter="filtreetablissement"
+          show-empty
+          empty-text="Aucune prospection enregistrée"
+          class="bg-white"
+        >
+          <template #cell(actions)="data">
+            <div class="text-nowrap py-1">
+              <!-- <b-link "> -->
+              <feather-icon
+                icon="Edit3Icon"
+                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                size="16"
+                class="cursor-pointer mr-1"
+                @click="updateEtablissement(data.item.id)"
               />
+              <!-- </b-link> -->
 
-              <small :class="valideRole ? 'block' : 'none'" class="text-danger">
-                Veuillez selectionner le diocèse
-              </small>
-            </validation-provider>
-          </b-col>
-          <b-col class="6">
-            <label for="">Sedec <span class="p-0 text-danger h6"> *</span></label>
-            <validation-provider #default="{}" name="sedec_id" rules="required">
-              <v-select
-                v-model="sedec_id"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
-                placeholder="Selectionner un sedec"
-              />
+              <b-link :to="{ name: 'create' }">
+                <feather-icon
+                  icon="EyeIcon"
+                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                  size="16"
+                  class="cursor-pointer mr-1"
+                  @click="update(data.item)"
+                />
+              </b-link>
 
-              <small :class="valideRole ? 'block' : 'none'" class="text-danger">
-                Veuillez selectionner le SEDEC
-              </small>
-            </validation-provider>
+              <!-- <b-link :to="{ name: 'create' }"> -->
+                <feather-icon
+                  icon="TrashIcon"
+                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                  size="16"
+                  class="cursor-pointer mr-1"
+                  @click="confirmText(data.item.id)"
+                />
+             
+            </div>
+          </template>
+        </b-table>
+
+        <!-- Les boutons de pagination -->
+        <div class="mx-2 mb-2 pb-1">
+          <b-row>
+            <b-col
+              cols="12"
+              sm="6"
+              class="d-flex align-items-center justify-content-center justify-content-sm-start"
+            >
+              <span class="text-muted"></span>
             </b-col>
-        </b-row> -->
-        <!-- login button -->
-        <b-col cols="12 mt-2">
-          <b-button
-            variant="primary"
-            type="submit"
-            @click="save"
-          >
-            Enregistrer
-          </b-button>
-        </b-col>
+            <!-- Pagination -->
+            <b-col
+              cols="12"
+              sm="6"
+              class="d-flex align-items-center justify-content-center justify-content-sm-end"
+            >
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="pTotal"
+                :per-page="perPage"
+                first-number
+                last-number
+                class="mb-0 mt-1 mt-sm-0"
+                prev-class="prev-item"
+                next-class="next-item"
+              >
+                <template #cell(title)="data">
+                  <div class="py-50">
+                    <span
+                      variant="info"
+                      class="text-uppercase font-weight-bolder"
+                    >
+                      {{ data.item.title }}
+                    </span>
+                  </div>
+                </template>
+                <template #prev-text>
+                  <feather-icon icon="ChevronLeftIcon" size="18" />
+                </template>
+                <template #next-text>
+                  <feather-icon icon="ChevronRightIcon" size="18" />
+                </template>
+              </b-pagination>
+            </b-col>
+          </b-row>
+        </div>
       </b-card>
-    </b-form>
-  </validation-observer>
+    </div>
+  </div>
 </template>
 
 <script>
-import { ValidationProvider, ValidationObserver } from "vee-validate";
-import vSelect from "vue-select";
-// import { BCard, BCardText } from "bootstrap-vue";
-
 import {
-  BFormInput,
-  BFormGroup,
-  BForm,
   BRow,
   BCol,
+  BModal,
+  BFormInput,
+  BFormGroup,
   BButton,
-  BCardText,
+  VBModal,
+  BForm,
+  BLink,
   BCard,
+  BFormCheckbox,
+  BInputGroup,
+  BInputGroupAppend,
+  BImg,
+  BPagination,
+  BTable,
+  BFormTextarea,
 } from "bootstrap-vue";
-import { required } from "@validations";
+import Ripple from "vue-ripple-directive";
+import { required, email } from "@validations";
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+import vSelect from "vue-select";
+import URL from "@/views/pages/request";
+import axios from "axios";
+import moment from "moment";
+import flatPickr from "vue-flatpickr-component";
+import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 
 export default {
   components: {
-    BCard,
-    vSelect,
-    ValidationProvider,
-    ValidationObserver,
-    BFormInput,
-    BFormGroup,
-    BCardText,
-    BForm,
+    flatPickr,
     BRow,
     BCol,
+    BFormInput,
     BButton,
+    BModal,
+    moment,
+    BFormGroup,
+    VBModal,
+    BForm,
+    BLink,
+    BFormCheckbox,
+    BInputGroup,
+    BInputGroupAppend,
+    BImg,
+    required,
+    email,
+    ValidationProvider,
+    ValidationObserver,
+    vSelect,
+    axios,
+    BCard,
+    BPagination,
+    BTable,
+    BInputGroupAppend,
+    BFormTextarea,
+  },
+  directives: {
+    Ripple,
   },
   data() {
     return {
       title: "",
       quartier: "",
-      phone: "",
+      contact: "",
       email: "",
-      // sideImg: require("@/assets/images/pages/register-v2.svg"),
+
+      valideEtablissement: false,
+      valideCommune: false,
+      valideQuartier: false,
+      valideEmail: false,
+      valideContact: false,
+      valideEnseignement: false,
+
+      valideTitle: false,
+
+      etablissement: [],
+      niveau: [],
+
+      perPage: 30,
+      currentPage: 1,
+      pTotal: 0,
+      tableColumns: [
+        { key: "code", label: "Code", sortable: true },
+        { key: "title", label: "Nom", sortable: true },
+        { key: "email", label: "Email", sortable: true },
+        { key: "contact", label: "contact", sortable: true },
+        // { key: "description", label: "motif", sortable: true },
+        // { key: "created_at", label: "crée le", sortable: true },
+        { key: "actions" },
+      ],
+      filtreetablissement: "",
+      perPageOptions: [30, 50, 100],
+      error: [],
     };
   },
 
-  async save() {
+  async mounted() {
     try {
-
-       const config = {
-          headers: {
-            Accept: "application/json",
-          },
-        };
-
-      const data = {
-        title: this.title,
-        quarier: this.quartier,
-        phone: this.contact,
-        email: this.email,
-        // code: this.userId,
-      };
-      await axios.post(URL.CREATE_ETABLISSEMENT, data, config).then((response) => {
-        this.createEtablissement = response.data
-      
+      await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
+        this.returnData = response.data;
+        this.etablissement = this.returnData.etablissements;
+        this.niveau = this.returnData.etablissementx;
+        // this.listEtablissement = this.returnData
       });
+
+      console.log(this.niveau);
     } catch (error) {
       console.log(error);
     }
   },
 
-
   methods: {
-    validationForm() {
-      this.$refs.simpleRules.validate().then((success) => {
-        if (success) {
-          // eslint-disable-next-line
-          alert("login successfully");
-        }
+    // validationForm() {
+    //   this.$refs.simpleRules.validate().then((success) => {
+    //     if (success) {
+    //       // eslint-disable-next-line
+    //       alert("login successfully");
+    //     }
+    //   });
+    // },
+
+    topEnd() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: "Etablissement enregistré avec succès",
+          icon: "BookIcon",
+          variant: "success",
+        },
       });
+    },
+
+    validateEtablissement() {
+      if (!this.etablissement_id) {
+        this.valideEtablissement = true;
+      } else {
+        this.valideEtablissement = false;
+      }
+    },
+
+    validateCommune() {
+      if (!this.commune_id) {
+        this.valideCommune = true;
+      } else {
+        this.valideCommune = false;
+      }
+    },
+
+    validateQuartier() {
+      if (!this.title) {
+        this.valideQuartier = true;
+      } else {
+        this.valideQuartier = false;
+      }
+    },
+
+    validateEmail() {
+      if (!this.email) {
+        this.valideEmail = true;
+      } else {
+        this.valideEmail = false;
+      }
+    },
+
+    validateContact() {
+      if (!this.contact) {
+        this.valideContact = true;
+      } else {
+        this.valideContact = false;
+      }
+    },
+
+    updateEtablissement(id) {
+      const etat = this.etablissement.filter(
+        (item) => item.id === id,
+        console.log(etat)
+      );
+
+      localStorage.setItem("etablissement", JSON.stringify(etat[0]));
+      this.$router.push({ name: "edit" });
+    },
+
+
+    confirmText(id) {
+      //  then((result) => {
+      //   if (result.value) {
+          this.destroyEtablisement(id);
+      //   }
+      // });
+    },
+
+    destroyEtablisement(identifiant) {
+      try {
+        const id = {
+          id: identifiant,
+        };
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+        axios
+          .post(URL.DESTROY_ETABLISSEMENT, id, config)
+          .then((response) => {
+            if(response.data){
+              response.data;
+              // topEnd();
+              
+            }
+          })
+        // this.users.splice(index, 1);
+      } catch (error) {
+        console.log(error.type);
+      }
     },
   },
 };
 </script>
 
 <style lang="scss">
+@import "@core/scss/vue/libs/vue-select.scss";
+@import "@core/scss/vue/libs/vue-flatpicker.scss";
+.table-base {
+  margin: 30px auto 0;
+}
+
+.tableau {
+  box-shadow: 0px 6px 46px -21px rgba(0, 0, 0, 0.75);
+}
+
+.table-card {
+  width: 100%;
+  margin: auto;
+  border-radius: 13px;
+}
+
+.table-card thead tr {
+  border-radius: 13px;
+  background-color: rgb(68, 68, 68) !important;
+}
+
+.table-card thead tr th {
+  background-color: rgb(68, 68, 68) !important;
+  color: white;
+}
+
+.add-btn {
+  position: absolute;
+  right: 0;
+  top: -50px;
+  background-color: #450077;
+}
+.none {
+  display: none;
+}
+.block {
+  display: inline-block;
+}
+</style>
+<style scoped lang="scss">
 @import "@core/scss/vue/libs/vue-select.scss";
 </style>

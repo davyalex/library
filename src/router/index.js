@@ -64,6 +64,39 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
+    
+
+    {
+      path: '/etablissement/create',
+      name: 'create',
+      component: () => import('@/views/pages/etablissements/CreateEtablissement.vue'),
+      meta: {
+        pageTitle: 'Liste',
+        breadcrumb: [
+          {
+            text: 'Etablissement',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/etablissement/edit',
+      name: 'edit',
+      component: () => import('@/views/pages/etablissements/editEtablissement.vue'),
+      meta: {
+        pageTitle: 'Modifier',
+        breadcrumb: [
+          {
+            text: 'Etablissement',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
 
     {
       path: '/register',

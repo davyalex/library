@@ -13,6 +13,6 @@ export default [
   {
     title: 'Etablissement',
     route: 'etablissement',
-    icon: 'FileIcon',
+    icon: 'BookIcon',
   },
 ]
