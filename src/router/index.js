@@ -116,6 +116,24 @@ const router = new VueRouter({
       },
     },
 
+
+    {
+      path: '/article/create',
+      name: 'create',
+      component: () => import('@/views/pages/articles/create.vue'),
+      meta: {
+        pageTitle: 'Ajout',
+        breadcrumb: [
+          {
+            text: 'Article',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+
     {
       path: '/register/:role',
       name: 'register',
