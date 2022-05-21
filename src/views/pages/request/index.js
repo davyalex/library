@@ -24,6 +24,10 @@ const URL = {
 
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
 
+  TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
+
+  TYPEPARAMETRE_DESTROY: `${baseUrl}/type-parametre/destroy`,
+
   PARAMETRE: `${baseUrl}/parametre`,
 
   PARAMETRE_CREATE: `${baseUrl}/parametre/create`,
@@ -32,7 +36,6 @@ const URL = {
 
   PARAMETRE_DESTROY: `${baseUrl}/parametre/destroy`,
 
-  TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
 
   LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
 

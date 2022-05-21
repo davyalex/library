@@ -7,19 +7,19 @@
       ok-title="Créer"
       cancel-title="Annuler"
       centered
-      title="Nouveau parametre"
+      :title="'Ajouter un'+ ' '+titleParms[0].title"
       @ok="save"
     >
       <b-form @submit.prevent>
         <!-- si sedec -->
 
-        <!-- si diocese -->
+        <!-- si sedec -->
           <div class="text-center">  <span class="text-danger" v-if="msgError"> {{ msgError }} </span></div>
 
         <b-form-group
           label=""
           label-for="register-libelle"
-          v-if="this.titleParms[0].title === 'sedec'"
+          v-if="this.titleParms[0].title === 'Sedec'"
         >
           <label> Diocese <span class="p-0 text-danger h6">*</span> </label>
           <validation-provider
@@ -51,7 +51,7 @@
         <b-form-group
           label=""
           label-for="register-libelle"
-          v-if="this.titleParms[0].title === 'diocese'"
+          v-if="this.titleParms[0].title === 'Diocese'"
         >
           <label> Commune <span class="p-0 text-danger h6">*</span> </label>
           <validation-provider
@@ -83,7 +83,7 @@
         <b-form-group
           label=""
           label-for="register-libelle"
-          v-if="this.titleParms[0].title === 'niveau'"
+          v-if="this.titleParms[0].title === 'Niveau'"
         >
           <label> Cycle <span class="p-0 text-danger h6">*</span> </label>
           <validation-provider
@@ -459,7 +459,7 @@ msgError:"",
         this.cycle = response.data.cycle;
         this.commune = response.data.commune;
         this.diocese = response.data.diocese;
-        // console.log('cycle',this.cycle);
+        console.log('cycle',this.commune);
       });
     } catch (error) {
       console.log(error);
@@ -559,6 +559,7 @@ msgError:"",
     },
 
     async save(bvModalEvt) {
+     
       try {
         this.validateTitle();
         this.validateSelectedCycle();
@@ -570,7 +571,9 @@ msgError:"",
           },
         };
 
-    
+          if (this.error=true) {
+             bvModalEvt.preventDefault();
+          }
         let selected = "";
         if (this.selectedCycle) {
           selected = this.selectedCycle.id;
@@ -616,7 +619,7 @@ msgError:"",
       } catch (error) {
         console.log(error);
       }
-      bvModalEvt.preventDefault();
+     
     },
 
 
@@ -646,7 +649,7 @@ msgError:"",
               console.log(error.response.data);
             }
           });
-        this.prospections.splice(index, 1);
+        this.Parametre.splice(index, 1);
       } catch (error) {
         console.log(error.type);
       }

@@ -123,10 +123,10 @@
                   >
                     Veuillez entrer un email valide
                   </small>
-                   <small v-if="email_exist===true"
+                   <small v-if="errorMsg"
                     class="text-danger"
                   >
-                    Email entré existe déjà!
+                   {{ errorMsg }}
                   </small>
                 </validation-provider>
               </b-form-group>
@@ -304,6 +304,7 @@ export default {
       // valideStatus: false,
       loading: false,
       // email_exist:false,
+      errorMsg:""
     };
   },
   computed: {
@@ -404,7 +405,7 @@ export default {
         };
           this.loading = true;
         // console.log(data);
-           await axios.post(URL.REGISTER, data, config).then((response) => {
+           await axios.post(URL.REGISTER+`/superadmin`, data, config).then((response) => {
           if (response.data) {
            
             this.loading = false;
@@ -431,7 +432,8 @@ export default {
      
       } catch (error) {
         this.loading = false;
-        console.log(error);
+        this.errorMsg = error.response.data.message
+        console.log(this.errorMsg.message);
       }
     },
   },

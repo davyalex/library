@@ -45,7 +45,7 @@ const router = new VueRouter({
     {
       path: '/parametre/:slug',
       // path: '/parametre/:slug',
-      // name: 'parametre',
+      name: 'parametre/:slug',
       component: () => import('@/views/pages/parametre/index.vue'),
       meta: {
         pageTitle: 'Parametre',

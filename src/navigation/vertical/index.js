@@ -15,7 +15,7 @@ export default [
       {
         title: 'Type parametre',
         route: 'type-parametre',
-        icon: 'SettingsIcon',
+        icon: 'ToolIcon',
        },
 
      {
@@ -48,6 +48,12 @@ export default [
       title: 'Commune',
       route: {path: `/parametre/commune`},
       icon: 'SettingsIcon',
+     },
+
+     {
+      title: 'Etat de la commande',
+      route: {path: `/parametre/etat-de-la-commande`},
+      icon: 'SettingsIcon',
      }
      
     ]
@@ -56,7 +62,7 @@ export default [
   {
     title: 'Etablissement',
     route: 'etablissement',
-    icon: 'FileIcon',
+    icon: 'BriefcaseIcon',
   },
 
 ]
