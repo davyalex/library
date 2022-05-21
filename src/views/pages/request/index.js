@@ -17,11 +17,25 @@ export const APP_PROD = false
 
 const URL = {
   LOGIN: `${baseUrl}/login`,
+
   REGISTER: `${baseUrl}/register`,
+
   USER_CONNECTE: `${baseUrl}/user_connecte`,
+
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
+
+  PARAMETRE: `${baseUrl}/parametre`,
+
+  PARAMETRE_CREATE: `${baseUrl}/parametre/create`,
+
+  PARAMETRE_STORE: `${baseUrl}/parametre/store`,
+
+  PARAMETRE_DESTROY: `${baseUrl}/parametre/destroy`,
+
   TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
+
   LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
+
   CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
 
 };

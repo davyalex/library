@@ -8,10 +8,9 @@
       cancel-title="Annuler"
       centered
       title="Nouveau type parametre"
-      @ok="save"
+      @ok="save()"
     >
-      <b-form>
-          <div class="text-center">  <span class="text-danger" v-if="msgError"> {{ msgError }} </span></div>
+      <b-form >
         <b-form-group label="" label-for="register-nom">
           <label for="">Title <span class="p-0 text-danger h6">*</span></label>
           <validation-provider
@@ -231,8 +230,7 @@ import vSelect from "vue-select";
 import URL from "@/views/pages/request";
 import axios from "axios";
 import moment from "moment";
-import flatPickr from  "vue-flatpickr-component";
-import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import flatPickr from "vue-flatpickr-component";
 
 export default {
   components: {
@@ -275,8 +273,9 @@ export default {
       description: "",
 
       valideTitle: false,
-   msgError :"",
+
       typeParametre: [],
+
       perPage: 30,
       currentPage: 1,
       pTotal: 0,
@@ -307,28 +306,6 @@ export default {
   },
 
   methods: {
-
-       topEnd() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: "Enregistrement réussi",
-          icon: "ThumbsUpIcon",
-          variant: "success",
-        },
-      });
-    },
-
-     topEndE() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: "Erreur",
-          icon: "ThumbsDownIcon",
-          variant: "danger",
-        },
-      });
-    },
 //envoi des infos en localStorage
 
         addParametre(id,slug){
@@ -373,29 +350,20 @@ validateTitle(){
         await axios
           .post(URL.TYPEPARAMETRE_STORE, data, this.config)
           .then((response) => {
-         
+              
           this.userData = response.data.type_parametre;
-           this.msgError = response.data.error
-            if (this.userData) {
-                 this.topEnd()
-                this.typeParametre.unshift( this.userData);
+          console.log( this.userData);
+              this.typeParametre.unshift( this.userData);
             //
             this.title = "";
             this.subtitle = "";
             this.description = "";
-            }else if(this.msgError !==""){
-                this.topEndE()
-               bvModalEvt.preventDefault();
-            }
-
-            
           });  
             }
       
       } catch (error) {
         console.log(error);
       }
-       bvModalEvt.preventDefault();
     },
   },
 };

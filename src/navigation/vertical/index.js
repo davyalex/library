@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export default [
   {
     title: 'Dashboard',
@@ -6,8 +8,49 @@ export default [
   },
   {
     title: 'Parametre',
-    route: 'type-parametre',
+    route: '',
     icon: 'SettingsIcon',
+    children:[
+
+      {
+        title: 'Type parametre',
+        route: 'type-parametre',
+        icon: 'SettingsIcon',
+       },
+
+     {
+      title: 'Enseignement',
+      route: {path: `/parametre/enseignement`},
+      icon: 'SettingsIcon',
+     },
+     {
+      title: 'Diocèse',
+      route: {path: `/parametre/diocese`},
+      icon: 'SettingsIcon',
+     },
+     {
+      title: 'Sedec',
+      route: {path: `/parametre/sedec`},
+      icon: 'SettingsIcon',
+     },
+
+     {
+      title: 'Cycle',
+      route: {path: `/parametre/cycle`},
+      icon: 'SettingsIcon',
+     },
+     {
+      title: 'Niveau',
+      route: {path: `/parametre/niveau`},
+      icon: 'SettingsIcon',
+     },
+     {
+      title: 'Commune',
+      route: {path: `/parametre/commune`},
+      icon: 'SettingsIcon',
+     }
+     
+    ]
   },
 
   {
@@ -15,4 +58,6 @@ export default [
     route: 'etablissement',
     icon: 'FileIcon',
   },
+
 ]
+
