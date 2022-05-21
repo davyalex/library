@@ -72,7 +72,14 @@ const router = new VueRouter({
       name: 'etablissement',
       component: () => import('@/views/pages/etablissements/listeEtablissement.vue'),
       meta: {
-        layout: 'full',
+        pageTitle: 'Liste',
+        breadcrumb: [
+          {
+            text: 'Etablissement',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
       },
     },
 

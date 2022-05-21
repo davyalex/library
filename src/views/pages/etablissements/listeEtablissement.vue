@@ -1,279 +1,254 @@
 <template>
-  <div class="auth-wrapper auth-v2">
-    <b-row class="auth-inner m-0">
-      <!-- Brand logo-->
-      <b-link class="brand-logo">
-        <vuexy-logo />
-        <h2 class="brand-text text-primary ml-1">Vuexy</h2>
-      </b-link>
-      <!-- /Brand logo-->
+  <validation-observer ref="simpleRules">
+    <b-form  @submit.prevent>
+      <b-card>
+        <b-row>
+          <b-col class="3">
+            <b-form-group label-for="title">
+            <label for="title">Nom de l'etablissement <span class="p-0 text-danger h6"> *</span></label>
 
-      <!-- Left Text-->
-      <b-col lg="8" class="d-none d-lg-flex align-items-center p-5">
-        <div
-          class="w-100 d-lg-flex align-items-center justify-content-center px-5"
-        >
-          <b-img fluid :src="imgUrl" alt="Login V2" />
-        </div>
-      </b-col>
-      <!-- /Left Text-->
-
-      <!-- Login-->
-      <b-col lg="4" class="d-flex align-items-center auth-bg px-2 p-lg-5">
-        <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
-          <b-card-title title-tag="h2" class="font-weight-bold mb-1">
-            Welcome to Vuexy! 👋
-          </b-card-title>
-          <b-card-text class="mb-2">
-            Please sign-in to your account and start the adventure
-          </b-card-text>
-
-          <!-- form -->
-          <validation-observer ref="loginValidation">
-            <b-form class="auth-login-form mt-2" @submit.prevent>
-              <!-- email -->
-
-              <b-form-group label="Email" label-for="login-email">
-                <validation-provider
-                  #default="{ errors }"
-                  name="Email"
-                  rules="required|email"
-                >
-                  <b-form-input
-                    id="login-email"
-                    v-model="email"
-                    :state="errors.length > 0 ? false : null"
-                    name="login-email"
-                    placeholder="john@example.com"
-                  />
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
-              <!-- forgot password -->
-              <b-form-group>
-                <div class="d-flex justify-content-between">
-                  <label for="login-password">Password</label>
-                  <b-link :to="{ name: 'auth-forgot-password-v2' }">
-                    <small>Forgot Password?</small>
-                  </b-link>
-                </div>
-                <validation-provider
-                  #default="{ errors }"
-                  name="Password"
-                  rules="required"
-                >
-                  <b-input-group
-                    class="input-group-merge"
-                    :class="errors.length > 0 ? 'is-invalid' : null"
-                  >
-                    <b-form-input
-                      id="login-password"
-                      v-model="password"
-                      :state="errors.length > 0 ? false : null"
-                      class="form-control-merge"
-                      :type="passwordFieldType"
-                      name="login-password"
-                      placeholder="············"
-                    />
-                    <b-input-group-append is-text>
-                      <feather-icon
-                        class="cursor-pointer"
-                        :icon="passwordToggleIcon"
-                        @click="togglePasswordVisibility"
-                      />
-                    </b-input-group-append>
-                  </b-input-group>
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
-              <!-- checkbox -->
-              <b-form-group>
-                <b-form-checkbox
-                  id="remember-me"
-                  v-model="status"
-                  name="checkbox-1"
-                >
-                  Se souvenir de moi
-                </b-form-checkbox>
-              </b-form-group>
-
-              <!-- submit buttons -->
-              <b-button
-                type="submit"
-                variant="primary"
-                block
-                @click="save"
+              <validation-provider
+                #default="{ errors }"
+                name="tilte"
+                rules="required"
               >
-                Connexion
-              </b-button>
-            </b-form>
-          </validation-observer>
+                <b-form-input
+                  id="tilte"
+                  type="text"
+                  v-model="tilte"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="EPP - Etablissement "
+                />
+                <small class="text-danger">{{ errors[0] }}</small>
+              </validation-provider>
+            </b-form-group>
+          </b-col>
 
-          <b-card-text class="text-center mt-2">
-            <span>Etre vous nouveau? </span>
-            <b-link :to="{ name: 'register' }">
-              <span>&nbsp;Créer un compte</span>
-            </b-link>
-          </b-card-text>
+          <!-- <b-col class="3">
+            <b-form-group label="" label-for="Commune">
+              <label for="Commune">Commune <span class="p-0 text-danger h6"> *</span></label>
+              <validation-provider
+                #default="{ errors }"
+                name="commune"
+                rules="required"
+              >
+                <b-form-input
+                  id="ommune"
+                  type="text"
+                  v-model="commune_id"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="Cocody"
+                />
+                <small class="text-danger">{{ errors[0] }}</small>
+              </validation-provider>
+            </b-form-group>
+          </b-col> -->
+          <b-col class="3">
+            <b-form-group label="" label-for="quartier">
+              <label for="quartier">Quartier <span class="p-0 text-danger h6"> *</span></label>
 
-          <!-- divider -->
-          <div class="divider my-2">
-            <div class="divider-text">or</div>
-          </div>
+              <validation-provider
+                #default="{ errors }"
+                name="quartier"
+                rules="required"
+              >
+                <b-form-input
+                  id="quartier"
+                  v-model="quartier"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="Abatta"
+                />
+                <small class="text-danger">{{ errors[0] }}</small>
+              </validation-provider>
+            </b-form-group>
+          </b-col>
+        </b-row>
 
-          <!-- social buttons -->
-          <div class="auth-footer-btn d-flex justify-content-center">
-            <b-button variant="facebook" href="javascript:void(0)">
-              <feather-icon icon="FacebookIcon" />
-            </b-button>
-            <b-button variant="twitter" href="javascript:void(0)">
-              <feather-icon icon="TwitterIcon" />
-            </b-button>
-            <b-button variant="google" href="javascript:void(0)">
-              <feather-icon icon="MailIcon" />
-            </b-button>
-            <b-button variant="github" href="javascript:void(0)">
-              <feather-icon icon="GithubIcon" />
-            </b-button>
-          </div>
+        <b-row>
+          <b-col class="3"
+            ><b-form-group label="" label-for="phone">
+              <label for="phone">Contact <span class="p-0 text-danger h6"> *</span></label>
+
+              <validation-provider
+                #default="{ errors }"
+                name="phone"
+                rules="required"
+              >
+                <b-form-input
+                  id="phone"
+                  type="text"
+                  v-model="phone"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="000 0000 000"
+                />
+                <small class="text-danger">{{ errors[0] }}</small>
+              </validation-provider>
+            </b-form-group>
+          </b-col>
+
+          <b-col class="3"
+            ><b-form-group label="" label-for="email">
+              <label for="email">Email <span class="p-0 text-danger h6"> *</span></label>
+              <validation-provider
+                #default="{ errors }"
+                name="email"
+                rules="required"
+              >
+                <b-form-input
+                  id="email"
+                  type="email"
+                  v-model="email"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="exemple@gmail.com"
+                />
+                <small class="text-danger">{{ errors[0] }}</small>
+              </validation-provider>
+            </b-form-group></b-col
+          >
+          <!-- <b-col class="3">
+            <label for="">Type d'enseignement<span class="p-0 text-danger h6"> *</span></label>
+            <validation-provider #default="{}" name="enseignement_id" rules="required">
+              <v-select
+                v-model="enseignement_id"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                placeholder="Selectionner un sedec"
+              />
+
+              <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+                Veuillez selectionner l'enseignement
+              </small>
+            </validation-provider>
+          </b-col> -->
+        </b-row>
+
+        <!-- <b-row>
+          <b-col class="6">
+            <label for="">Diocèse <span class="p-0 text-danger h6"> *</span></label>
+            <validation-provider #default="{}" name="diocese_id" rules="required">
+              <v-select
+                v-model="sedec_id"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                placeholder="Selectionner le diocèse"
+              />
+
+              <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+                Veuillez selectionner le diocèse
+              </small>
+            </validation-provider>
+          </b-col>
+          <b-col class="6">
+            <label for="">Sedec <span class="p-0 text-danger h6"> *</span></label>
+            <validation-provider #default="{}" name="sedec_id" rules="required">
+              <v-select
+                v-model="sedec_id"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                placeholder="Selectionner un sedec"
+              />
+
+              <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+                Veuillez selectionner le SEDEC
+              </small>
+            </validation-provider>
+            </b-col>
+        </b-row> -->
+        <!-- login button -->
+        <b-col cols="12 mt-2">
+          <b-button
+            variant="primary"
+            type="submit"
+            @click="save"
+          >
+            Enregistrer
+          </b-button>
         </b-col>
-      </b-col>
-      <!-- /Login-->
-    </b-row>
-  </div>
+      </b-card>
+    </b-form>
+  </validation-observer>
 </template>
 
 <script>
-/* eslint-disable global-require */
 import { ValidationProvider, ValidationObserver } from "vee-validate";
-import VuexyLogo from "@core/layouts/components/Logo.vue";
+import vSelect from "vue-select";
+// import { BCard, BCardText } from "bootstrap-vue";
+
 import {
+  BFormInput,
+  BFormGroup,
+  BForm,
   BRow,
   BCol,
-  BLink,
-  BFormGroup,
-  BFormInput,
-  BInputGroupAppend,
-  BInputGroup,
-  BFormCheckbox,
-  BCardText,
-  BCardTitle,
-  BImg,
-  BForm,
   BButton,
+  BCardText,
+  BCard,
 } from "bootstrap-vue";
-import { required, email } from "@validations";
-import { togglePasswordVisibility } from "@core/mixins/ui/forms";
-import store from "@/store/index";
-import URL, { APP_HOST } from "@/views/pages/request";
-import setAuthHeader from "../../../auth/jwt/token"
-import axios from "axios";
-// import axios from "axios";
-// import URL from "@/views/pages/request";
-import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import { required } from "@validations";
 
 export default {
   components: {
-    BRow,
-    BCol,
-    BLink,
-    BFormGroup,
-    BFormInput,
-    BInputGroupAppend,
-    BInputGroup,
-    BFormCheckbox,
-    BCardText,
-    BCardTitle,
-    BImg,
-    BForm,
-    BButton,
-    VuexyLogo,
-    axios,
+    BCard,
+    vSelect,
     ValidationProvider,
     ValidationObserver,
-    setAuthHeader
+    BFormInput,
+    BFormGroup,
+    BCardText,
+    BForm,
+    BRow,
+    BCol,
+    BButton,
   },
-  mixins: [togglePasswordVisibility],
-
   data() {
     return {
-      status: "",
-      password: "",
+      title: "",
+      quartier: "",
+      phone: "",
       email: "",
-      sideImg: require("@/assets/images/pages/login-v2.svg"),
-      // validation rulesimport store from '@/store/index'
-      required,
-      email,
+      // sideImg: require("@/assets/images/pages/register-v2.svg"),
     };
   },
-  computed: {
-    passwordToggleIcon() {
-      return this.passwordFieldType === "password" ? "EyeIcon" : "EyeOffIcon";
-    },
-    imgUrl() {
-      if (store.state.appConfig.layout.skin === "dark") {
-        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-        this.sideImg = require("@/assets/images/pages/login-v2-dark.svg");
-        return this.sideImg;
-      }
-      return this.sideImg;
-    },
-  },
-  methods: {
-   topEnd(){
-      this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: "Connexion réussi",
-              icon: "UserIcon",
-              variant: "success",
-            },
-          });
-   },
 
-    async save() {
+  async save() {
+    try {
 
-      try {
-        // e.preventDefault();
-        // this.marche = true;
-        const data = {
-          email: this.email,
-          password: this.password,
-          // code: this.userId,
-        };
-        const config = {
+       const config = {
           headers: {
             Accept: "application/json",
           },
         };
-        // this.bouton = "";
-        // this.validateEmail();
-        // this.validatePassword();
-        await axios.post(URL.LOGIN, data, config).then((response) => {
-          this.userData = response.data;
-                  if (this.userData) {
-                    setAuthHeader(response.data[1]);
-                      localStorage.setItem('token', this.userData[1])
-                         this.topEnd();
-                  }
-                   if (localStorage.getItem("token")) {
-              localStorage.setItem("connected", true);
-              this.$router.push({ name: "home" });
-            }
-          console.log(this.userData);
-        });
-        
-      } catch (error) {
-        console.log(error);
-      }
-      // this.$route.push('/register')
+
+      const data = {
+        title: this.title,
+        quarier: this.quartier,
+        phone: this.contact,
+        email: this.email,
+        // code: this.userId,
+      };
+      await axios.post(URL.CREATE_ETABLISSEMENT, data, config).then((response) => {
+        this.createEtablissement = response.data
+      
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+
+  methods: {
+    validationForm() {
+      this.$refs.simpleRules.validate().then((success) => {
+        if (success) {
+          // eslint-disable-next-line
+          alert("login successfully");
+        }
+      });
     },
   },
 };
 </script>
 
 <style lang="scss">
-@import "@core/scss/vue/pages/page-auth.scss";
+@import "@core/scss/vue/libs/vue-select.scss";
 </style>
