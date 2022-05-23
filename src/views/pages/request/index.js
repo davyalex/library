@@ -38,6 +38,9 @@ const URL = {
 
 
   LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
+  CREATE_ETABLISSEMENT: `${baseUrl}/etablissement/store`,
+  UPDATE_ETABLISSEMENT: `${baseUrl}/etablissement/update`,
+  DESTROY_ETABLISSEMENT: `${baseUrl}/etablissement/destroy`,
 
   CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
 

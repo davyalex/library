@@ -62,7 +62,7 @@ export default [
   {
     title: 'Etablissement',
     route: 'etablissement',
-    icon: 'BriefcaseIcon',
+    icon: 'BookIcon',
   },
 
 ]
