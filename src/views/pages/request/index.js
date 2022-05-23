@@ -22,27 +22,28 @@ const URL = {
 
   USER_CONNECTE: `${baseUrl}/user_connecte`,
 
+//type parametre
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
-
   TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
-
   TYPEPARAMETRE_DESTROY: `${baseUrl}/type-parametre/destroy`,
 
+  //parametre
   PARAMETRE: `${baseUrl}/parametre`,
-
   PARAMETRE_CREATE: `${baseUrl}/parametre/create`,
-
   PARAMETRE_STORE: `${baseUrl}/parametre/store`,
-
   PARAMETRE_DESTROY: `${baseUrl}/parametre/destroy`,
 
-
+//etablissement
   LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
   CREATE_ETABLISSEMENT: `${baseUrl}/etablissement/store`,
   UPDATE_ETABLISSEMENT: `${baseUrl}/etablissement/update`,
   DESTROY_ETABLISSEMENT: `${baseUrl}/etablissement/destroy`,
-
   CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
+
+  //article
+  LIST_CATEGORIE: `${baseUrl}/parametre`,
+  LIST_ARTICLE: `${baseUrl}/article`,
+  ARTICLE_STORE: `${baseUrl}/article/store`,
 
 };
 

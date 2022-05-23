@@ -54,6 +54,12 @@ export default [
       title: 'Etat de la commande',
       route: {path: `/parametre/etat-de-la-commande`},
       icon: 'SettingsIcon',
+     },
+
+     {
+      title: 'Categorie',
+      route: {path: `/parametre/categorie`},
+      icon: 'SettingsIcon',
      }
      
     ]
