@@ -303,17 +303,6 @@ export default {
           montant: "12000 FCFA",
           date: moment(new Date().toString()).format("YYYY-MM-DD"),
         },
-
-           {
-          id: 2,
-          code: "#00026",
-          statut: "En cour de livraison",
-          avatar: "CheckIcon",
-          client: "Yakou",
-          avatarVariant: "light-success",
-          montant: "12000 FCFA",
-          date: moment(new Date().toString()).format("YYYY-MM-DD"),
-        },
       ],
 
       perPage: 30,

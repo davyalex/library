@@ -10,9 +10,9 @@
 
 // TOUTES LES URL DISPONIBLE DANS L'APP
 // const baseUrl = 'https://devapi.ediqia.com/api'
-const baseUrl = 'http://127.0.0.1:8000/api'
+const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
 // export const APP_HOST = 'https://ediqia.com'
-export const APP_HOST = 'http://127.0.0.1:8080'
+export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website/api'
 export const APP_PROD = false
 
 const URL = {

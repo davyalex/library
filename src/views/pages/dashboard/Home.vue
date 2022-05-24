@@ -157,7 +157,7 @@ import StatisticCardVertical from './composant/StatisticCardVertical.vue';
 import RecenteCommande from './composant/RecenteCommande.vue';
 
 import StatisticCardHorizontal from './composant/StatisticCardHorizontal.vue';
-
+import moment from "moment";
 
 
 export default {
@@ -182,7 +182,8 @@ export default {
     BMediaBody,
        StatisticCardVertical,
        StatisticCardHorizontal,
-       RecenteCommande
+       RecenteCommande,
+       moment
   },
 
 
@@ -194,7 +195,7 @@ export default {
           icon: "UserIcon",
           color: "light-info",
           title: "1000",
-          subtitle: "Clients",
+          subtitle: "title",
           customClass: "mb-2 mb-xl-0",
         },
         {
