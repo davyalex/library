@@ -11,7 +11,9 @@
       @ok="save"
     >
       <b-form>
-          <div class="text-center">  <span class="text-danger" v-if="msgError"> {{ msgError }} </span></div>
+        <div class="text-center">
+          <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
+        </div>
         <b-form-group label="" label-for="register-nom">
           <label for="">Title <span class="p-0 text-danger h6">*</span></label>
           <validation-provider
@@ -114,13 +116,12 @@
           empty-text=""
           class="bg-white"
         >
-         <template #cell(created_at)="data">
-          {{ format_date(data.item.created_at) }}
-        </template>
+          <template #cell(created_at)="data">
+            {{ format_date(data.item.created_at) }}
+          </template>
 
-            <template #cell(actions)="data">
+          <template #cell(actions)="data">
             <div class="text-nowrap py-1">
-
               <!-- Dropdown -->
               <b-dropdown
                 variant="link"
@@ -136,7 +137,7 @@
                   />
                 </template>
 
- <b-dropdown-item
+                <b-dropdown-item
                   @click="addParametre(data.item.id, data.item.slug)"
                 >
                   <feather-icon icon="PlusIcon" />
@@ -152,9 +153,9 @@
                 </b-dropdown-item>
 
                 <b-dropdown-item @click="destroy(data.item.id)">
-												<feather-icon icon="TrashIcon" />
-												<span class="align-middle ml-50"> Supprimer</span>
-											</b-dropdown-item>
+                  <feather-icon icon="TrashIcon" />
+                  <span class="align-middle ml-50"> Supprimer</span>
+                </b-dropdown-item>
               </b-dropdown>
             </div>
           </template>
@@ -221,8 +222,7 @@ import {
   BTable,
   BFormTextarea,
   BDropdown,
-  BDropdownItem
-  
+  BDropdownItem,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -231,7 +231,7 @@ import vSelect from "vue-select";
 import URL from "@/views/pages/request";
 import axios from "axios";
 import moment from "moment";
-import flatPickr from  "vue-flatpickr-component";
+import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 
 export default {
@@ -262,8 +262,7 @@ export default {
     BInputGroupAppend,
     BFormTextarea,
     BDropdown,
-      BDropdownItem
-
+    BDropdownItem,
   },
   directives: {
     Ripple,
@@ -275,7 +274,7 @@ export default {
       description: "",
 
       valideTitle: false,
-   msgError :"",
+      msgError: "",
       typeParametre: [],
       perPage: 30,
       currentPage: 1,
@@ -298,7 +297,7 @@ export default {
     try {
       await axios.get(URL.TYPEPARAMETRE).then((response) => {
         this.typeParametre = response.data.liste;
-        console.log('liste',this.typeParametre);
+        console.log("liste", this.typeParametre);
         this.pTotal = this.typeParametre.length;
       });
     } catch (error) {
@@ -307,8 +306,7 @@ export default {
   },
 
   methods: {
-
-       topEnd() {
+    topEnd() {
       this.$toast({
         component: ToastificationContent,
         props: {
@@ -319,7 +317,7 @@ export default {
       });
     },
 
-     topEndE() {
+    topEndE() {
       this.$toast({
         component: ToastificationContent,
         props: {
@@ -329,73 +327,113 @@ export default {
         },
       });
     },
-//envoi des infos en localStorage
+    //envoi des infos en localStorage
 
-        addParametre(id,slug){
-            	const currectTp = this.typeParametre.filter(
-				(item) => item.id === id
-			);
+    addParametre(id, slug) {
+      const currectTp = this.typeParametre.filter((item) => item.id === id);
 
-			localStorage.setItem('typeParametre', JSON.stringify(currectTp[0]));
-			this.$router.push(`/parametre/${slug}`);
-        },
+      localStorage.setItem("typeParametre", JSON.stringify(currectTp[0]));
+      this.$router.push(`/parametre/${slug}`);
+    },
 
-       format_date(value) {
+    format_date(value) {
       if (value) {
         return moment(String(value)).format("DD-MM-YYYY");
       }
     },
-//
-validateTitle(){
-    if (!this.title) {
-        this.valideTitle = true
-    } else {
-          this.valideTitle = false
-    }
-},
+    //
+    validateTitle() {
+      if (!this.title) {
+        this.valideTitle = true;
+      } else {
+        this.valideTitle = false;
+      }
+    },
 
     async save(bvModalEvt) {
       try {
-          this.validateTitle()
+        this.validateTitle();
 
         const config = {
           headers: {
             Accept: "application/json",
           },
         };
-            if (this.title) {
-                const data = {
-          title: this.title,
-          subtitle: this.subtitle,
-          description: this.description,
-        };
-                console.log(data);
-        await axios
-          .post(URL.TYPEPARAMETRE_STORE, data, this.config)
-          .then((response) => {
-         
-          this.userData = response.data.type_parametre;
-           this.msgError = response.data.error
-            if (this.userData) {
-                 this.topEnd()
-                this.typeParametre.unshift( this.userData);
-            //
-            this.title = "";
-            this.subtitle = "";
-            this.description = "";
-            }else if(this.msgError !==""){
-                this.topEndE()
-               bvModalEvt.preventDefault();
-            }
-
-            
-          });  
-            }
-      
+        if (this.title) {
+          const data = {
+            title: this.title,
+            subtitle: this.subtitle,
+            description: this.description,
+          };
+          console.log(data);
+          await axios
+            .post(URL.TYPEPARAMETRE_STORE, data, this.config)
+            .then((response) => {
+              this.userData = response.data.type_parametre;
+              this.msgError = response.data.error;
+              if (this.userData) {
+                this.topEnd();
+                this.typeParametre.unshift(this.userData);
+                //
+                this.title = "";
+                this.subtitle = "";
+                this.description = "";
+              } else if (this.msgError !== "") {
+                this.topEndE();
+                bvModalEvt.preventDefault();
+              }
+            });
+        }
       } catch (error) {
         console.log(error);
       }
-       bvModalEvt.preventDefault();
+      bvModalEvt.preventDefault();
+    },
+
+      //destroy
+      async deleteTypeParametre(indentifiant) {
+      const id_delete = {
+        id: indentifiant,
+      };
+      try {
+        await axios
+          .post(URL.TYPEPARAMETRE_DESTROY, id_delete)
+          .then((response) => {
+            response.data;
+           axios.get(URL.TYPEPARAMETRE).then((response) => {
+        this.typeParametre = response.data.liste;
+        console.log("liste", this.typeParametre);
+        this.pTotal = this.typeParametre.length;
+      });
+          })
+          .catch((error) => {
+            if (error.response) {
+              console.log(error.response.data);
+            }
+          });
+        this.typeParametre.splice(index, 1);
+      } catch (error) {
+        console.log(error.type);
+      }
+    },
+
+      destroy(id) {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: "Ce type parametre sera supprimée définitivement !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.deleteTypeParametre(id);
+        }
+      });
     },
   },
 };
@@ -441,6 +479,4 @@ validateTitle(){
   display: inline-block;
 }
 </style>
-<style scoped lang="scss">
-@import "@core/scss/vue/libs/vue-select.scss";
-</style>
+

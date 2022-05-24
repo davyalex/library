@@ -13,7 +13,7 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/pages/Home.vue'),
+      component: () => import('@/views/pages/dashboard/Home.vue'),
       meta: {
         pageTitle: 'Dashboard',
         breadcrumb: [
@@ -45,7 +45,7 @@ const router = new VueRouter({
     {
       path: '/parametre/:slug',
       // path: '/parametre/:slug',
-      // name: 'parametre',
+      name: 'parametre/:slug',
       component: () => import('@/views/pages/parametre/index.vue'),
       meta: {
         pageTitle: 'Parametre',
@@ -119,13 +119,13 @@ const router = new VueRouter({
 
     {
       path: '/article/create',
-      name: 'create',
+      name: 'article',
       component: () => import('@/views/pages/articles/create.vue'),
       meta: {
-        pageTitle: 'Ajout',
+        pageTitle: 'Article',
         breadcrumb: [
           {
-            text: 'Article',
+            text: 'Liste des articles',
             active: true,
           },
         ],

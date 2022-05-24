@@ -6,8 +6,8 @@
         class="ml-25"
         href="https://1.envato.market/pixinvent_portfolio"
         target="_blank"
-      >Pixinvent</b-link>
-      <span class="d-none d-sm-inline-block">, All rights Reserved</span>
+      >Librairie siloe</b-link>
+      <span class="d-none d-sm-inline-block">, Tous droits reservés</span>
     </span>
 
     <span class="float-md-right d-none d-md-block">Hand-crafted &amp; Made with

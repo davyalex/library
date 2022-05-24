@@ -6,6 +6,20 @@ export default [
     route: 'home',
     icon: 'HomeIcon',
   },
+ 
+
+  {
+    title: 'Etablissement',
+    route: 'etablissement',
+    icon: 'BookIcon',
+  },
+
+  {
+    title: 'Articles',
+    route: 'article',
+    icon: 'BookIcon',
+  },
+
   {
     title: 'Parametre',
     route: '',
@@ -15,7 +29,7 @@ export default [
       {
         title: 'Type parametre',
         route: 'type-parametre',
-        icon: 'SettingsIcon',
+        icon: 'ToolIcon',
        },
 
      {
@@ -48,15 +62,21 @@ export default [
       title: 'Commune',
       route: {path: `/parametre/commune`},
       icon: 'SettingsIcon',
+     },
+
+     {
+      title: 'Etat de la commande',
+      route: {path: `/parametre/etat-de-la-commande`},
+      icon: 'SettingsIcon',
+     },
+
+     {
+      title: 'Categorie',
+      route: {path: `/parametre/categorie`},
+      icon: 'SettingsIcon',
      }
      
     ]
-  },
-
-  {
-    title: 'Etablissement',
-    route: 'etablissement',
-    icon: 'BookIcon',
   },
 
 ]

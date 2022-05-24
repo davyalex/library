@@ -10,9 +10,9 @@
 
 // TOUTES LES URL DISPONIBLE DANS L'APP
 // const baseUrl = 'https://devapi.ediqia.com/api'
-const baseUrl = 'http://127.0.0.1:8000/api'
+const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
 // export const APP_HOST = 'https://ediqia.com'
-export const APP_HOST = 'http://127.0.0.1:8080'
+export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website/api'
 export const APP_PROD = false
 
 const URL = {
@@ -22,18 +22,18 @@ const URL = {
 
   USER_CONNECTE: `${baseUrl}/user_connecte`,
 
+//type parametre
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
+  TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
+  TYPEPARAMETRE_DESTROY: `${baseUrl}/type-parametre/destroy`,
 
+  //parametre
   PARAMETRE: `${baseUrl}/parametre`,
-
   PARAMETRE_CREATE: `${baseUrl}/parametre/create`,
-
   PARAMETRE_STORE: `${baseUrl}/parametre/store`,
-
   PARAMETRE_DESTROY: `${baseUrl}/parametre/destroy`,
 
-  TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
-
+//etablissement
   LIST_ETABLISSEMENT: `${baseUrl}/etablissement`,
   CREATE_ETABLISSEMENT: `${baseUrl}/etablissement/store`,
   UPDATE_ETABLISSEMENT: `${baseUrl}/etablissement/update`,
@@ -41,6 +41,12 @@ const URL = {
 
   CREATE_ETABLISSEMENT: `${baseUrl}/etablissement/store`,
 
+  CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
+
+  //article
+  LIST_CATEGORIE: `${baseUrl}/parametre`,
+  LIST_ARTICLE: `${baseUrl}/article`,
+  ARTICLE_STORE: `${baseUrl}/article/store`,
 
 };
 
