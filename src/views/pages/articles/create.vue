@@ -127,11 +127,9 @@
                <label for="">Image du produit</label>
                <b-form-file
                   class="text-center mb-1"
-                    v-model="file"
                   @change="processFile($event)"
                   placeholder="Images du produit"
                   drop-placeholder="Glisser un fichier ici..."
-                  multiple
                />
             </div>
           </b-col>
@@ -295,7 +293,6 @@ import vSelect from "vue-select";
 import { ref, onUnmounted } from "@vue/composition-api";
 import URL, { APP_HOST } from "@/views/pages/request";
 import { heightTransition } from "@core/mixins/ui/transition";
-
 import axios from "axios";
 import Ripple from "vue-ripple-directive";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
@@ -355,8 +352,8 @@ export default {
       validePrix: false,
       valideQte: false,
       valideCategorie: false,
-      file:null,
-
+      
+        file:"",
       categorieList: [],
 
       multiJumele: [],
@@ -401,10 +398,10 @@ export default {
 
   methods: {
  processFile(event) {
-      this.picture = event.target.files[0];
+      this.file = event.target.files[0];
 
       if (event.target.files.length !== 0) {
-        console.log(this.picture);
+        console.log(this.file);
       }
     },
 
@@ -501,6 +498,28 @@ export default {
             Accept: "application/json",
           },
         };
+      //     const j= this.multiJumele.map(item=>{
+      //       return{jumeler_id:item.articleJumele_id}
+      //     })
+      //   const newFormdata = new FormData();
+
+      // newFormdata.append("image", this.file);
+
+      // newFormdata.append("title", this.title);
+
+      // newFormdata.append("quantite", this.quantite);
+
+      // newFormdata.append("prix", this.prix);
+
+      // newFormdata.append("categorie_id", this.categorie_id);
+
+      // newFormdata.append("description", this.description);
+
+      // newFormdata.append("jumele", this.j );
+
+      // newFormdata.append("count", this.multiJumele.length,);
+
+
         
 
         const data = {
@@ -510,13 +529,11 @@ export default {
           description:this.description,
           categorie_id:this.categorie.id,
           count:this.multiJumele.length,
-          // image:this.picture,
           jumele: this.multiJumele.map(item=>{
             return{jumeler_id:item.articleJumele_id}
           })
-          // code: this.userId,
         };
-        console.log(data);
+       
                   this.loading = true;
         await axios.post(URL.ARTICLE_STORE, data, config).then((response) => {
 

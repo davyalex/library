@@ -13,7 +13,7 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/pages/Home.vue'),
+      component: () => import('@/views/pages/dashboard/Home.vue'),
       meta: {
         pageTitle: 'Dashboard',
         breadcrumb: [
