@@ -119,13 +119,13 @@ const router = new VueRouter({
 
     {
       path: '/article/create',
-      name: 'create',
+      name: 'article',
       component: () => import('@/views/pages/articles/create.vue'),
       meta: {
-        pageTitle: 'Ajout',
+        pageTitle: 'Article',
         breadcrumb: [
           {
-            text: 'Article',
+            text: 'Liste des articles',
             active: true,
           },
         ],

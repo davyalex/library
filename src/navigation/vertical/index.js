@@ -6,6 +6,20 @@ export default [
     route: 'home',
     icon: 'HomeIcon',
   },
+ 
+
+  {
+    title: 'Etablissement',
+    route: 'etablissement',
+    icon: 'BookIcon',
+  },
+
+  {
+    title: 'Articles',
+    route: 'article',
+    icon: 'BookIcon',
+  },
+
   {
     title: 'Parametre',
     route: '',
@@ -63,12 +77,6 @@ export default [
      }
      
     ]
-  },
-
-  {
-    title: 'Etablissement',
-    route: 'etablissement',
-    icon: 'BookIcon',
   },
 
 ]
