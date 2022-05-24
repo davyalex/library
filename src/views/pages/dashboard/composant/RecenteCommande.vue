@@ -83,8 +83,12 @@
           </template>
 
           <template #cell(statut)="data">
-            <span class="badge badge-light-success badge-pill font-weight-bold">
+            <span v-if="data.item.statut==='livrée'" class="badge badge-light-success badge-pill font-weight-bold">
               <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
+              {{ data.item.statut }}</span
+            >
+            <span v-if="data.item.statut==='En cour de livraison'" class="badge badge-light-warning badge-pill font-weight-bold">
+              <feather-icon size="20" icon="TruckIcon" class="cursor-pointer" />
               {{ data.item.statut }}</span
             >
           </template>

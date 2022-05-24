@@ -26,12 +26,12 @@
             >
               <span class="brand-logo">
                 <b-img
-                  :src="appLogoImage"
+                 src="@/assets/images/logo/logo-original.png"
                   alt="logo"
                 />
               </span>
-              <h2 class="brand-text">
-                {{ appName }}
+              <h2 class=" text-success brand-text">
+                Librairie siloe
               </h2>
             </b-link>
           </li>

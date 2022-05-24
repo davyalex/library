@@ -74,7 +74,7 @@
     </b-col>
 
     <b-col
-       cols="6"
+       cols="4"
       >
         <statistic-card-vertical
           color="primary"
@@ -85,7 +85,18 @@
       </b-col>
 
        <b-col
-       cols="6"
+       cols="4"
+      >
+        <statistic-card-vertical
+          color="warning"
+          icon="TruckIcon"
+          statistic="70"
+          statistic-title="Commandes en attentes"
+        />
+      </b-col>
+
+        <b-col
+       cols="4"
       >
         <statistic-card-vertical
           color="success"
@@ -195,7 +206,7 @@ export default {
           icon: "UserIcon",
           color: "light-info",
           title: "1000",
-          subtitle: "title",
+          subtitle: "Clients",
           customClass: "mb-2 mb-xl-0",
         },
         {
@@ -250,6 +261,10 @@ export default {
 
     
     };
+  },
+
+  mounted(){
+    document.title = "Dashboard"
   },
 
   methods: {},
