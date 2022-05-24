@@ -18,7 +18,7 @@
       </b-avatar>
     </b-card-body>
       <div class="text-center">
-        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" class="m-auto" variant="primary">
+        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" class="mb-2" variant="primary">
         Plus de details
          <feather-icon
                     size="16"

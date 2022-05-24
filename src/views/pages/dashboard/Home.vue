@@ -1,29 +1,39 @@
 <template>
   <b-row>
     <b-col cols="6">
-      <b-card class="card-congratulation-medal">
-        <h5>Bienvenue 🎉 John!</h5>
-        <b-card-text class="font-small-3">
-         Voiçi votre chiffre d'affaire du mois en cours
-     
-        </b-card-text>
-        <h3 class="mb-0 mt-0">
-          <b-link>48.000.000 FCFA</b-link>
-        </h3>
-        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" class="mb-1" variant="primary">
-        Details
-         <feather-icon
-                    size="16"
-                    icon="ChevronRightIcon"
-                    class="cursor-pointer"
-                  />
-        </b-button>
-        <b-img
-          :src="require('@/assets/images/illustration/badge.svg')"
-          class="congratulation-medal"
-          alt="Medal Pic"
-        />
-      </b-card>
+       <b-card
+   
+    text-variant="center"
+    class="card card-congratulations"
+  >
+    <!-- images -->
+    <b-img
+      :src="require('@/assets/images/elements/decore-left.png')"
+      class="congratulations-img-left"
+    />
+    <b-img
+      :src="require('@/assets/images/elements/decore-right.png')"
+      class="congratulations-img-right"
+    />
+    <!--/ images -->
+
+    <b-avatar
+      variant="primary"
+      size="70"
+      class="shadow mb-2"
+    >
+      <feather-icon
+        size="28"
+        icon="AwardIcon"
+      />
+    </b-avatar>
+    <h1 class="mb-1 mt-50 text-white">
+     Bienvenue, Admin
+    </h1>
+    <b-card-text class="m-auto w-75">
+      Vvous avez réalisé <strong>500.000.000 FCFA</strong>de chiffre d'affaire ce mois.
+    </b-card-text>
+  </b-card>
     </b-col>
 
     <b-col cols="6">
@@ -49,10 +59,10 @@
                   </b-avatar>
                 </b-media-aside>
                 <b-media-body class="my-auto">
-                  <h4 class="font-weight-bolder mb-0">
+                  <h4 class="font-weight-bolder mb-2">
                     {{ item.title }}
                   </h4>
-                  <b-card-text class="font-small-3 mb-0">
+                  <b-card-text class="font-small-3 mb-3">
                     {{ item.subtitle }}
                   </b-card-text>
                 </b-media-body>
@@ -116,58 +126,9 @@
         />
       </b-col>
 
-
-<b-col cols="12">
- <b-card
-    class="card-transaction"
-    no-body
-  >
-    <b-card-header>
-      <b-card-title>Commandes recentes</b-card-title>
-      <feather-icon
-        icon="PlusIcon"
-        size="18"
-        class="cursor-pointer"
-      />
-    </b-card-header>
-
-    <b-card-body>
-      <div
-        v-for="transaction in transactionData"
-        :key="transaction.mode"
-        class="transaction-item"
-      >
-        <b-media no-body>
-          <b-media-aside>
-            <b-avatar
-              rounded
-              size="42"
-              :variant="transaction.avatarVariant"
-            >
-              <feather-icon
-                size="18"
-                :icon="transaction.avatar"
-              />
-            </b-avatar>
-          </b-media-aside>
-          <b-media-body>
-            <h6 class="transaction-title">
-              {{ transaction.mode }}
-            </h6>
-            <small>{{ transaction.types }}</small>
-          </b-media-body>
-        </b-media>
-        <div
-          class="font-weight-bolder"
-          :class="transaction.deduction ? 'text-danger':'text-success'"
-        >
-          {{ transaction.payment }}
-        </div>
-      </div>
-    </b-card-body>
-  </b-card>
-</b-col>
-
+      <b-col cols="12">
+        <recente-commande />
+      </b-col>
   </b-row>
 
 
@@ -192,8 +153,10 @@ import {
   BCol,
 } from "bootstrap-vue";
 import { reactive, ref, computed, onMounted } from "@vue/composition-api";
-import StatisticCardVertical from '../dashboard/StatisticCardVertical.vue';
-import StatisticCardHorizontal from '../dashboard/StatisticCardHorizontal.vue';
+import StatisticCardVertical from './composant/StatisticCardVertical.vue';
+import RecenteCommande from './composant/RecenteCommande.vue';
+
+import StatisticCardHorizontal from './composant/StatisticCardHorizontal.vue';
 
 
 
@@ -219,7 +182,9 @@ export default {
     BMediaBody,
        StatisticCardVertical,
        StatisticCardHorizontal,
+       RecenteCommande
   },
+
 
   data() {
     return {
@@ -281,6 +246,8 @@ export default {
        
       
       ],
+
+    
     };
   },
 
