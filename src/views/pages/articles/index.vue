@@ -4,7 +4,7 @@
     <div class="tableau">
       <b-card no-body class="py-1">
         <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvelle taxe -->
-        <b-row class="px-2">
+        <b-row class="px-2 py-2">
           <!-- Per Page -->
           <b-col
             cols="12"
@@ -23,8 +23,8 @@
             <b-button variant="primary">
               <feather-icon icon="PlusIcon" class="mx-auto" />
               <!-- Ajouter un etablissement -->
-              <b-link :to="{ name: 'create' }">
-                <span class="text-white">Ajouter un etablissement </span>
+              <b-link :to="{ name: 'article/create' }">
+                <span class="text-white">Ajouter un article </span>
               </b-link>
             </b-button>
 
@@ -37,13 +37,13 @@
           <b-col cols="12" md="6" class="mt-1">
             <div class="d-flex align-items-center justify-content-end">
               <b-input-group class="input-group-merge">
-                <b-input-group-prepend is-text>
+                <!-- <b-input-group-prepend is-text >
                   <feather-icon icon="SearchIcon" />
-                </b-input-group-prepend>
+                </b-input-group-prepend> -->
                 <b-form-input
-                  v-model="filtreetablissement"
+                  v-model="filtreArticle"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : titre de propection, motif, date..."
+                  placeholder="Rechercher par : title, categorie..."
                 />
               </b-input-group>
             </div>
@@ -51,19 +51,26 @@
         </b-row>
 
         <!-- Le tableau affichant les typeParametre -->
-        <b-table
+        <b-table 
           hover
           responsive
           primary-key="id"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="etablissement"
+          :items="articleList"
           :fields="tableColumns"
-          :filter="filtreetablissement"
+          :filter="filtreArticle"
           show-empty
-          empty-text="Aucune prospection enregistrée"
+          empty-text=""
           class="bg-white"
         >
+<template #cell(categorie)="data">
+    <span>
+      {{ data.item.categorie.title }}
+    </span>
+</template>
+        
+
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- <b-link "> -->
@@ -214,66 +221,42 @@ export default {
   },
   data() {
     return {
-      title: "",
-      quartier: "",
-      contact: "",
-      email: "",
 
-      valideEtablissement: false,
-      valideCommune: false,
-      valideQuartier: false,
-      valideEmail: false,
-      valideContact: false,
-      valideEnseignement: false,
-
-      valideTitle: false,
-
-      etablissement: [],
-      niveau: [],
-
-      perPage: 30,
+      articleList: [],
+      perPage: 5,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
-        { key: "title", label: "Nom", sortable: true },
-        { key: "email", label: "Email", sortable: true },
-        { key: "contact", label: "contact", sortable: true },
-        // { key: "description", label: "motif", sortable: true },
-        // { key: "created_at", label: "crée le", sortable: true },
+        { key: "title", label: "Nom", sortable: true }, 
+        { key: "categorie", label: "categorie", sortable: true },
+        { key: "quantite", label: "quantite", sortable: true },
+        { key: "prix", label: "prix", sortable: true },
         { key: "actions" },
       ],
-      filtreetablissement: "",
+      filtreArticle: "",
       perPageOptions: [30, 50, 100],
       error: [],
     };
   },
 
   async mounted() {
+
+    document.title ="Liste des articles"
     try {
-      await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
-        this.returnData = response.data;
-        this.etablissement = this.returnData.etablissements;
-        this.niveau = this.returnData.etablissementx;
-        // this.listEtablissement = this.returnData
+      await axios.get(URL.LIST_ARTICLE).then((response) => {
+        this.articleList = response.data.article;
+      //  this.articleList =  this.returnData.article
+           this.pTotal = this.articleList.length;
+         console.log(this.articleList);
       });
 
-      console.log(this.niveau);
     } catch (error) {
       console.log(error);
     }
   },
 
   methods: {
-    // validationForm() {
-    //   this.$refs.simpleRules.validate().then((success) => {
-    //     if (success) {
-    //       // eslint-disable-next-line
-    //       alert("login successfully");
-    //     }
-    //   });
-    // },
-
     topEnd() {
       this.$toast({
         component: ToastificationContent,
@@ -285,15 +268,7 @@ export default {
       });
     },
 
-    validateEtablissement() {
-      if (!this.etablissement_id) {
-        this.valideEtablissement = true;
-      } else {
-        this.valideEtablissement = false;
-      }
-    },
-
- 
+  
     updateEtablissement(id) {
       const etat = this.etablissement.filter(
         (item) => item.id === id,

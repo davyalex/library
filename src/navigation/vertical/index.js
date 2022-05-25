@@ -21,6 +21,12 @@ export default [
   },
 
   {
+    title: 'Kit',
+    route: 'kit/create',
+    icon: 'BookIcon',
+  },
+
+  {
     title: 'Parametre',
     route: '',
     icon: 'SettingsIcon',

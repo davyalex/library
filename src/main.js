@@ -51,6 +51,7 @@ if (localStorage.getItem('token')) {
   setAuthHeader(false)
 }
 
+
 new Vue({
   router,
   store,

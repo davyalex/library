@@ -25,6 +25,26 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
+
+    {
+      path: '/kit/create',
+      name: 'kit/create',
+      component: () => import('@/views/pages/kit/create.vue'),
+      meta: {
+        pageTitle: 'Kit',
+        breadcrumb: [
+          {
+            text: 'Ajouter un kit',
+            active: true,
+          },
+          {
+            text: 'Liste des kits',
+            to: { name: 'kit' },
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
     {
       path: '/type-parametre',
       name: 'type-parametre',
@@ -58,14 +78,7 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/pages/auth/Login.vue'),
-      meta: {
-        layout: 'full',
-      },
-    },
+    
 
     {
       path: '/etablissement',
@@ -119,8 +132,28 @@ const router = new VueRouter({
 
     {
       path: '/article/create',
-      name: 'article',
+      name: 'article/create',
       component: () => import('@/views/pages/articles/create.vue'),
+      meta: {
+        pageTitle: 'Article',
+        breadcrumb: [
+          {
+            text: 'Ajouter un articles',
+            active: true,
+          },
+          {
+            text: 'Liste des articles',
+            to: { name: 'article' },
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/article',
+      name: 'article',
+      component: () => import('@/views/pages/articles/index.vue'),
       meta: {
         pageTitle: 'Article',
         breadcrumb: [
@@ -138,6 +171,14 @@ const router = new VueRouter({
       path: '/register/:role',
       name: 'register',
       component: () => import('@/views/pages/auth/register.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/pages/auth/Login.vue'),
       meta: {
         layout: 'full',
       },
