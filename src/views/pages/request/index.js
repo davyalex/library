@@ -10,9 +10,11 @@
 
 // TOUTES LES URL DISPONIBLE DANS L'APP
 // const baseUrl = 'https://devapi.ediqia.com/api'
-const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
+const baseUrl = 'http://127.0.0.1:8000/api'
+
+// const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
 // export const APP_HOST = 'https://ediqia.com'
-export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website/api'
+// export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website/api'
 export const APP_PROD = false
 
 const URL = {
@@ -40,8 +42,6 @@ const URL = {
   DESTROY_ETABLISSEMENT: `${baseUrl}/etablissement/destroy`,
 
   CREATE_ETABLISSEMENT: `${baseUrl}/etablissement/store`,
-
-  CREATE_ETABLISSEMENT: `${baseUrl}/store/etablissement`,
 
   //article
   LIST_CATEGORIE: `${baseUrl}/parametre`,

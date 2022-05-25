@@ -19,10 +19,17 @@
                   id="title"
                   type="text"
                   v-model="title"
+                  @input="obligatoryTitle"
                   :state="errors.length > 0 ? false : null"
                   placeholder="EPP - Etablissement "
                 />
-                <small class="text-danger">{{ errors[0] }}</small>
+
+                <small
+                  :class="valideTitle ? 'block' : 'none'"
+                  class="text-danger"
+                >
+                  Veuillez saisir nom de l'etablissement
+                </small>
               </validation-provider>
             </b-form-group>
           </b-col>
@@ -48,9 +55,12 @@
                 :state="errors.length > 0 ? false : null"
               />
 
-              <!-- <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+              <small
+                :class="valideCommune ? 'block' : 'none'"
+                class="text-danger"
+              >
                 Veuillez selectionner la commune
-              </small> -->
+              </small>
             </validation-provider>
           </b-col>
 
@@ -68,10 +78,17 @@
                 <b-form-input
                   id="quartier"
                   v-model="quartier"
+                  @input="obligatoryQuartier"
                   :state="errors.length > 0 ? false : null"
                   placeholder="Abatta"
                 />
-                <small class="text-danger">{{ errors[0] }}</small>
+
+                <small
+                  :class="valideQuartier ? 'block' : 'none'"
+                  class="text-danger"
+                >
+                  Veuillez saisir le quartier
+                </small>
               </validation-provider>
             </b-form-group>
           </b-col>
@@ -97,9 +114,12 @@
                 placeholder="Selectionner un enseignement"
               />
 
-              <!-- <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+              <small
+                :class="valideEnseignement ? 'block' : 'none'"
+                class="text-danger"
+              >
                 Veuillez selectionner l'enseignement
-              </small> -->
+              </small>
             </validation-provider>
           </b-col>
           <b-col class="3">
@@ -120,9 +140,12 @@
                 placeholder="Selectionner le diocèse"
               />
 
-              <!-- <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+              <small
+                :class="valideDiocese ? 'block' : 'none'"
+                class="text-danger"
+              >
                 Veuillez selectionner le diocèse
-              </small> -->
+              </small>
             </validation-provider>
           </b-col>
           <b-col class="3">
@@ -138,9 +161,12 @@
                 placeholder="Selectionner un sedec"
               />
 
-              <!-- <small :class="valideRole ? 'block' : 'none'" class="text-danger">
+              <small
+                :class="valideSedec ? 'block' : 'none'"
+                class="text-danger"
+              >
                 Veuillez selectionner le SEDEC
-              </small> -->
+              </small>
             </validation-provider>
           </b-col>
         </b-row>
@@ -164,7 +190,13 @@
                   :state="errors.length > 0 ? false : null"
                   placeholder="000 0000 000"
                 />
-                <small class="text-danger">{{ errors[0] }}</small>
+
+                <small
+                  :class="valideContact ? 'block' : 'none'"
+                  class="text-danger"
+                >
+                  Veuillez saisir le contact
+                </small>
               </validation-provider>
             </b-form-group>
           </b-col>
@@ -186,7 +218,12 @@
                   :state="errors.length > 0 ? false : null"
                   placeholder="exemple@gmail.com"
                 />
-                <small class="text-danger">{{ errors[0] }}</small>
+                <small
+                  :class="valideEmail ? 'block' : 'none'"
+                  class="text-danger"
+                >
+                  Veuillez saisir l'email
+                </small>
               </validation-provider>
             </b-form-group>
           </b-col>
@@ -201,7 +238,6 @@
               drop-placeholder="Glisser un fichier ici..."
               multiple
               class="text-center"
-            
             />
           </b-col>
         </b-row>
@@ -215,7 +251,6 @@
               :value="cycles.id"
               class="custom-control-primary"
               v-model="selectedCycle"
-
             >
               {{ cycles.title }}
             </b-form-checkbox>
@@ -290,10 +325,10 @@ export default {
   },
   data() {
     return {
-      selectedCommune: "",
-      selectedEnseignement: "",
-      selectedDiocese: "",
-      selectedSedec: "",
+      selectedCommune: "Votre commune",
+      selectedEnseignement: "Votre enseignement",
+      selectedDiocese: "Votre diocèse",
+      selectedSedec: "Votre sedec ",
       communes: [],
       typeEnseignement: [],
       enseignements: [],
@@ -306,7 +341,17 @@ export default {
       email: "",
       selected: "",
       selectedB: "",
-      image:"",
+      image: "",
+
+      valideTitle: false,
+      valideCommune: false,
+      valideQuartier: false,
+      valideEnseignement: false,
+      valideDiocese: false,
+      valideSedec: false,
+      valideContact: false,
+      valideEmail: false,
+
       // file:null,
       selectedC: "",
       sedecsCache: [],
@@ -315,9 +360,8 @@ export default {
       niveau: [],
       niveauCy: [],
       datas: [],
-      selectedCycle: "",
+      selectedCycle: [],
       selectedNiveau: [],
-      // selectedCycle:[],
       // sideImg: require("@/assets/images/pages/register-v2.svg"),
     };
   },
@@ -382,8 +426,7 @@ export default {
     //   });
     // },
 
-
-     processFile(event) {
+    processFile(event) {
       this.image = event.target.files[0];
 
       if (event.target.files.length !== 0) {
@@ -447,53 +490,116 @@ export default {
       });
     },
 
-    // async save() {
-    //   try {
-    //     const config = {
-    //       headers: {
-    //         Accept: "application/json",
-    //       },
-    //     };
-    //     const data = {
-    //       title: this.title,
-    //       quartier: this.quartier,
-    //       contact: this.contact,
-    //       email: this.email,
-    //       commune_id: this.selectedCommune.id,
-    //       enseignement_id: this.selectedEnseignement.id,
-    //       diocese_id : this.selectedDiocese.id,
-    //       sedec_id : this.selectedSedec.id,
-    //       niveaux : this.selectedNiveau,
-    //       cycles : this.selectedCycle,
-    //       image : this.image,
-    //     };
-    //     console.log(data);
-    //     await axios
-    //       .post(URL.CREATE_ETABLISSEMENT, data, config)
-    //       .then((response) => {
-    //         this.createEtablissement = response.data;
+    obligatoryTitle() {
+      if (!this.title) {
+        this.valideTitle = true;
 
-    //         if (response.data) {
-    //           this.title = "",
-    //           this.quartier = "",
-    //           this.contact = "",
-    //           this.email = "",
-    //           this.selectedCommune="",
-    //           this.SelectedEnseignement="",
-    //           this.selectedDiocese="",
-    //           this.selectedSedec="",
-    //           this.topEnd();
+        this.erreur = true;
+      } else {
+        this.valideTitle = false;
 
-    //           console.log(this.selectedCommune)
-    //         }
-    //       });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
+        this.erreur = false;
+      }
+    },
+
+     obligatoryContact() {
+      if (!this.contact) {
+        this.valideContact = true;
+
+        this.erreur = true;
+      } else {
+        this.valideContact = false;
+
+        this.erreur = false;
+      }
+    },
+
+     obligatoryEmail() {
+      if (!this.email) {
+        this.valideEmail = true;
+
+        this.erreur = true;
+      } else {
+        this.valideEmail = false;
+
+        this.erreur = false;
+      }
+    },
+
+    obligatoryCommune() {
+      if (this.selectedCommune == "Votre commune" || !this.selectedCommune) {
+        this.valideCommune = true;
+
+        this.erreur = true;
+      } else {
+        this.valideCommune = false;
+
+        this.erreur = false;
+      }
+    },
+
+    obligatoryEnseignement() {
+      if (
+        this.selectedEnseignement == "Votre enseignement" ||
+        !this.selectedEnseignement
+      ) {
+        this.valideEnseignement = true;
+
+        this.erreur = true;
+      } else {
+        this.valideEnseignement = false;
+
+        this.erreur = false;
+      }
+    },
+
+    obligatoryDiocese() {
+      if (this.selectedDiocese == "Votre diocèse" || !this.selectedDiocese) {
+        this.valideDiocese = true;
+
+        this.erreur = true;
+      } else {
+        this.valideDiocese = false;
+
+        this.erreur = false;
+      }
+    },
+
+    obligatorySedec() {
+      if (this.selectedSedec == "Votre sedec " || !this.selectedSedec) {
+        this.valideSedec = true;
+
+        this.erreur = true;
+      } else {
+        this.valideSedec = false;
+
+        this.erreur = false;
+      }
+    },
+
+    obligatoryQuartier() {
+      if (!this.quartier) {
+        this.valideQuartier = true;
+
+        this.erreur = true;
+      } else {
+        this.valideQuartier = false;
+
+        this.erreur = false;
+      }
+    },
 
     async save() {
       try {
+        this.obligatoryTitle();
+        this.obligatoryCommune();
+        this.obligatoryQuartier();
+        this.obligatoryEnseignement();
+        this.obligatoryDiocese();
+        this.obligatorySedec();
+        this.obligatoryContact();
+        this.obligatoryEmail();
+
         const config = {
           headers: {
             Accept: "application/json",
@@ -509,11 +615,19 @@ export default {
         data.append("enseignement_id", this.selectedEnseignement.id);
         data.append("diocese_id", this.selectedSedec.id);
         data.append("sedec_id", this.selectedSedec.id);
-        // data.append("niveaux", this.selectedNiveau);
-        data.append("cycles", [this.selectedCycle]);
-        // data.append('image', this.image);
+        data.append("image", this.image);
 
-        console.log(data);
+        for (let index = 0; index < this.selectedCycle.length; index++) {
+          const element = this.selectedCycle[index];
+          data.append(`cycles[${index}]`, this.selectedCycle[index]);
+        }
+
+        for (let index = 0; index < this.selectedNiveau.length; index++) {
+          const element = this.selectedNiveau[index];
+          data.append(`niveaux[${index}]`, this.selectedNiveau[index]);
+        }
+
+        // console.log(this.selectedNiveau);
 
         // const newDataEtablissement = {
         //   title: this.title,
@@ -545,7 +659,7 @@ export default {
               (this.selectedSedec = ""),
               this.topEnd();
 
-              console.log(this.selectedCommune);
+              // console.log(this.selectedCommune);
             }
           });
       } catch (error) {
