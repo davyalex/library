@@ -169,6 +169,8 @@ import RecenteCommande from './composant/RecenteCommande.vue';
 
 import StatisticCardHorizontal from './composant/StatisticCardHorizontal.vue';
 import moment from "moment";
+import URL from "@/views/pages/request";
+import axios from "axios";
 
 
 export default {
@@ -263,8 +265,14 @@ export default {
     };
   },
 
-  mounted(){
+  async mounted(){
     document.title = "Dashboard"
+      await axios.get(URL.TYPEPARAMETRE).then((response) => {
+        this.typeParametre = response.data.liste;
+          if (this.typeParametre) {
+          localStorage.setItem('typeParametre', JSON.stringify(this.typeParametre));
+          }
+      });
   },
 
   methods: {},
