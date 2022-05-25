@@ -43,7 +43,7 @@
                 <b-form-input
                   v-model="filtreetablissement"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : titre de propection, motif, date..."
+                  placeholder="Rechercher par : non etablissement, date..."
                 />
               </b-input-group>
             </div>
@@ -76,7 +76,7 @@
               />
               <!-- </b-link> -->
 
-              <b-link :to="{ name: 'create' }">
+              <!-- <b-link :to="{ name: 'create' }">
                 <feather-icon
                   icon="EyeIcon"
                   :id="`invoice-row-${data.item.id}-Edit3-icon`"
@@ -84,7 +84,7 @@
                   class="cursor-pointer mr-1"
                   @click="update(data.item)"
                 />
-              </b-link>
+              </b-link> -->
 
               <!-- <b-link :to="{ name: 'create' }"> -->
                 <feather-icon
@@ -117,7 +117,7 @@
             >
               <b-pagination
                 v-model="currentPage"
-                :total-rows="pTotal"
+                :total-rows="totalEtablissement"
                 :per-page="perPage"
                 first-number
                 last-number
@@ -233,7 +233,7 @@ export default {
 
       perPage: 30,
       currentPage: 1,
-      pTotal: 0,
+      totalEtablissement: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
         { key: "title", label: "Nom", sortable: true },
@@ -254,7 +254,8 @@ export default {
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
         this.returnData = response.data;
         this.etablissement = this.returnData.etablissements;
-        this.niveau = this.returnData.etablissementx;
+        this.totalEtablissement=response.data.etablissements.length;
+        this.niveau = this.returnData.etablissements;
         // this.listEtablissement = this.returnData
       });
 
