@@ -32,7 +32,7 @@
             <p class="user-name font-weight-bolder mb-0">
              {{ user_connecte.nom }}  {{ user_connecte.prenoms }}
             </p>
-            <span class="user-status">Admin</span>
+            <span class="user-status">{{role.name}}</span>
           </div>
           <b-avatar
             size="40"
@@ -124,6 +124,7 @@ export default {
   data(){
     return{
        user_connecte: "",
+       role:"",
     }
   },
 
@@ -136,7 +137,8 @@ export default {
         },
       };
        axios.get(URL.USER_CONNECTE, config).then((response) => {
-        this.user_connecte = response.data.user_connecte
+        this.user_connecte = response.data.auth
+           this.role = response.data.role
         console.log(this.user_connecte);
       });
       } catch (error) {

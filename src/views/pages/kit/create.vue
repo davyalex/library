@@ -2,8 +2,10 @@
   <validation-observer ref="simpleRules">
     <b-form @submit.prevent>
       <b-card>
+
+    
         <b-row>
-          <b-col cols="3">
+          <b-col cols="4">
             <b-form-group label-for="title">
               <label for="title"
                 >nom de kit <span class="p-0 text-danger h6"> *</span></label
@@ -29,7 +31,7 @@
             </b-form-group>
           </b-col>
 
-          <b-col cols="3">
+          <b-col cols="4">
             <b-form-group label="" label-for="register-libelle">
               <label>
                 Etablissement <span class="p-0 text-danger h6">*</span>
@@ -56,32 +58,7 @@
             </b-form-group>
           </b-col>
 
-          <b-col cols="3">
-            <b-form-group label="" label-for="register-libelle">
-              <label> Cycle <span class="p-0 text-danger h6">*</span> </label>
-              <validation-provider
-                #default="{ errors }"
-                name="montant"
-                rules="required"
-              >
-                <v-select
-                  v-model="cycle"
-                  @input="validateCycle()"
-                  placeholder="Selectionnez un cycle"
-                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  :options="cycleList"
-                  label="title"
-                  :state="errors.length > 0 ? false : null"
-                >
-                </v-select>
-                <small v-if="valideCycle" class="text-danger">
-                  Vous devez sélectionner un cycle
-                </small>
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-
-          <b-col cols="3">
+          <b-col cols="4">
             <b-form-group label="" label-for="register-libelle">
               <label> Niveau <span class="p-0 text-danger h6">*</span> </label>
               <validation-provider
@@ -136,18 +113,18 @@
         <!-- DUPLICATEUR -->
         <div ref="form" class="repeater-form" :style="{ height: trHeight }">
           <b-row
-            v-for="(item, index) in multiJumele"
+            v-for="(item, index) in multiArticle"
             :key="index"
             ref="row"
             class="pb-2"
           >
             <!-- Item Form -->
             <!-- ? This will be in loop => So consider below markup for single item -->
-            <b-col cols="6" class="m-auto">
+            <b-col cols="12" class="m-auto">
               <div class="d-flex border rounded">
                 <b-row class="flex-grow-1 p-2">
                   <!-- article jumelé -->
-                  <b-col cols="12" md="" class="m-auto">
+                  <b-col cols="8" md="" class="m-auto">
                     <b-form-group label="" label-for="register-libelle">
                       <label for=""
                         >Choisir un article<span
@@ -155,7 +132,7 @@
                         ></span
                       ></label>
                       <v-select
-                        v-model="item.articleJumele"
+                        v-model="item.article"
                         placeholder="Selectionnez un article"
                         :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                         rules="required"
@@ -166,6 +143,54 @@
                       </v-select>
                     </b-form-group>
                   </b-col>
+
+                            <b-col cols="4">
+            <b-form-group label-for="title">
+              <label for="title"
+                >quantite <span class="p-0 text-danger h6"> *</span></label
+              >
+
+              <validation-provider
+                #default="{ errors }"
+                name="title"
+                rules="required"
+              >
+                <b-form-input
+                  id="title"
+                  @input="validateQte(index)"
+                  type="number"
+                
+                  v-model="item.quantite"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="00000"
+                />
+              </validation-provider>
+            </b-form-group>
+          </b-col>
+
+                    <b-col cols="4">
+            <b-form-group label-for="title">
+              <label for="title"
+                >prix <span class="p-0 text-danger h6"> *</span></label
+              >
+
+              <validation-provider
+                #default="{ errors }"
+                name="title"
+                rules="required"
+              >
+                <b-form-input
+                  id="title"
+                  disabled
+                  type="number"
+                  v-model="item.prix"
+                  :state="errors.length > 0 ? false : null"
+                  placeholder="00000"
+                />
+              </validation-provider>
+            </b-form-group>
+          </b-col>
+
                 </b-row>
 
                 <div
@@ -195,13 +220,15 @@
           </b-col>
         </b-row>
 
+            <h3 v-if="montant" class="text-right text-success">Montant du kit: <br> {{montant}}FCFA</h3>
+
         <!-- login button -->
         <b-col cols="12 mt-2">
           <b-button
             variant="primary"
             block
             type="submit"
-            @click.prevent="save"
+            @click.prevent="confirmSave()"
             :disabled="loading === true ? true : false"
           >
             <div
@@ -273,25 +300,30 @@ export default {
     return {
       title: "",
       etablissement: "",
-      cycle: "",
+   
       niveau: "",
       description: "",
       valideTitle: false,
       valideEtablissement: false,
-      valideCycle: false,
+    
       valideNiveau: false,
 
       file: "",
       etablissementList: [],
-      cycleList: [],
+      montant:"",
+      pU:"",
+
       niveauList: [],
       articleList: [],
       niveauListFilter: [],
 
-      multiJumele: [],
+      multiArticle: [],
 
-      jumeleItem: {
-        articleJumele: "",
+     articleItem: {
+    //    article:"",
+        quantite:1,
+        prix:"",
+     
       },
       loading: false,
 
@@ -305,19 +337,16 @@ export default {
 
     try {
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre= n`)
-        .then((response) => {
-          this.cycleList = response.data.parametre;
-        });
-      await axios
         .get(URL.PARAMETRE + `/?type_parametre=niveau`)
         .then((response) => {
           this.niveauList = response.data.parametre;
           this.niveauListFilter = response.data.parametre;
+          console.log('niveau',this.niveauListFilter);
         });
 
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
         this.etablissementList = response.data.etablissements;
+        console.log(  'etablissement',this.etablissementList)
       });
 
       await axios.get(URL.LIST_ARTICLE).then((response) => {
@@ -336,6 +365,10 @@ export default {
     window.removeEventListener("resize", this.initTrHeight);
   },
 
+  computed:{
+      
+  },
+
   methods: {
     processFile(event) {
       this.file = event.target.files[0];
@@ -345,17 +378,62 @@ export default {
       }
     },
 
+    
+ 
+
     updateItemForm(index, val) {
-      const { id } = val;
-      const j = (this.multiJumele[index].articleJumele_id = id);
-      console.log("jumele", j);
+        const { prix } = val;
+         const { id } = val;
+
+      const price = (this.multiArticle[index].prix = prix); 
+       const q = (this.multiArticle[index].id = id);
+           this.pU = this.multiArticle[index].article.prix;
+       this.prix = price;
+
+   
+      console.log("article",price,q,this.pU);
+   
+      // let mt =0
+      // for (let index = 0; index < this.multiArticle.length; index++) {
+      //  this.montant= mt += Number(this.multiArticle[index].article.prix);
+      // }
+      // console.log('montant',this.montant)
     },
+
+
+validateQte(index){
+  let mont = 0
+       for (let i = 0; i < this.multiArticle.length; i++) {
+         if (i===index && parseInt(this.multiArticle[i].quantite)>0 ||i===index && this.multiArticle[i].quantite.length>0 ) {
+             this.multiArticle[i].prix =  this.multiArticle[i].article.prix * this.multiArticle[i].quantite
+          //  this.montant =    mont +=Number(this.multiArticle[i].prix)
+          //  console.log(this.montant);
+     }else if(i===index && parseInt(this.multiArticle[i].quantite)<=1 ||i===index && this.multiArticle[i].quantite.length<=1 ){
+         this.multiArticle[i].prix =  this.multiArticle[i].article.prix
+      }
+}
+    },
+    
+
+    getMontant(){
+      // let mt = 0
+      // for (let i = 0; i < multiArticle.length; i++) {
+      //   const element = array[i];
+        
+      // }      
+   
+
+    },
+
+    
+
 
     //duplicateur
     addNewItemInItemForm() {
+   
       this.$refs.form.style.overflow = "hidden";
 
-      this.multiJumele.push(JSON.parse(JSON.stringify(this.jumeleItem)));
+      this.multiArticle.push(JSON.parse(JSON.stringify(this.articleItem)));
       this.$nextTick(() => {
         this.trAddHeight(this.$refs.row[0].offsetHeight);
         setTimeout(() => {
@@ -366,7 +444,7 @@ export default {
 
     // remove ligne duplique
     removeItem(index) {
-      this.multiJumele.splice(index, 1);
+      this.multiArticle.splice(index, 1);
       this.trTrimHeight(this.$refs.row[0].offsetHeight);
     },
 
@@ -392,15 +470,31 @@ export default {
 
     //message validation
 
-    validateCycle() {
-      this.niveauList = this.niveauListFilter.filter((niveau) => {
-        return niveau.parent_id === this.cycle.id;
-      });
+   
+    validateEtablissement() {
+    //     let filtre =[]
+    //     for (let index = 0; index < this.etablissement.niveaux.length; index++) {
+    //         const element = this.etablissement.niveaux[index];
+    //         filtre.push(element.id)
+    //          console.log(filtre);
+    //     }
+    //                 // console.log(this.etablissement.niveaux);
+    //                 let niveauFilter = []
+    //                 this.niveauList.forEach((element,index) => {
+    //                     if (element.id === filtre[index]) {
+    //                             niveauFilter.push(element)
+    //                     }
+    //                 });
 
-      if (!this.cycle) {
-        this.valideCycle = true;
+    //   this.niveauList = niveauFilter
+    //     console.log( this.niveauList);
+
+    console.log(this.multiArticle);
+
+      if (!this.etablissement) {
+        this.valideEtablissement= true;
       } else {
-        this.valideCycle = true;
+        this.valideEtablissement= false;
       }
     },
 
@@ -414,76 +508,111 @@ export default {
       }
     },
 
-    validateCategorie() {
-      if (!this.categorie) {
-        this.valideCategorie = true;
+    validateNiveau() {
+      if (!this.niveau) {
+        this.valideNiveau = true;
       } else {
-        this.valideCategorie = false;
+        this.valideNiveau = false;
+      }
+    },
+    getMontant(){
+    let ttc = 0
+      for (let index = 0; index < this.multiArticle.length; index++) {
+       this.montant = ttc+=Number(this.multiArticle[index].prix);
       }
     },
 
+     confirmSave() {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: this.getMontant(),
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.save();
+        }
+      });
+    },
+
     async save(bvModalEvt) {
+  
       try {
+             this.getMontant()
         this.validateTitle();
-        this.validateCycle();
-        this.validateQte();
-        this.validateCategorie();
+        this.validateEtablissement();
+        this.validateNiveau();
         const config = {
           headers: {
             Accept: "application/json",
           },
         };
-        const jumele = this.multiJumele.map((item) => {
-          return { jumeler_id: item.articleJumele_id };
-        });
-        console.log("jumele", jumele);
+        // const jumele = this.multiArticle.map((item) => {
+        //   return { jumeler_id: item.articleJumele_id };
+        // });
 
-        const newFormdata = new FormData();
+        // const newFormdata = new FormData();
 
-        newFormdata.append("image", this.file);
+        // newFormdata.append("image", this.file);
 
-        newFormdata.append("title", `${this.title}`);
+        // newFormdata.append("title", `${this.title}`);
 
-        newFormdata.append("quantite", `${this.quantite}`);
+        // newFormdata.append("quantite", `${this.quantite}`);
 
-        newFormdata.append("prix", this.prix);
+        // newFormdata.append("prix", this.prix);
 
-        newFormdata.append("categorie_id", this.categorie.id);
+        // newFormdata.append("categorie_id", this.categorie.id);
 
-        newFormdata.append("description", this.description);
+        // newFormdata.append("description", this.description);
 
-        for (let index = 0; index < jumele.length; index++) {
-          const element = jumele[index];
-          newFormdata.append(`jumele[${index}]`, jumele[index].jumeler_id);
-        }
+        // for (let index = 0; index < jumele.length; index++) {
+        //   const element = jumele[index];
+        //   newFormdata.append(`jumele[${index}]`, jumele[index].jumeler_id);
+        // }
 
-        newFormdata.append("count", this.multiJumele.length);
+        // newFormdata.append("count", this.multiArticle.length);
 
         const data = {
           title: this.title,
-          quantite: this.quantite,
-          prix: this.prix,
+          etablissement_id: this.etablissement.id,
+          niveau_id: this.niveau.id,
           description: this.description,
-          categorie_id: this.categorie.id,
-          count: this.multiJumele.length,
-          jumele: this.multiJumele.map((item) => {
-            return { jumeler_id: item.articleJumele_id };
+          count: this.multiArticle.length,
+        //   articles:this.multiArticle,
+          articles: this.multiArticle.map((item) => {
+            return { id:item.id, quantite:item.quantite,montant:this.pU};
           }),
-        };
 
+        //    quantite: this.multiArticle.map((item) => {
+        //     return { quantite: item.quantite, };
+        //   }),
+        };
+        console.log(data);
         this.loading = true;
         await axios
-          .post(URL.ARTICLE_STORE, newFormdata, config)
+          .post(URL.KIT_STORE, data, config)
           .then((response) => {
+            this.topEnd();
+                        this.title=""
+this.etablissement =""
+this.niveau =""
+this.description =""
+this.prix = ""
+this.quantite = "",
+this.articleItem = ""
             if (response.data) {
-              this.articleList.unshift(newFormdata);
+             
+              this.kitList.unshift(data);
               this.loading = false;
-              (this.title = ""),
-                (this.quantite = ""),
-                (this.prix = ""),
-                (this.categorie = ""),
-                this.topEnd();
-              this.$router.push("/article");
+
+                
+              // this.$router.push("/article");
             }
           });
       } catch (error) {
