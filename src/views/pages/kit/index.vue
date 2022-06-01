@@ -23,8 +23,8 @@
             <b-button variant="primary">
               <feather-icon icon="PlusIcon" class="mx-auto" />
               <!-- Ajouter un etablissement -->
-              <b-link :to="{ name: 'article/create' }">
-                <span class="text-white">Ajouter un article </span>
+              <b-link :to="{ name:'create' }">
+                <span class="text-white">Ajouter un kit </span>
               </b-link>
             </b-button>
 
@@ -41,9 +41,9 @@
                   <feather-icon icon="SearchIcon" />
                 </b-input-group-prepend> -->
                 <b-form-input
-                  v-model="filtreArticle"
+                  v-model="filtreKit"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : title, categorie..."
+                  placeholder="Rechercher par : title..."
                 />
               </b-input-group>
             </div>
@@ -51,25 +51,30 @@
         </b-row>
 
         <!-- Le tableau affichant les typeParametre -->
-        <b-table 
+        <b-table
           hover
           responsive
           primary-key="id"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="articleList"
+          :items="kitList"
           :fields="tableColumns"
-          :filter="filtreArticle"
+          :filter="filtreKit"
           show-empty
           empty-text=""
           class="bg-white"
         >
-<template #cell(categorie)="data">
-    <span>
-      {{ data.item.categorie.title }}
-    </span>
-</template>
-        
+          <template #cell(etablissement)="data">
+            <span>
+              {{ data.item.etablissement.title }}
+            </span>
+          </template>
+
+          <template #cell(niveau)="data">
+            <span>
+              {{ data.item.niveau.title }}
+            </span>
+          </template>
 
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
@@ -79,18 +84,28 @@
                 :id="`invoice-row-${data.item.id}-Edit3-icon`"
                 size="16"
                 class="cursor-pointer mr-1"
-                @click="updateEtablissement(data.item.id)"
+                @click="updateKit(data.item.id)"
               />
+              <!-- </b-link> -->
 
-              <!-- <b-link :to="{ name: 'create' }"> -->
+              <b-link v-b-modal.modal-update>
                 <feather-icon
-                  icon="TrashIcon"
+                  icon="EyeIcon"
                   :id="`invoice-row-${data.item.id}-Edit3-icon`"
                   size="16"
                   class="cursor-pointer mr-1"
-                  @click="confirmText(data.item.id)"
+                  @click="preview(data.item.id)"
                 />
-             
+              </b-link>
+
+              <!-- <b-link :to="{ name: 'create' }"> -->
+              <feather-icon
+                icon="TrashIcon"
+                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                size="16"
+                class="cursor-pointer mr-1"
+                @click="confirmText(data.item.id)"
+              />
             </div>
           </template>
         </b-table>
@@ -143,6 +158,91 @@
         </div>
       </b-card>
     </div>
+
+    <b-modal
+      id="modal-update"
+      cancel-variant="outline-secondary"
+      ok-title="Valider"
+      cancel-title="Annuler"
+      centered
+      title=" Liste des articles du kit"
+    >
+      <b-card no-body class="invoice-padding form-item-section">
+        <div ref="form" class="repeater-form">
+          <b-row
+            v-for="(item, index) in articleList"
+            :key="index"
+            ref="row"
+            class="pb-2"
+          >
+            <!-- Item Form -->
+            <!-- ? This will be in loop => So consider below markup for single item -->
+            <b-col cols="12">
+                   <div class="d-none d-lg-flex">
+                <b-row class="flex-grow-1 px-1">
+                  <!-- Single Item Form Headers -->
+                  <b-col cols="4" lg="4">
+                    Libelle
+                  </b-col>
+                  <b-col cols="3" lg="3">
+                    Prix
+                  </b-col>
+                  <b-col cols="5" lg="5">
+                    Quantite
+                  </b-col>
+                </b-row>
+                <div class="form-item-action-col" />
+              </div>
+
+              <div class="d-flex border rounded">
+                <b-row class="flex-grow-1 p-2">
+                  <!-- Single Item Form Headers -->
+                  <b-col cols="12" lg="12">
+                    <b-row class="d-flex justify-items-center">
+                      <b-col cols="4" lg="4">
+                        <label class="d-inline d-lg-none">{{index}}</label>
+
+                        <b-form-input
+                          v-model="item.title"
+                          type="text"
+                          class="mb-2"
+                          readonly
+                        />
+                      </b-col>
+                      <b-col cols="4" lg="4">
+                        <label class="d-inline d-lg-none">Prix</label>
+
+                        <b-form-input
+                          v-model="item.prix"
+                          type="text"
+                          class="mb-2"
+                          readonly
+                        />
+                      </b-col>
+                      <b-col cols="4" lg="4">
+                        <label class="d-inline d-lg-none">Quantité</label>
+
+                        <b-form-input
+                          v-model="item.pivot.quantite"
+                          type="text"
+                          class="mb-2"
+                          readonly
+                        />
+                      </b-col>
+
+                      <b-col class="w-100" cols="12" lg="12"> </b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
+              </div>
+            </b-col>
+          </b-row>
+        </div>
+      </b-card>
+      <template #modal-footer>
+        <b-button class="hidden"> </b-button>
+      </template>
+    </b-modal>
   </div>
 </template>
 
@@ -210,67 +310,59 @@ export default {
   },
   data() {
     return {
-
+      kitList: [],
       articleList: [],
       perPage: 5,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
-        { key: "title", label: "Nom", sortable: true }, 
-        { key: "categorie", label: "categorie", sortable: true },
-        { key: "quantite", label: "quantite", sortable: true },
-        { key: "prix", label: "prix", sortable: true },
+        { key: "title", label: "Nom", sortable: true },
+        { key: "etablissement", label: "etablissement", sortable: true },
+        { key: "niveau", label: "niveau", sortable: true },
+        // { key: "prix", label: "prix", sortable: true },
         { key: "actions" },
       ],
-      filtreArticle: "",
+      filtreKit: "",
       perPageOptions: [30, 50, 100],
       error: [],
     };
   },
 
   async mounted() {
-
-    document.title ="Liste des articles"
+    document.title = "Liste des kits";
     try {
-      await axios.get(URL.LIST_ARTICLE).then((response) => {
-        this.articleList = response.data.article;
-      //  this.articleList =  this.returnData.article
-           this.pTotal = this.articleList.length;
-         console.log(this.articleList);
+      await axios.get(URL.LIST_KIT).then((response) => {
+        this.kitList = response.data.kit;
+        this.pTotal = this.kitList.length;
+        console.log(this.kitList);
       });
-
     } catch (error) {
       console.log(error);
     }
   },
 
   methods: {
-    topEnd() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: "Etablissement enregistré avec succès",
-          icon: "BookIcon",
-          variant: "success",
-        },
+    preview(id) {
+      this.articleList = this.kitList.filter((item) => {
+        return item.id === id;
       });
+      this.articleList = this.articleList[0].articles;
+      console.log("articleList", this.articleList);
     },
 
-  
-    updateEtablissement(id) {
-      const etat = this.etablissement.filter(
+    updateKit(id) {
+      const updateKit = this.kitList.filter(
         (item) => item.id === id,
-        console.log(etat)
+        console.log(updateKit)
       );
 
-      localStorage.setItem("etablissement", JSON.stringify(etat[0]));
+      localStorage.setItem("kit", JSON.stringify(updateKit[0]));
       this.$router.push({ name: "edit" });
     },
 
-
     confirmText(id) {
-       this.$swal({
+      this.$swal({
         title: "Êtes vous sûr?",
         text: "Cet etablissement sera supprimé définitivement !",
         icon: "warning",
@@ -283,12 +375,12 @@ export default {
         buttonsStyling: false,
       }).then((result) => {
         if (result.value) {
-          this.destroyEtablisement(id);
+          this.destroyKit(id);
         }
       });
     },
 
-    destroyEtablisement(identifiant, index) {
+    destroyKit(identifiant) {
       try {
         const id = {
           id: identifiant,
@@ -298,16 +390,15 @@ export default {
             Accept: "application/json",
           },
         };
-        axios
-          .post(URL.DESTROY_ETABLISSEMENT, id, config)
-          .then((response) => {
-            if(response.data){
-              response.data;
-              topEnd();
-              
-            }
-          })
-        this.etablissement.splice(index, 1);
+        axios.post(URL.KIT_DESTROY +`/${id.id}`, config).then((response) => {
+          if (response.data) {
+              axios.get(URL.LIST_KIT).then((response) => {
+        this.kitList = response.data.kit;
+        this.pTotal = this.kitList.length;
+      });
+          }
+        });
+        this.kitList.splice(index, 1);
       } catch (error) {
         console.log(error.type);
       }

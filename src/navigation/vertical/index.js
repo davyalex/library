@@ -6,6 +6,12 @@ export default [
     route: 'home',
     icon: 'HomeIcon',
   },
+
+  {
+    title: 'Utilisateur',
+    route: 'user',
+    icon: 'UsersIcon',
+  },
  
 
   {
@@ -22,7 +28,7 @@ export default [
 
   {
     title: 'Kit',
-    route: 'kit/create',
+    route: 'kit',
     icon: 'BookIcon',
   },
 
