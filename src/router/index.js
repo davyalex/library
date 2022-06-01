@@ -205,6 +205,55 @@ const router = new VueRouter({
 
 
     {
+      path: '/point-retrait',
+      name: 'point-retrait',
+      component: () => import('@/views/pages/pointRetrait/index.vue'),
+      meta: {
+        pageTitle: 'Point',
+        breadcrumb: [
+          {
+            text: 'Retrait',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/point-retrait/create',
+      name: 'point-retrait/create',
+      component: () => import('@/views/pages/pointRetrait/create.vue'),
+      meta: {
+        pageTitle: 'Point',
+        breadcrumb: [
+          {
+            text: 'Retrait',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/point-retrait/update',
+      name: 'point-retrait/update',
+      component: () => import('@/views/pages/pointRetrait/edit.vue'),
+      meta: {
+        pageTitle: 'Modifier',
+        breadcrumb: [
+          {
+            text: 'Point Retrait',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+
+    {
       path: '/article/create',
       name: 'article/create',
       component: () => import('@/views/pages/articles/create.vue'),

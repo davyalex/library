@@ -6,7 +6,7 @@
           <b-col class="3">
             <b-form-group label-for="title">
               <label for="title"
-                >Nom de l'etablissement
+                >Nom du point de retrait
                 <span class="p-0 text-danger h6"> *</span></label
               >
 
@@ -21,14 +21,14 @@
                   v-model="title"
                   @input="obligatoryTitle"
                   :state="errors.length > 0 ? false : null"
-                  placeholder="EPP - Etablissement "
+                  placeholder="Point de cocody"
                 />
 
                 <small
                   :class="valideTitle ? 'block' : 'none'"
                   class="text-danger"
                 >
-                  Veuillez saisir nom de l'etablissement
+                  Veuillez saisir nom du point de retrait
                 </small>
               </validation-provider>
             </b-form-group>
@@ -49,7 +49,7 @@
                 label="title"
                 placeholder="Selectionner une commune"
                 id="commune"
-                :options="communeList"
+                :options="communes"
                 type="text"
                 v-model="selectedCommune"
                 :state="errors.length > 0 ? false : null"
@@ -94,99 +94,21 @@
           </b-col>
         </b-row>
         <b-row>
-          <b-col class="3">
-            <label for=""
-              >Type d'enseignement<span class="p-0 text-danger h6">
-                *</span
-              ></label
-            >
-            <validation-provider
-              #default="{}"
-              name="enseignement_id"
-              rules="required"
-            >
-              <v-select
-                @input="getEnseignements()"
-                v-model="selectedEnseignement"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="title"
-                :options="enseignements"
-                placeholder="Selectionner un enseignement"
-              />
-
-              <small
-                :class="valideEnseignement ? 'block' : 'none'"
-                class="text-danger"
-              >
-                Veuillez selectionner l'enseignement
-              </small>
-            </validation-provider>
-          </b-col>
-          <b-col class="3">
-            <label for=""
-              >Diocèse <span class="p-0 text-danger h6"> *</span></label
-            >
-            <validation-provider
-              #default="{}"
-              name="diocese_id"
-              rules="required"
-            >
-              <v-select
-                @input="getSedec()"
-                v-model="selectedDiocese"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="title"
-                :options="dioceses"
-                placeholder="Selectionner le diocèse"
-              />
-
-              <small
-                :class="valideDiocese ? 'block' : 'none'"
-                class="text-danger"
-              >
-                Veuillez selectionner le diocèse
-              </small>
-            </validation-provider>
-          </b-col>
-          <b-col class="3">
-            <label for=""
-              >Sedec <span class="p-0 text-danger h6"> *</span></label
-            >
-            <validation-provider #default="{}" name="sedec_id" rules="required">
-              <v-select
-                v-model="selectedSedec"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="title"
-                :options="sedecs"
-                placeholder="Selectionner un sedec"
-              />
-
-              <small
-                :class="valideSedec ? 'block' : 'none'"
-                class="text-danger"
-              >
-                Veuillez selectionner le SEDEC
-              </small>
-            </validation-provider>
-          </b-col>
-        </b-row>
-
-        <b-row class="mt-1">
           <b-col class="3"
-            ><b-form-group label="" label-for="contact">
-              <label for="contact"
-                >Contact <span class="p-0 text-danger h6"> *</span></label
+            ><b-form-group label="" label-for="phone">
+              <label for="phone"
+                >phone <span class="p-0 text-danger h6"> *</span></label
               >
 
               <validation-provider
                 #default="{ errors }"
-                name="contact"
+                name="phone"
                 rules="required"
               >
                 <b-form-input
-                  id="contact"
+                  id="phone"
                   type="text"
-                  v-model="contact"
+                  v-model="phone"
                   :state="errors.length > 0 ? false : null"
                   placeholder="000 0000 000"
                 />
@@ -234,7 +156,7 @@
               @change="processFile($event)"
               :state="Boolean(image)"
               no-drop
-              placeholder="Logo de l'etablissement"
+              placeholder="Image point du retrait"
               drop-placeholder="Glisser un fichier ici..."
               multiple
               class="text-center"
@@ -242,35 +164,22 @@
           </b-col>
         </b-row>
 
-        <label for="niveau"
-          >Cycle & Niveaux<span class="p-0 text-danger h6"> *</span></label
-        >
-        <b-row>
-          <b-col class="mt-1 4" v-for="(cycles, index) in cycle" :key="index">
-            <b-form-checkbox
-              :value="cycles.id"
-              class="custom-control-primary"
-              v-model="selectedCycle"
-            >
-              {{ cycles.title }}
-            </b-form-checkbox>
+        <!--  Description du produit -->
+        <b-form-group>
+          <label for="taxeValue">Description </label>
+          <b-form-textarea
+            id="textarea"
+            v-model="description"
+            placeholder="Entrer les details du point de retrait"
+            rows="5"
+            max-rows="6"
+          >
+          </b-form-textarea>
+        </b-form-group>
 
-            <b-col class="6" v-for="(niveaux, index) in niveau" :key="index">
-              <b-row v-if="cycles.id === niveaux.parent_id">
-                <b-form-checkbox
-                  :value="niveaux.id"
-                  v-model="selectedNiveau"
-                  class="custom-control-primary ml-1 mb-1"
-                >
-                  {{ niveaux.title }}
-                </b-form-checkbox>
-              </b-row>
-            </b-col>
-          </b-col>
-        </b-row>
         <!-- login button -->
         <b-col cols="12 mt-2">
-          <b-button variant="primary" type="submit" @click="update">
+          <b-button variant="primary" type="submit" @click="save">
             Enregistrer
           </b-button>
         </b-col>
@@ -302,11 +211,13 @@ import {
   BCardText,
   BCard,
   BFormFile,
+  BFormTextarea,
 } from "bootstrap-vue";
 import { required } from "@validations";
 
 export default {
   components: {
+    BFormTextarea,
     BCard,
     BFormFile,
     BDropdown,
@@ -330,7 +241,6 @@ export default {
       selectedDiocese: "Votre diocèse",
       selectedSedec: "Votre sedec ",
       communes: [],
-      communeList: [],
       typeEnseignement: [],
       enseignements: [],
       dioceses: [],
@@ -338,11 +248,12 @@ export default {
       sedecs: [],
       title: "",
       quartier: "",
-      contact: "",
+      phone: "",
       email: "",
       selected: "",
       selectedB: "",
       image: "",
+      description: "",
 
       valideTitle: false,
       valideCommune: false,
@@ -363,37 +274,31 @@ export default {
       datas: [],
       selectedCycle: [],
       selectedNiveau: [],
-      getEnseignements: [],
-      id: "",
+      getPointRetrait: [],
       // sideImg: require("@/assets/images/pages/register-v2.svg"),
     };
   },
 
   async mounted() {
     try {
-      this.getEtablissements = JSON.parse(
-        localStorage.getItem("etablissement")
-      );
+      this.getPointRetrait = JSON.parse(localStorage.getItem("point-retrait"));
+      console.log(this.getPointRetrait);
 
-      this.id = this.getEtablissements.id;
-      this.title = this.getEtablissements.title;
-      this.quartier = this.getEtablissements.quartier;
-      this.email = this.getEtablissements.email;
-      this.contact = this.getEtablissements.contact;
+      this.id = this.getPointRetrait.id;
+      this.title = this.getPointRetrait.title;
+      this.quartier = this.getPointRetrait.quartier;
+      this.email = this.getPointRetrait.email;
+      this.phone = this.getPointRetrait.phone;
+      this.description = this.getPointRetrait.description;
+    //   this.file = this.getPointRetrait.file;
 
-      console.log(this.getEtablissements);
+      // console.log(this.id)
 
       await axios
         .get(URL.PARAMETRE + `/?type_parametre=commune`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.communes = this.returnDatas;
-          this.communeList = this.returnDatas;
-
-          this.communes = this.communes.filter((commune) => {
-            return commune.id === this.getEtablissements.commune_id;
-          });
-          this.selectedCommune = this.communes[0].title;
         });
 
       await axios
@@ -402,7 +307,7 @@ export default {
           this.returnDatas = response.data.parametre;
           this.enseignements = this.returnDatas;
 
-          console.log(this.enseignements);
+          // console.log(this.enseignements);
         });
 
       await axios
@@ -411,7 +316,7 @@ export default {
           this.returnDatas = response.data.parametre;
           this.dioceses = this.returnDatas;
           this.diocesesCache = this.returnDatas;
-          // console.log(this.dioceses);
+          console.log(this.dioceses);
         });
 
       await axios
@@ -432,7 +337,7 @@ export default {
           this.cycle = this.returnDatas;
           this.datas = this.returnDatas;
 
-          console.log(this.cycle);
+          console.log(this.returnDatas);
 
           for (let index = 0; index < this.datas.length; index++) {
             let element = this.datas[index];
@@ -528,7 +433,7 @@ export default {
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: "Etablissemnt enregistré avec succès",
+          title: "Point de retrait supprimé avec succès",
           icon: "BookIcon",
           variant: "success",
         },
@@ -548,7 +453,7 @@ export default {
     },
 
     obligatoryContact() {
-      if (!this.contact) {
+      if (!this.phone) {
         this.valideContact = true;
 
         this.erreur = true;
@@ -583,45 +488,6 @@ export default {
       }
     },
 
-    obligatoryEnseignement() {
-      if (
-        this.selectedEnseignement == "Votre enseignement" ||
-        !this.selectedEnseignement
-      ) {
-        this.valideEnseignement = true;
-
-        this.erreur = true;
-      } else {
-        this.valideEnseignement = false;
-
-        this.erreur = false;
-      }
-    },
-
-    obligatoryDiocese() {
-      if (this.selectedDiocese == "Votre diocèse" || !this.selectedDiocese) {
-        this.valideDiocese = true;
-
-        this.erreur = true;
-      } else {
-        this.valideDiocese = false;
-
-        this.erreur = false;
-      }
-    },
-
-    obligatorySedec() {
-      if (this.selectedSedec == "Votre sedec " || !this.selectedSedec) {
-        this.valideSedec = true;
-
-        this.erreur = true;
-      } else {
-        this.valideSedec = false;
-
-        this.erreur = false;
-      }
-    },
-
     obligatoryQuartier() {
       if (!this.quartier) {
         this.valideQuartier = true;
@@ -634,14 +500,11 @@ export default {
       }
     },
 
-    async update() {
+    async save() {
       try {
         this.obligatoryTitle();
-        // this.obligatoryCommune();
+        this.obligatoryCommune();
         this.obligatoryQuartier();
-        // this.obligatoryEnseignement();
-        // this.obligatoryDiocese();
-        // this.obligatorySedec();
         this.obligatoryContact();
         this.obligatoryEmail();
 
@@ -650,59 +513,49 @@ export default {
             Accept: "application/json",
           },
         };
+        
         const data = new FormData();
-
         data.append("id", this.id);
         data.append("title", this.title);
         data.append("quartier", this.quartier);
-        data.append("contact", this.contact);
+        data.append("phone", this.phone);
         data.append("email", this.email);
         data.append("commune_id", this.selectedCommune.id);
-        // data.append("enseignement_id", this.selectedEnseignement.id);
-        // data.append("diocese_id", this.selectedSedec.id);
-        // data.append("sedec_id", this.selectedSedec.id);
-        // data.append("image", this.image);
+        data.append("image", this.image);
+        data.append("description", this.description);
 
-        for (let index = 0; index < this.selectedCycle.length; index++) {
-          const element = this.selectedCycle[index];
-          data.append(`cycles[${index}]`, this.selectedCycle[index]);
-        }
+        // for (let index = 0; index < this.selectedCycle.length; index++) {
+        //   const element = this.selectedCycle[index];
+        //   data.append(`cycles[${index}]`, this.selectedCycle[index]);
+        // }
 
-        for (let index = 0; index < this.selectedNiveau.length; index++) {
-          const element = this.selectedNiveau[index];
-          data.append(`niveaux[${index}]`, this.selectedNiveau[index]);
-        }
+        // for (let index = 0; index < this.selectedNiveau.length; index++) {
+        //   const element = this.selectedNiveau[index];
+        //   data.append(`niveaux[${index}]`, this.selectedNiveau[index]);
+        // }
 
         // console.log(this.selectedNiveau);
 
-        // const newDataEtablissement = {
+        // const data = {
         //   title: this.title,
         //   quartier: this.quartier,
-        //   contact: this.contact,
+        //   phone: this.phone,
         //   email: this.email,
         //   commune_id: this.selectedCommune.id,
-        //   enseignement_id: this.selectedEnseignement.id,
-        //   diocese_id: this.selectedDiocese.id,
-        //   sedec_id: this.selectedSedec.id,
-        //   niveaux: this.selectedNiveau,
-        //   cycles: this.selectedCycle,
-        //   image: this.image,
         // };
 
         await axios
-          .post(URL.UPDATE_ETABLISSEMENT, data, config)
+          .post(URL.UPDATE_POINTRETRAIT +`/${this.id}` , data, config)
           .then((response) => {
             this.createEtablissement = response.data;
 
             if (response.data) {
               (this.title = ""),
                 (this.quartier = ""),
-                (this.contact = ""),
+                (this.phone = ""),
                 (this.email = ""),
-                // (this.selectedCommune = ""),
-                // (this.SelectedEnseignement = ""),
-                // (this.selectedDiocese = ""),
-                // (this.selectedSedec = ""),
+                (this.description = ""),
+                (this.selectedCommune = ""),
                 this.topEnd();
 
               // console.log(this.selectedCommune);

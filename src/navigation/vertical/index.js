@@ -33,6 +33,12 @@ export default [
   },
 
   {
+    title: 'Point Retrait',
+    route: 'point-retrait',
+    icon: 'BookIcon',
+  },
+
+  {
     title: 'Parametre',
     route: '',
     icon: 'SettingsIcon',
@@ -90,6 +96,7 @@ export default [
      
     ]
   },
+
 
 ]
 

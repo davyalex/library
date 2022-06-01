@@ -368,18 +368,54 @@ export default {
 
   async mounted() {
     try {
-      await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
-        this.returnData = response.data;
-        this.communes = response.data.commune;
-        this.enseignements = response.data.enseignement;
-        this.dioceses = response.data.diocese;
-        this.diocesesCache = response.data.diocese;
-        this.sedecs = response.data.sedec;
-        this.sedecsCache = response.data.sedec;
-        this.niveaux = response.data;
-      });
+      // await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
+      //   this.returnData = response.data;
+      //   this.communes = response.data.commune;
+      //   this.enseignements = response.data.enseignement;
+      //   this.dioceses = response.data.diocese;
+      //   this.diocesesCache = response.data.diocese;
+      //   this.sedecs = response.data.sedec;
+      //   this.sedecsCache = response.data.sedec;
+      //   this.niveaux = response.data;
+      // });
 
-      // console.log(this.niveaux)
+       await axios
+        .get(URL.PARAMETRE + `/?type_parametre=commune`)
+        .then((response) => {
+          this.returnDatas = response.data.parametre;
+          this.communes = this.returnDatas;
+
+        });
+
+
+         await axios
+        .get(URL.PARAMETRE + `/?type_parametre=enseignement`)
+        .then((response) => {
+          this.returnDatas = response.data.parametre;
+          this.enseignements = this.returnDatas;
+
+          // console.log(this.enseignements);
+        });
+
+         await axios
+        .get(URL.PARAMETRE + `/?type_parametre=diocese`)
+        .then((response) => {
+          this.returnDatas = response.data.parametre;
+          this.dioceses = this.returnDatas;
+          this.diocesesCache = this.returnDatas;
+          console.log(this.dioceses);
+        });
+        
+         await axios
+        .get(URL.PARAMETRE + `/?type_parametre=sedec`)
+        .then((response) => {
+          this.returnDatas = response.data.parametre;
+          this.sedecs = this.returnDatas;
+          this.sedecsCache = this.returnDatas;
+          // console.log(this.sedecs);
+        });
+        
+
       const __Niveau = [];
 
       await axios
@@ -388,6 +424,8 @@ export default {
           this.returnDatas = response.data.parametre;
           this.cycle = this.returnDatas;
           this.datas = this.returnDatas;
+
+          console.log(this.returnDatas);
 
           for (let index = 0; index < this.datas.length; index++) {
             let element = this.datas[index];
@@ -448,7 +486,7 @@ export default {
      */
 
     getCycle() {
-      console.log(this.niveau);
+      // console.log(this.niveau);
       this.niveau = filter((niveau) => {
         return niveau.parent_id === this.selectedCycle.id;
       });
@@ -461,7 +499,7 @@ export default {
      */
 
     getSedec() {
-      console.log(this.sedecs, this.sedecsCache);
+      // console.log(this.sedecs, this.sedecsCache);
       this.sedecs = this.sedecsCache.filter((sedec) => {
         return sedec.parent_id === this.selectedDiocese.id;
       });

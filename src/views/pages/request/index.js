@@ -60,6 +60,15 @@ const URL = {
   KIT_UPDATE: `${baseUrl}/kit/update`,
   KIT_DESTROY: `${baseUrl}/kit/destroy`,
 
+  //Point de retrait
+
+  LIST_POINTRETRAIT: `${baseUrl}/point-retrait`,
+  CREATE_POINTRETRAIT: `${baseUrl}/point-retrait/store`,
+  UPDATE_POINTRETRAIT: `${baseUrl}/point-retrait/update`,
+  DESTROY_POINTRETRAIT: `${baseUrl}/point-retrait/destroy`,
+
+  
+
 };
 
 export default URL;
