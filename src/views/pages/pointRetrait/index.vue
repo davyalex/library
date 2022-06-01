@@ -4,7 +4,7 @@
     <div class="tableau">
       <b-card no-body class="py-1">
         <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvelle taxe -->
-        <b-row class="px-2">
+        <b-row class="px-2 py-2">
           <!-- Per Page -->
           <b-col
             cols="12"
@@ -23,8 +23,8 @@
             <b-button variant="primary">
               <feather-icon icon="PlusIcon" class="mx-auto" />
               <!-- Ajouter un etablissement -->
-              <b-link :to="{ name: 'create' }">
-                <span class="text-white">Ajouter un etablissement </span>
+              <b-link :to="{ name: 'point-retrait/create' }">
+                <span class="text-white">Ajouter un point de retrait</span>
               </b-link>
             </b-button>
 
@@ -37,13 +37,13 @@
           <b-col cols="12" md="6" class="mt-1">
             <div class="d-flex align-items-center justify-content-end">
               <b-input-group class="input-group-merge">
-                <b-input-group-prepend is-text>
+                <!-- <b-input-group-prepend is-text >
                   <feather-icon icon="SearchIcon" />
-                </b-input-group-prepend>
+                </b-input-group-prepend> -->
                 <b-form-input
-                  v-model="filtreetablissement"
+                  v-model="filtrePointRetrait"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : non etablissement, date..."
+                  placeholder="Rechercher par : title, categorie..."
                 />
               </b-input-group>
             </div>
@@ -57,13 +57,19 @@
           primary-key="id"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="etablissement"
+          :items="pointretaitListe"
           :fields="tableColumns"
-          :filter="filtreetablissement"
+          :filter="filtrePointRetrait"
           show-empty
-          empty-text="Aucun etablissement enregistré"
+          empty-text=""
           class="bg-white"
         >
+          <template #cell(categorie)="data">
+            <span>
+              {{ data.item.categorie.title }}
+            </span>
+          </template>
+
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- <b-link "> -->
@@ -72,7 +78,7 @@
                 :id="`invoice-row-${data.item.id}-Edit3-icon`"
                 size="16"
                 class="cursor-pointer mr-1"
-                @click="updateEtablissement(data.item.id)"
+                @click="updatepointretrait(data.item.id)"
               />
               <!-- </b-link> -->
 
@@ -87,14 +93,13 @@
               </b-link> -->
 
               <!-- <b-link :to="{ name: 'create' }"> -->
-                <feather-icon
-                  icon="TrashIcon"
-                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
-                  size="16"
-                  class="cursor-pointer mr-1"
-                  @click="confirmText(data.item.id)"
-                />
-             
+              <feather-icon
+                icon="TrashIcon"
+                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                size="16"
+                class="cursor-pointer mr-1"
+                @click="confirmText(data.item.id)"
+              />
             </div>
           </template>
         </b-table>
@@ -117,7 +122,7 @@
             >
               <b-pagination
                 v-model="currentPage"
-                :total-rows="totalEtablissement"
+                :total-rows="pTotal"
                 :per-page="perPage"
                 first-number
                 last-number
@@ -214,36 +219,19 @@ export default {
   },
   data() {
     return {
-      title: "",
-      quartier: "",
-      contact: "",
-      email: "",
-
-      valideEtablissement: false,
-      valideCommune: false,
-      valideQuartier: false,
-      valideEmail: false,
-      valideContact: false,
-      valideEnseignement: false,
-
-      valideTitle: false,
-
-      etablissement: [],
-      niveau: [],
-
-      perPage: 30,
+      pointretaitListe: [],
+      perPage: 5,
       currentPage: 1,
-      totalEtablissement: 0,
+      pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
         { key: "title", label: "Nom", sortable: true },
-        { key: "email", label: "Email", sortable: true },
-        { key: "contact", label: "contact", sortable: true },
-        // { key: "description", label: "motif", sortable: true },
-        // { key: "created_at", label: "crée le", sortable: true },
+        { key: "phone", label: "Contact", sortable: true },
+        { key: "email", label: "email", sortable: true },
+        // { key: "prix", label: "prix", sortable: true },
         { key: "actions" },
       ],
-      filtreetablissement: "",
+      filtrePointRetrait: "",
       perPageOptions: [30, 50, 100],
       error: [],
     };
@@ -251,30 +239,17 @@ export default {
 
   async mounted() {
     try {
-      await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
-        this.returnData = response.data;
-        this.etablissement = this.returnData.etablissements;
-        this.totalEtablissement=response.data.etablissements.length;
-        this.niveau = this.returnData.etablissements;
-        // this.listEtablissement = this.returnData
+      await axios.get(URL.LIST_POINTRETRAIT).then((response) => {
+        this.pointretaitListe = response.data.pointRetrait;
+        this.pTotal = this.pointretaitListe.length;
+        console.log(this.pointretaitListe);
       });
-
-      console.log(this.niveau);
     } catch (error) {
       console.log(error);
     }
   },
 
   methods: {
-    // validationForm() {
-    //   this.$refs.simpleRules.validate().then((success) => {
-    //     if (success) {
-    //       // eslint-disable-next-line
-    //       alert("login successfully");
-    //     }
-    //   });
-    // },
-
     topEnd() {
       this.$toast({
         component: ToastificationContent,
@@ -286,28 +261,18 @@ export default {
       });
     },
 
-    validateEtablissement() {
-      if (!this.etablissement_id) {
-        this.valideEtablissement = true;
-      } else {
-        this.valideEtablissement = false;
-      }
-    },
-
- 
-    updateEtablissement(id) {
-      const etat = this.etablissement.filter(
+    updatepointretrait(id) {
+      const etat = this.pointretaitListe.filter(
         (item) => item.id === id,
         console.log(etat)
       );
 
-      localStorage.setItem("etablissement", JSON.stringify(etat[0]));
-      this.$router.push({ name: "edit" });
+      localStorage.setItem("point-retrait", JSON.stringify(etat[0]));
+      this.$router.push({ name: "point-retrait/update" });
     },
 
-
     confirmText(id) {
-       this.$swal({
+      this.$swal({
         title: "Êtes vous sûr?",
         text: "Cet etablissement sera supprimé définitivement !",
         icon: "warning",
@@ -320,12 +285,12 @@ export default {
         buttonsStyling: false,
       }).then((result) => {
         if (result.value) {
-          this.destroyEtablisement(id);
+          this.destroypointretrait(id);
         }
       });
     },
 
-    destroyEtablisement(identifiant) {
+    destroypointretrait(identifiant) {
       try {
         const id = {
           id: identifiant,
@@ -335,16 +300,13 @@ export default {
             Accept: "application/json",
           },
         };
-        axios
-          .post(URL.DESTROY_ETABLISSEMENT + `/${id.id}`, config)
-          .then((response) => {
-            if(response.data){
-              response.data;
-              topEnd();
-              
-            }
-          })
-        this.etablissement.splice(index, 1);
+        axios.post(URL.DESTROY_POINTRETRAIT + `/${id.id}`, config).then((response) => {
+          if (response.data) {
+            response.data;
+            topEnd();
+          }
+        });
+        this.pointretaitListe.splice(index, 1);
       } catch (error) {
         console.log(error.type);
       }

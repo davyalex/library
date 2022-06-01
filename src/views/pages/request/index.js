@@ -53,6 +53,15 @@ const URL = {
   //kit
   KIT_STORE: `${baseUrl}/kit/store`,
 
+  //Point de retrait
+
+  LIST_POINTRETRAIT: `${baseUrl}/point-retrait`,
+  CREATE_POINTRETRAIT: `${baseUrl}/point-retrait/store`,
+  UPDATE_POINTRETRAIT: `${baseUrl}/point-retrait/update`,
+  DESTROY_POINTRETRAIT: `${baseUrl}/point-retrait/destroy`,
+
+  
+
 };
 
 export default URL;
