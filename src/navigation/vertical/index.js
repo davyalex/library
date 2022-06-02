@@ -35,8 +35,15 @@ export default [
   {
     title: 'Point Retrait',
     route: 'point-retrait',
-    icon: 'BookIcon',
+    icon: 'NavigationIcon',
   },
+
+  {
+    title: 'Commande',
+    route: 'commande',
+    icon: 'ShoppingCartIcon',
+  },
+
 
   {
     title: 'Parametre',

@@ -112,7 +112,7 @@ const router = new VueRouter({
         pageTitle: 'Kit',
         breadcrumb: [
           {
-            text: 'Lisre des kits',
+            text: 'Liste des kits',
             active: true,
           },
         ],
@@ -135,6 +135,41 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
+
+    {
+      path: '/commande',
+      name: 'commande',
+      component: () => import('@/views/pages/commande/index.vue'),
+      meta: {
+        pageTitle: 'Commande',
+        breadcrumb: [
+          {
+            text: 'Liste des commandes',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/detail',
+      name: 'detail',
+      component: () => import('@/views/pages/commande/preview.vue'),
+      meta: {
+        pageTitle: 'Detail de la commande',
+        breadcrumb: [
+          {
+            text: 'Liste des commandes',
+            to: {name:'commande'},
+          
+
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
 
     {
       path: '/parametre/:slug',

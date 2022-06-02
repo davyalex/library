@@ -67,6 +67,11 @@ const URL = {
   UPDATE_POINTRETRAIT: `${baseUrl}/point-retrait/update`,
   DESTROY_POINTRETRAIT: `${baseUrl}/point-retrait/destroy`,
 
+
+  //commande
+  LIST_COMMANDE: `${baseUrl}/commande`,
+  AFFECTE: `${baseUrl}/commande_etat`,
+
   
 
 };

@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <!-- Modal pour ajouter un utilisateur -->
+    <!-- Modal pour affecter une commande au livreur -->
     <b-modal
       id="modal-add"
       ref="modalUser"
@@ -9,16 +9,77 @@
       cancel-title="Annuler"
       centered
       hide-footer
-      :title="'Ajouter un' + ' ' + userItem"
+    title="Affecter la commande N°"
     >
       <validation-observer ref="registerForm">
         <b-form class="auth-register-form mt-2" @submit.prevent>
-          <!-- code de l'etablissement -->
-          <b-form-group
-            label="code"
-            label-for="code"
-            v-if="userItem === 'client'"
-          >
+          <!-- code de commande -->
+          <b-form-group label="" label-for="register-libelle">
+            <label for=""
+              >Choisir un livreur<span class="p-0 text-danger h6"></span
+            ></label>
+            <v-select
+              v-model="livreur"
+              @input="validateLivreur"
+              placeholder="Selectionnez un livreur"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              rules="required"
+              label="nom"
+              :options="users"
+            >
+              <template v-slot:option="option">
+                {{ option.nom }}
+                {{ option.prenoms }}
+              </template>
+            </v-select>
+          </b-form-group>
+
+          <b-form-group label="Prenom" label-for="code" v-if="livreur">
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="prenom"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+                disabled
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <b-form-group label="Contact" label-for="code" v-if="livreur">
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="contact"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+                disabled
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <b-form-group label="Email" label-for="code" v-if="livreur">
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="email"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+                disabled
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <!-- <b-form-group label="Lieu de livraison" label-for="code">
             <validation-provider
               #default="{ errors }"
               name="code"
@@ -26,140 +87,12 @@
             >
               <b-form-input
                 v-model="code"
-                @input="validateCode"
                 :state="errors.length > 0 ? false : null"
                 placeholder="ETA009"
+                disabled
               />
-              <small v-if="valideCode" class="text-danger">
-                Veuillez entrer le code de l'etablissement'
-              </small>
-              <small v-if="valideExiste === true" class="text-danger">
-                {{ code_exist }}
-              </small>
             </validation-provider>
-          </b-form-group>
-          <!-- Nom -->
-          <b-form-group label="Nom" label-for="nom">
-            <validation-provider
-              #default="{ errors }"
-              name="nom"
-              rules="required"
-            >
-              <b-form-input
-                v-model="nom"
-                @input="validateNom"
-                :state="errors.length > 0 ? false : null"
-                placeholder="john"
-              />
-              <small v-if="valideNom" class="text-danger">
-                Veuillez entrer un nom
-              </small>
-            </validation-provider>
-          </b-form-group>
-
-          <!-- Prenoms -->
-          <b-form-group label="Prenoms" label-for="prenoms">
-            <validation-provider
-              #default="{ errors }"
-              name="prenoms"
-              rules="required"
-            >
-              <b-form-input
-                id="prenoms"
-                v-model="prenoms"
-                @input="validatePrenom"
-                :state="errors.length > 0 ? false : null"
-                name="prenoms"
-                placeholder="john"
-              />
-              <small v-if="validePrenom" class="text-danger">
-                Veuillez entrer un prenom
-              </small>
-            </validation-provider>
-          </b-form-group>
-
-          <!-- contact -->
-
-          <b-form-group label="phone" label-for="phone">
-            <validation-provider
-              #default="{ errors }"
-              name="phone"
-              rules="required"
-            >
-              <b-form-input
-                id="contact"
-                type="tel"
-                v-model="phone"
-                @input="validatePhone"
-                :state="errors.length > 0 ? false : null"
-                name="contact"
-                placeholder="000 000 000"
-              />
-              <small v-if="validePhone" class="text-danger">
-                Veuillez entrer un numero de telephone
-              </small>
-            </validation-provider>
-          </b-form-group>
-
-          <!-- email -->
-          <b-form-group label="Email" label-for="register-email">
-            <validation-provider
-              #default="{ errors }"
-              name="Email"
-              rules="required"
-            >
-              <b-form-input
-                id="register-email"
-                type="email"
-                v-model="email"
-                @input="validateEmail"
-                name="register-email"
-                :state="errors.length > 0 ? false : null"
-                placeholder="xxx@example.com"
-              />
-              <small v-if="valideEmail" class="text-danger">
-                Veuillez entrer un email valide
-              </small>
-              <small v-if="emailList.length > 0" class="text-danger">
-                Ce email est déja utilisé, veuillez renseigner un autre
-              </small>
-            </validation-provider>
-          </b-form-group>
-
-          <!-- password -->
-          <b-form-group label-for="register-password" label="Password">
-            <validation-provider
-              #default="{ errors }"
-              name="Password"
-              rules="required"
-            >
-              <b-input-group
-                class="input-group-merge"
-                :class="errors.length > 0 ? 'is-invalid' : null"
-              >
-                <b-form-input
-                  id="register-password"
-                  v-model="password"
-                  class="form-control-merge"
-                  @input="validatePassword"
-                  :type="passwordFieldType"
-                  :state="errors.length > 0 ? false : null"
-                  name="register-password"
-                  placeholder="············"
-                />
-                <b-input-group-append is-text>
-                  <feather-icon
-                    :icon="passwordToggleIcon"
-                    class="cursor-pointer"
-                    @click="togglePasswordVisibility"
-                  />
-                </b-input-group-append>
-              </b-input-group>
-              <small v-if="validePassword" class="text-danger">
-                Vous devez renseigner le mot de passe
-              </small>
-            </validation-provider>
-          </b-form-group>
+          </b-form-group> -->
 
           <!-- <b-form-group>
                 <b-form-checkbox
@@ -183,7 +116,7 @@
               v-if="loading === true"
               class="spinner-border text-light"
             ></div>
-            <span v-else> Enregistrer</span>
+            <span v-else> <feather-icon icon="SendIcon" /> Affecter</span>
           </b-button>
         </b-form>
       </validation-observer>
@@ -213,33 +146,30 @@
             <b-dropdown
               id="dropdown-1"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-              text="+ Ajouter un utilisateur"
+              icon="ShoppingCartIcon"
+              text="Filtrer"
               variant="primary"
             >
-              <b-dropdown-item
-                v-b-modal.v-b-modal.modal-add
-                @click="getName('admin')"
-              >
-                <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50"
-                  >Ajouter un administrateur</span
+              <feather-icon icon="ShoppingCartIcon" />
+              <b-dropdown-item @click="getName('livre')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-success"
+                  >Commandes livrées</span
                 >
               </b-dropdown-item>
 
-              <b-dropdown-item
-                v-b-modal.v-b-modal.modal-add
-                @click="getName('client')"
-              >
-                <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50">Ajouter un client</span>
+              <b-dropdown-item @click="getName('attente')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-warning"
+                  >Commandes en attentes</span
+                >
               </b-dropdown-item>
 
-              <b-dropdown-item
-                v-b-modal.v-b-modal.modal-add
-                @click="getName('livreur')"
-              >
-                <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50">Ajouter un livreur</span>
+              <b-dropdown-item @click="getName('affecte')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-primary"
+                  >Commandes affectées</span
+                >
               </b-dropdown-item>
             </b-dropdown>
           </b-col>
@@ -252,9 +182,9 @@
                   <feather-icon icon="SearchIcon" />
                 </b-input-group-prepend> -->
                 <b-form-input
-                  v-model="filtreusers"
+                  v-model="filtrecommandes"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : nom, role, date..."
+                  placeholder="Rechercher par : N°, statut, date..."
                 />
               </b-input-group>
             </div>
@@ -267,9 +197,9 @@
           responsive
           :per-page="perPage"
           :current-page="currentPage"
-          :items="users"
+          :items="commandes"
           :fields="tableColumns"
-          :filter="filtreusers"
+          :filter="filtrecommandes"
           show-empty
           empty-text=""
           class="bg-white"
@@ -278,25 +208,64 @@
             {{ format_date(data.item.created_at) }}
           </template>
 
-          <template #cell(role)="data">
+           <template #cell(client)="data">
+            {{ data.item.client.nom }}
+          </template>
+
+            <template #cell(etat)="data">
+                    <span class="badge badge-light-warning badge-pill font-weight-bol">
+                            {{ data.item.etat.title }}
+                    </span>
+          </template>
+
+           <template #cell(status)="data">
+                    <span class="badge badge-light-info badge-pill font-weight-bol">
+                            {{ data.item.status}}
+                    </span>
+          </template>
+
+          <!-- <template #cell(role)="data">
             <div
               class="badge badge-light-success badge-pill font-weight-bol"
               v-if="data.item.roles.length > 0"
             >
               {{ data.item.roles[0].name }}
             </div>
-          </template>
+          </template> -->
 
           <template #cell(actions)="data">
-            <div class="text-nowrap py-1 text-center">
+            <div class="text-nowrap text-center py-3">
               <!-- Dropdown -->
-              <feather-icon
-                icon="TrashIcon"
-                :id="`invoice-row-${data.item.id}-Edit3-icon`"
-                size="16"
-                class="cursor-pointer text-danger"
-                @click="destroy(data.item.id)"
-              />
+              <b-dropdown
+                variant="link"
+                toggle-class="p-0"
+                no-caret
+                :right="$store.state.appConfig.isRTL"
+              >
+                <template #button-content>
+                  <feather-icon
+                    icon="MoreVerticalIcon"
+                    size="16"
+                    class="align-middle text-body"
+                  />
+                </template>
+                <b-dropdown-item v-b-modal.v-b-modal.modal-add>
+                  <feather-icon icon="SendIcon" />
+                  <span class="align-middle ml-50">Affecter</span>
+                </b-dropdown-item>
+
+                <b-dropdown-item
+                    @click="preview(data.item.id)"
+                >
+                  <feather-icon icon="EyeIcon" />
+                  <span class="align-middle ml-50">Details</span>
+                </b-dropdown-item>
+
+                <b-dropdown-item>
+                  <feather-icon icon="TrashIcon" />
+                  <span class="align-middle ml-50">Supprimer</span>
+                </b-dropdown-item>
+              </b-dropdown>
             </div>
           </template>
         </b-table>
@@ -412,68 +381,56 @@ export default {
   },
   data() {
     return {
-      nom: "",
-      prenoms: "",
+      livreur: "",
+      prenom: "",
+      contact: "",
       email: "",
-      phone: "",
-      password: "",
-      code: "",
-      required,
-      email,
-      valideNom: false,
-      valideCode: false,
-      validePrenom: false,
-      validePhone: false,
-      valideEmail: false,
-      validePassword: false,
-      valideExiste: false,
-      code_exist: false,
-      valideEmailExiste: false,
-      email_exist: false,
-      // valideStatus: false,
+
       role: "",
       loading: false,
 
       // errorMsg: "",
-      emailList: "",
       users: [],
-      etablissements: [],
-      userItem: [],
+      commandes:[],
+      recoverCommande:"",
+      recover: "",
+
       perPage: 5,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
-        { key: "nom", label: "nom", sortable: true },
-        { key: "prenoms", label: "prenom", sortable: true },
-        { key: "email", label: "email", sortable: true },
-        { key: "phone", label: "contact", sortable: true },
-        { key: "role", label: "role", sortable: true },
-        { key: "created_at", label: "crée le", sortable: true },
+        { key: "total_ttc", label: "montant", sortable: true },
+        { key: "quantite", label: "quantite", sortable: true },
+        { key: "client", label: "client", sortable: true },
+        { key: "status", label: "statut", sortable: true },
+                { key: "etat", label: "etat", sortable: true },
+
+        // { key: "phone", label: "contact", sortable: true },
+        // { key: "role", label: "role", sortable: true },
+        { key: "created_at", label: "date", sortable: true },
         { key: "actions" },
       ],
-      filtreusers: "",
+      filtrecommandes: "",
       perPageOptions: [30, 50, 100],
     };
   },
-  computed: {
-    passwordToggleIcon() {
-      return this.passwordFieldType === "password" ? "EyeIcon" : "EyeOffIcon";
-    },
-  },
+ 
 
   async mounted() {
-    document.title = "Utilisateur";
+    document.title = "Commande";
 
     try {
-      await axios.get(URL.LIST_USER).then((response) => {
+
+         await axios.get(URL.LIST_COMMANDE).then((response) => {
+        this.commandes = response.data.commande;
+        this.pTotal = this.commandes.length;
+        console.log('commande',this.commandes);
+      });
+      await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
         this.users = response.data.liste;
         this.pTotal = this.users.length;
-      });
-
-      await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
-        this.etablissements = response.data.etablissements;
-        console.log("liste", this.etablissements);
+        console.log('livreur', this.users);
       });
     } catch (error) {
       console.log(error);
@@ -481,24 +438,13 @@ export default {
   },
 
   methods: {
-    topEnd() {
+     topEnd() {
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: "Enregistrement réussi",
+          title: "Commande affectée avec avec success",
           icon: "ThumbsUpIcon",
           variant: "success",
-        },
-      });
-    },
-
-    topEndE() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: "Erreur",
-          icon: "ThumbsDownIcon",
-          variant: "danger",
         },
       });
     },
@@ -512,104 +458,44 @@ export default {
     //envoi des item en localStorage
     getName(item) {
       console.log("item", item);
-      localStorage.setItem("userItem", item);
-
-      this.userItem = localStorage.getItem("userItem");
-      console.log("userItem", this.userItem);
+      localStorage.setItem("Item", item);
     },
+
+    //envoi des details commande en localstorage
+    preview(id){
+          const previewCmd = this.commandes.filter((item)=> {
+              return item.id === id
+          })
+          //insertion dans le localstorage
+            localStorage.setItem("commande",JSON.stringify(previewCmd[0]))
+
+             //recuperation du local storage
+            this.recoverCommande = JSON.parse(localStorage.getItem('commande'))
+            console.log('recover', this.recoverCommande );
+
+            this.$router.push({name:'detail'})
+
+        
+    },
+
     //validation
-    //validation
-    validateEmail() {
-      // valid email regex pattern
-      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-      if (!this.email.match(emailPattern)) {
-        this.valideEmail = true;
-      } else {
-        this.valideEmail = false;
-      }
 
-      this.emailList = this.users.filter((item) => {
-        return item.email === this.email;
-      });
+    validateLivreur() {
+      const selectedLivreur = this.livreur;
+      localStorage.setItem("livreur", JSON.stringify(selectedLivreur));
+      this.recover = JSON.parse(localStorage.getItem("livreur"));
+
+      //affectation
+      this.prenom = this.recover.prenoms;
+      this.contact = this.recover.phone;
+      this.email = this.recover.email;
+      console.log(this.recover.id);
     },
 
-    validatePassword() {
-      if (!this.password) {
-        this.validePassword = true;
-      } else {
-        this.validePassword = false;
-      }
-    },
-    validateNom() {
-      if (!this.nom) {
-        this.valideNom = true;
-      } else {
-        this.valideNom = false;
-      }
-    },
-
-    validateCode() {
-      if (!this.code) {
-        this.valideCode = true;
-        this.code_exist = "";
-      } else {
-        this.valideCode = false;
-      }
-      for (let index = 0; index < this.etablissements.length; index++) {
-        if (this.code !== this.etablissements[index].code) {
-          this.valideExiste = true;
-          this.code_exist =
-            "Ce code n'existe pas, veuillez renseigner un autre";
-        } else {
-          this.valideExiste = false;
-          this.code_exist = "";
-        }
-      }
-
-      if (!this.code) {
-        this.valideExiste = false;
-        this.code_exist = "";
-      }
-    },
-    validatePrenom() {
-      if (!this.prenoms) {
-        this.validePrenom = true;
-      } else {
-        this.validePrenom = false;
-      }
-    },
-
-    validatePhone() {
-      if (!this.phone) {
-        this.validePhone = true;
-      } else {
-        this.validePhone = false;
-      }
-    },
-
-    existEmail() {
-      this.emailList = this.users.filter((item) => {
-        return item.email === this.email;
-      });
-
-      console.log(this.emailList.length);
-      if (this.emailList.length > 0) {
-        this.valideEmailExiste = true;
-      } else {
-        this.valideEmailExiste = false;
-      }
-    },
-
-    async save() {
+        async save() {
       try {
-        this.validateEmail();
-        this.validateNom();
-        this.validatePrenom();
-        this.validatePhone();
+        this.validateLivreur();
 
-        if (this.userItem === "client") {
-          this.validateCode();
-        }
         const config = {
           headers: {
             Accept: "application/json",
@@ -617,36 +503,23 @@ export default {
         };
 
         if (
-          this.nom ||
-          this.prenoms ||
-          this.phone ||
-          this.email ||
-          this.password
+          this.livreur 
         ) {
           const data = {
-            nom: this.nom,
-            prenoms: this.prenoms,
-            email: this.email,
-            phone: this.phone,
-            password: this.password,
-            role: this.userItem,
-            code: this.code,
+              id:this.recoverCommande.id,
+            livreur_id: this.livreur.id,
+            etat: 14,
           };
           this.loading = true;
-          // console.log(data);
+          console.log(data);
           await axios
-            .post(URL.USER_STORE + `/${data.role}`, data, config)
+            .post(URL.AFFECTE, data, config)
             .then((response) => {
               if (response.data) {
                 this.loading = false;
                 this.$refs.modalUser.hide();
 
-                (this.nom = ""),
-                  (this.prenoms = ""),
-                  (this.phone = ""),
-                  (this.email = ""),
-                  (this.password = ""),
-                  (this.code = ""),
+                    this.livreur = ""
                   this.topEnd();
                 this.users.unshift(response.data.user);
                 console.log(this.users);
@@ -655,13 +528,12 @@ export default {
         }
       } catch (error) {
         this.loading = false;
-        // this.errorMsg = error.response.data.message;
-        // console.log(this.errorMsg.message);
       }
     },
 
+
     //destroy
-    async deleteusers(indentifiant) {
+    async deletecmd(indentifiant) {
       const id = {
         id: indentifiant,
       };
@@ -695,7 +567,7 @@ export default {
     destroy(id) {
       this.$swal({
         title: "Êtes vous sûr?",
-        text: "Ce utilisateur sera supprimé définitivement !",
+        text: "Cette commande sera supprimé définitivement !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Oui",
@@ -706,7 +578,7 @@ export default {
         buttonsStyling: false,
       }).then((result) => {
         if (result.value) {
-          this.deleteusers(id);
+          this.deletecmd(id);
         }
       });
     },
