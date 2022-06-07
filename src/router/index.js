@@ -27,8 +27,41 @@ const router = new VueRouter({
     },
 
     {
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/pages/user/index.vue'),
+      meta: {
+        pageTitle: 'Utilisteurs',
+        breadcrumb: [
+          {
+            text: 'Liste des utilisteurs',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/user/create',
+      name: 'user/create',
+      component: () => import('@/views/pages/user/create.vue'),
+      meta: {
+        pageTitle: 'Utlisateurs',
+        breadcrumb: [
+          {
+            text: 'Créer un utilisteurs',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+
+    {
       path: '/kit/create',
-      name: 'kit/create',
+      name: 'create',
       component: () => import('@/views/pages/kit/create.vue'),
       meta: {
         pageTitle: 'Kit',
@@ -40,6 +73,47 @@ const router = new VueRouter({
           {
             text: 'Liste des kits',
             to: { name: 'kit' },
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/kit/update',
+      name: 'edit',
+      component: () => import('@/views/pages/kit/update.vue'),
+      meta: {
+        pageTitle: 'Kit',
+        breadcrumb: [
+          {
+            text: 'Modifier un kit',
+            active: true,
+          },
+          {
+            text: 'Ajouter un kits',
+            to: { name: 'create' },
+          },
+          {
+            text: 'Liste des kits',
+            to: { name: 'kit' },
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+
+    {
+      path: '/kit',
+      name: 'kit',
+      component: () => import('@/views/pages/kit/index.vue'),
+      meta: {
+        pageTitle: 'Kit',
+        breadcrumb: [
+          {
+            text: 'Liste des kits',
+            active: true,
           },
         ],
         requiresAuth: true,
@@ -61,6 +135,41 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
+
+    {
+      path: '/commande',
+      name: 'commande',
+      component: () => import('@/views/pages/commande/index.vue'),
+      meta: {
+        pageTitle: 'Commande',
+        breadcrumb: [
+          {
+            text: 'Liste des commandes',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/detail',
+      name: 'detail',
+      component: () => import('@/views/pages/commande/preview.vue'),
+      meta: {
+        pageTitle: 'Detail de la commande',
+        breadcrumb: [
+          {
+            text: 'Liste des commandes',
+            to: {name:'commande'},
+          
+
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
 
     {
       path: '/parametre/:slug',

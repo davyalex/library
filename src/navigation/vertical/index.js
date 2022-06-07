@@ -6,6 +6,12 @@ export default [
     route: 'home',
     icon: 'HomeIcon',
   },
+
+  {
+    title: 'Utilisateur',
+    route: 'user',
+    icon: 'UsersIcon',
+  },
  
 
   {
@@ -22,15 +28,22 @@ export default [
 
   {
     title: 'Kit',
-    route: 'kit/create',
+    route: 'kit',
     icon: 'BookIcon',
   },
 
   {
     title: 'Point Retrait',
     route: 'point-retrait',
-    icon: 'BookIcon',
+    icon: 'NavigationIcon',
   },
+
+  {
+    title: 'Commande',
+    route: 'commande',
+    icon: 'ShoppingCartIcon',
+  },
+
 
   {
     title: 'Parametre',

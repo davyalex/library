@@ -25,6 +25,10 @@ const URL = {
   REGISTER: `${baseUrl}/register`,
 
   USER_CONNECTE: `${baseUrl}/user-connect`,
+  LIST_USER: `${baseUrl}/user`,
+  USER_STORE:`${baseUrl}/user/store`,
+  USER_DESTROY:`${baseUrl}/user/destroy`,
+
 
 //type parametre
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
@@ -52,6 +56,9 @@ const URL = {
 
   //kit
   KIT_STORE: `${baseUrl}/kit/store`,
+  LIST_KIT: `${baseUrl}/kit`,
+  KIT_UPDATE: `${baseUrl}/kit/update`,
+  KIT_DESTROY: `${baseUrl}/kit/destroy`,
 
   //Point de retrait
 
@@ -59,6 +66,11 @@ const URL = {
   CREATE_POINTRETRAIT: `${baseUrl}/point-retrait/store`,
   UPDATE_POINTRETRAIT: `${baseUrl}/point-retrait/update`,
   DESTROY_POINTRETRAIT: `${baseUrl}/point-retrait/destroy`,
+
+
+  //commande
+  LIST_COMMANDE: `${baseUrl}/commande`,
+  AFFECTE: `${baseUrl}/commande_etat`,
 
   
 
