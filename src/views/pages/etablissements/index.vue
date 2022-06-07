@@ -4,7 +4,7 @@
     <div class="tableau">
       <b-card no-body class="py-1">
         <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvelle taxe -->
-        <b-row class="px-2">
+        <b-row class="px-2 py-2">
           <!-- Per Page -->
           <b-col
             cols="12"
@@ -23,8 +23,8 @@
             <b-button variant="primary">
               <feather-icon icon="PlusIcon" class="mx-auto" />
               <!-- Ajouter un etablissement -->
-              <b-link :to="{ name: 'create' }">
-                <span class="text-white">Ajouter un etablissement </span>
+              <b-link :to="{ name: 'etablissement/create' }">
+                <span class="text-white">Ajouter un etablissement</span>
               </b-link>
             </b-button>
 
@@ -37,13 +37,13 @@
           <b-col cols="12" md="6" class="mt-1">
             <div class="d-flex align-items-center justify-content-end">
               <b-input-group class="input-group-merge">
-                <b-input-group-prepend is-text>
+                <!-- <b-input-group-prepend is-text >
                   <feather-icon icon="SearchIcon" />
-                </b-input-group-prepend>
+                </b-input-group-prepend> -->
                 <b-form-input
                   v-model="filtreetablissement"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : non etablissement, date..."
+                  placeholder="Rechercher par : title, categorie..."
                 />
               </b-input-group>
             </div>
@@ -64,6 +64,12 @@
           empty-text="Aucun etablissement enregistré"
           class="bg-white"
         >
+          <template #cell(categorie)="data">
+            <span>
+              {{ data.item.categorie.title }}
+            </span>
+          </template>
+
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- <b-link "> -->
@@ -87,14 +93,13 @@
               </b-link> -->
 
               <!-- <b-link :to="{ name: 'create' }"> -->
-                <feather-icon
-                  icon="TrashIcon"
-                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
-                  size="16"
-                  class="cursor-pointer mr-1"
-                  @click="confirmText(data.item.id)"
-                />
-             
+              <feather-icon
+                icon="TrashIcon"
+                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                size="16"
+                class="cursor-pointer mr-1"
+                @click="confirmText(data.item.id)"
+              />
             </div>
           </template>
         </b-table>
@@ -214,23 +219,7 @@ export default {
   },
   data() {
     return {
-      title: "",
-      quartier: "",
-      contact: "",
-      email: "",
-
-      valideEtablissement: false,
-      valideCommune: false,
-      valideQuartier: false,
-      valideEmail: false,
-      valideContact: false,
-      valideEnseignement: false,
-
-      valideTitle: false,
-
       etablissement: [],
-      niveau: [],
-
       perPage: 30,
       currentPage: 1,
       totalEtablissement: 0,
@@ -238,9 +227,8 @@ export default {
         { key: "code", label: "Code", sortable: true },
         { key: "title", label: "Nom", sortable: true },
         { key: "email", label: "Email", sortable: true },
-        { key: "contact", label: "contact", sortable: true },
-        // { key: "description", label: "motif", sortable: true },
-        // { key: "created_at", label: "crée le", sortable: true },
+        { key: "contact", label: "Contact", sortable: true },
+        // { key: "prix", label: "prix", sortable: true },
         { key: "actions" },
       ],
       filtreetablissement: "",
@@ -249,7 +237,7 @@ export default {
     };
   },
 
-  async mounted() {
+   async mounted() {
     try {
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
         this.returnData = response.data;
@@ -350,6 +338,9 @@ export default {
       }
     },
   },
+
+
+
 };
 </script>
 

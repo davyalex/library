@@ -86,7 +86,16 @@ export default [
       title: 'Categorie',
       route: {path: `/parametre/categorie`},
       icon: 'SettingsIcon',
+     },
+
+     {
+      title: 'Mode de livraison',
+      route: {path: `/parametre/mode-de-livraison`},
+      icon: 'SettingsIcon',
      }
+
+
+    //  mode-de-livraison
      
     ]
   },

@@ -79,11 +79,12 @@ const router = new VueRouter({
       },
     },
     
+    
 
     {
       path: '/etablissement',
       name: 'etablissement',
-      component: () => import('@/views/pages/etablissements/listeEtablissement.vue'),
+      component: () => import('@/views/pages/etablissements/index.vue'),
       meta: {
         pageTitle: 'Liste',
         breadcrumb: [
@@ -95,12 +96,13 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
+
     
 
     {
       path: '/etablissement/create',
-      name: 'create',
-      component: () => import('@/views/pages/etablissements/CreateEtablissement.vue'),
+      name: 'etablissement/create',
+      component: () => import('@/views/pages/etablissements/create.vue'),
       meta: {
         pageTitle: 'Liste',
         breadcrumb: [
@@ -116,7 +118,7 @@ const router = new VueRouter({
     {
       path: '/etablissement/edit',
       name: 'edit',
-      component: () => import('@/views/pages/etablissements/editEtablissement.vue'),
+      component: () => import('@/views/pages/etablissements/edit.vue'),
       meta: {
         pageTitle: 'Modifier',
         breadcrumb: [

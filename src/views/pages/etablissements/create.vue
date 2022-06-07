@@ -696,6 +696,7 @@ export default {
               (this.selectedDiocese = ""),
               (this.selectedSedec = ""),
               this.topEnd();
+              this.$router.push("/etablissement");
 
               // console.log(this.selectedCommune);
             }

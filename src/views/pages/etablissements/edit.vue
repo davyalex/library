@@ -380,8 +380,15 @@ export default {
       this.quartier = this.getEtablissements.quartier;
       this.email = this.getEtablissements.email;
       this.contact = this.getEtablissements.contact;
+      this.commune_id = this.getEtablissements.commune_id;
+      this.diocese_id = this.getEtablissements.diocese_id;
+      this.enseignement_id = this.getEtablissements.enseignement_id;
+      this.sedec_id = this.getEtablissements.sedec_id;
+      this.image = this.getEtablissements.image;
+      this.niveaux = this.getEtablissements.niveaux;
 
-      console.log(this.getEtablissements);
+
+      console.log(this.niveaux);
 
       await axios
         .get(URL.PARAMETRE + `/?type_parametre=commune`)
@@ -637,11 +644,11 @@ export default {
     async update() {
       try {
         this.obligatoryTitle();
-        // this.obligatoryCommune();
+        this.obligatoryCommune();
         this.obligatoryQuartier();
-        // this.obligatoryEnseignement();
-        // this.obligatoryDiocese();
-        // this.obligatorySedec();
+        this.obligatoryEnseignement();
+        this.obligatoryDiocese();
+        this.obligatorySedec();
         this.obligatoryContact();
         this.obligatoryEmail();
 
@@ -657,11 +664,14 @@ export default {
         data.append("quartier", this.quartier);
         data.append("contact", this.contact);
         data.append("email", this.email);
-        data.append("commune_id", this.selectedCommune.id);
-        // data.append("enseignement_id", this.selectedEnseignement.id);
-        // data.append("diocese_id", this.selectedSedec.id);
-        // data.append("sedec_id", this.selectedSedec.id);
-        // data.append("image", this.image);
+        data.append("commune_id", this.commune_id);
+        data.append("enseignement_id", this.enseignement_id);
+        data.append("diocese_id", this.diocese_id);
+        data.append("sedec_id", this.sedec_id);
+        data.append("image", this.image);
+
+
+        // console.log( this.selectedCommune.id);
 
         for (let index = 0; index < this.selectedCycle.length; index++) {
           const element = this.selectedCycle[index];
@@ -690,7 +700,7 @@ export default {
         // };
 
         await axios
-          .post(URL.UPDATE_ETABLISSEMENT, data, config)
+          .post(URL.UPDATE_ETABLISSEMENT +`/${this.id}`, data, config)
           .then((response) => {
             this.createEtablissement = response.data;
 
@@ -699,11 +709,13 @@ export default {
                 (this.quartier = ""),
                 (this.contact = ""),
                 (this.email = ""),
-                // (this.selectedCommune = ""),
-                // (this.SelectedEnseignement = ""),
-                // (this.selectedDiocese = ""),
-                // (this.selectedSedec = ""),
+                (this.selectedCommune = ""),
+                (this.SelectedEnseignement = ""),
+                (this.selectedDiocese = ""),
+                (this.selectedSedec = ""),
                 this.topEnd();
+
+                this.$router.push("/etablissement");
 
               // console.log(this.selectedCommune);
             }
@@ -715,15 +727,6 @@ export default {
   },
 };
 
-// let togg1 = document.getElementById("togg1");
-// let d1 = document.getElementById("d1");
-// togg1.addEventListener("click", () => {
-//   if(getComputedStyle(d1).display != "none"){
-//     d1.style.display = "none";
-//   } else {
-//     d1.style.display = "block";
-//   }
-// })
 </script>
 
 <style lang="scss">
