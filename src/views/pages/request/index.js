@@ -9,12 +9,12 @@
 // ****
 
 // TOUTES LES URL DISPONIBLE DANS L'APP
-const baseUrl = 'http://127.0.0.1:8000/api'
-//  const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
+// const baseUrl = 'http://127.0.0.1:8000/api'
+ const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
 
-export const APP_HOST = 'https://127.0.0.1:8000'
+// export const APP_HOST = 'https://127.0.0.1:8000'
 
-// export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website'
+export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website'
 // const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
 // export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website/api'
 export const APP_PROD = false
