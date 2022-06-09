@@ -320,6 +320,11 @@ export default {
       return this.sideImg;
     },
   },
+
+  mounted(){
+    document.title ="Inscription"
+},
+
   methods: {
     //validation
     validateEmail() {
