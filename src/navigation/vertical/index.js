@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import URL from "@/views/pages/request";
 export default [
   {
     title: 'Dashboard',
@@ -113,6 +113,6 @@ export default [
     ]
   },
 
-
 ]
 
+ 

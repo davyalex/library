@@ -27,6 +27,16 @@ const router = new VueRouter({
     },
 
     {
+      path: '/404',
+      name: '404',
+      component: () => import('@/views/pages/Error.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+
+
+    {
       path: '/user',
       name: 'user',
       component: () => import('@/views/pages/user/index.vue'),
@@ -81,7 +91,7 @@ const router = new VueRouter({
 
     {
       path: '/kit/update',
-      name: 'edit',
+      name: 'kit/edit',
       component: () => import('@/views/pages/kit/update.vue'),
       meta: {
         pageTitle: 'Kit',

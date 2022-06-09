@@ -39,7 +39,11 @@
             </validation-provider>
           </b-form-group>
           <!-- Nom -->
-          <b-form-group label="Nom" label-for="nom">
+          <b-form-group
+            label="Nom"
+            label-for="nom"
+            v-if="userItem !== 'etablissement'"
+          >
             <validation-provider
               #default="{ errors }"
               name="nom"
@@ -58,7 +62,11 @@
           </b-form-group>
 
           <!-- Prenoms -->
-          <b-form-group label="Prenoms" label-for="prenoms">
+          <b-form-group
+            label="Prenoms"
+            label-for="prenoms"
+            v-if="userItem !== 'etablissement'"
+          >
             <validation-provider
               #default="{ errors }"
               name="prenoms"
@@ -88,7 +96,7 @@
             >
               <b-form-input
                 id="contact"
-                type="tel"
+                type="number"
                 v-model="phone"
                 @input="validatePhone"
                 :state="errors.length > 0 ? false : null"
@@ -189,10 +197,177 @@
       </validation-observer>
     </b-modal>
 
-    <!-- Tableau pour afficher les taxes -->
+    <!-- Modal pour modifier un utilisateur -->
+    <b-modal
+      id="modal-update"
+      ref="modalUser"
+      cancel-variant="outline-secondary"
+      ok-title="Créer"
+      cancel-title="Annuler"
+      centered
+      hide-footer
+      :title="'Modifier un' + ' ' + roleUser"
+    >
+      <validation-observer ref="registerForm">
+        <b-form class="auth-register-form mt-2" @submit.prevent>
+          <!-- code de l'etablissement -->
+          <b-form-group
+            v-if="roleUser === 'client'"
+            label="code"
+            label-for="code"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="editCode"
+                @input="validateCode"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+              />
+            </validation-provider>
+          </b-form-group>
+          <!-- Nom -->
+          <b-form-group
+            label="Nom"
+            label-for="nom"
+            v-if="roleUser !== 'etablissement'"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="nom"
+              rules="required"
+            >
+              <b-form-input
+                v-model="editNom"
+                @input="validateNom"
+                :state="errors.length > 0 ? false : null"
+                placeholder="john"
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <!-- Prenoms -->
+          <b-form-group
+            label="Prenoms"
+            label-for="prenoms"
+            v-if="roleUser !== 'etablissement'"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="prenoms"
+              rules="required"
+            >
+              <b-form-input
+                id="prenoms"
+                v-model="editPrenoms"
+                @input="validatePrenom"
+                :state="errors.length > 0 ? false : null"
+                name="prenoms"
+                placeholder="john"
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <!-- contact -->
+
+          <b-form-group label="phone" label-for="phone">
+            <validation-provider
+              #default="{ errors }"
+              name="phone"
+              rules="required"
+            >
+              <b-form-input
+                id="contact"
+                type="number"
+                v-model="editPhone"
+                @input="validatePhone"
+                :state="errors.length > 0 ? false : null"
+                name="contact"
+                placeholder="000 000 000"
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <!-- email -->
+          <b-form-group label="Email" label-for="register-email">
+            <validation-provider
+              #default="{ errors }"
+              name="Email"
+              rules="required"
+            >
+              <b-form-input
+                id="register-email"
+                type="email"
+                v-model="editEmail"
+                @input="validateEmail"
+                name="register-email"
+                :state="errors.length > 0 ? false : null"
+                placeholder="xxx@example.com"
+              />
+              <small v-if="valideEmail" class="text-danger">
+                Veuillez entrer un email valide
+              </small>
+            </validation-provider>
+          </b-form-group>
+
+          <!-- password -->
+          <!-- <b-form-group label-for="register-password" label="Password">
+            <validation-provider
+              #default="{ errors }"
+              name="Password"
+              rules="required"
+            >
+              <b-input-group
+                class="input-group-merge"
+                :class="errors.length > 0 ? 'is-invalid' : null"
+              >
+                <b-form-input
+                  id="register-password"
+                  v-model="password"
+                  class="form-control-merge"
+                  @input="validatePassword"
+                  :type="passwordFieldType"
+                  :state="errors.length > 0 ? false : null"
+                  name="register-password"
+                  placeholder="············"
+                />
+                <b-input-group-append is-text>
+                  <feather-icon
+                    :icon="passwordToggleIcon"
+                    class="cursor-pointer"
+                    @click="togglePasswordVisibility"
+                  />
+                </b-input-group-append>
+              </b-input-group>
+              <small v-if="validePassword" class="text-danger">
+                Vous devez renseigner le mot de passe
+              </small>
+            </validation-provider>
+          </b-form-group> -->
+          <b-button
+            variant="primary"
+            block
+            type="submit"
+            @click="updateUser"
+            :disabled="loading === true ? true : false"
+          >
+            <div
+              v-if="loading === true"
+              class="spinner-border text-light"
+            ></div>
+            <span v-else> Modifier</span>
+          </b-button>
+        </b-form>
+      </validation-observer>
+    </b-modal>
+
+    <!-- Tableau pour afficher les users -->
     <div class="tableau">
       <b-card no-body class="py-1">
-        <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvelle taxe -->
+        <!-- Le haut du tableau contenant les barre de recherche et bouton d'ajout de nouvel user -->
         <b-row class="py-2 px-2">
           <!-- Per Page -->
           <b-col
@@ -224,6 +399,14 @@
                 <span class="align-middle ml-50"
                   >Ajouter un administrateur</span
                 >
+              </b-dropdown-item>
+
+              <b-dropdown-item
+                v-b-modal.v-b-modal.modal-add
+                @click="getName('etablissement')"
+              >
+                <feather-icon icon="UserIcon" />
+                <span class="align-middle ml-50">Ajouter un etablissement</span>
               </b-dropdown-item>
 
               <b-dropdown-item
@@ -290,9 +473,18 @@
           <template #cell(actions)="data">
             <div class="text-nowrap py-1 text-center">
               <!-- Dropdown -->
+
+              <feather-icon
+                v-b-modal.v-b-modal.modal-update
+                icon="Edit3Icon"
+                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                size="16"
+                class="cursor-pointer text-info mr-1"
+                @click="update(data.item)"
+              />
               <feather-icon
                 icon="TrashIcon"
-                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                :id="`invoice-row-${data.item.id}-Trash-icon`"
                 size="16"
                 class="cursor-pointer text-danger"
                 @click="destroy(data.item.id)"
@@ -431,14 +623,23 @@ export default {
       valideEmailExiste: false,
       email_exist: false,
       // valideStatus: false,
+
+      //edit
+      editCode: "",
+      editNom: "",
+      editPrenoms: "",
+      editEmail: "",
+      editPhone: "",
       role: "",
       loading: false,
+      roleUser: "",
 
       // errorMsg: "",
       emailList: "",
       users: [],
       etablissements: [],
       userItem: [],
+      recoverUserInfos: "",
       perPage: 5,
       currentPage: 1,
       pTotal: 0,
@@ -496,11 +697,32 @@ export default {
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: "Erreur",
-          icon: "ThumbsDownIcon",
-          variant: "danger",
+          title: "modification reussi avec success",
+          icon: "ThumbsUpIcon",
+          variant: "success",
         },
       });
+    },
+
+    //update
+    update(data) {
+      const userInfo = data;
+      localStorage.setItem("userInfos", JSON.stringify(userInfo));
+      this.recoverUserInfos = JSON.parse(localStorage.getItem("userInfos"));
+
+      this.editNom = this.recoverUserInfos.nom;
+      this.editPrenoms = this.recoverUserInfos.prenoms;
+      this.editEmail = this.recoverUserInfos.email;
+      this.editPhone = this.recoverUserInfos.phone;
+      const codeEta = this.etablissements.filter((item) => {
+        return item.id === this.recoverUserInfos.etablissement_id;
+      });
+      console.log("eee", codeEta[0].code);
+      this.editCode = codeEta[0].code;
+
+      this.roleUser = this.recoverUserInfos.roles[0].name;
+
+      console.log(this.roleUser);
     },
 
     //formatage date
@@ -657,6 +879,64 @@ export default {
         this.loading = false;
         // this.errorMsg = error.response.data.message;
         // console.log(this.errorMsg.message);
+      }
+    },
+
+    async updateUser(bvModalEvt) {
+      try {
+        //  this.validateEmail();
+        // this.validateNom();
+        // this.validatePrenom();
+        // this.validatePhone();
+
+        // if (this.roleUser === "client") {
+        //   this.validateCode();
+        // }
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+
+  
+          const data = {
+            id: this.recoverUserInfos.id,
+            nom: this.editNom,
+            prenoms: this.editPrenoms,
+            email: this.editEmail,
+            phone: this.editPhone,
+            // code: this.code,
+          };
+          this.loading = true;
+          console.log(data);
+          await axios
+            .post(URL.USER_UPDATE + `/${data.id}`, data, config)
+            .then((response) => {
+              if (response.data) {
+                this.loading = false;
+                this.$refs.modalUser.hide();
+                this.topEnd();
+                (this.editNom = ""),
+                  (this.editPrenoms = ""),
+                  (this.editEmail = ""),
+                  (this.editPhone = ""),
+                  
+                this.users.unshift(data);
+                
+                console.log(this.users);
+                 axios.get(URL.LIST_USER).then((response) => {
+              this.users = response.data.liste;
+              this.pTotal = this.users.length;
+            });
+              }
+            });
+       
+      } catch (error) {
+        this.loading = false;
+        // this.errorMsg = error.response.data.message;
+        // console.log(this.errorMsg.message);
+              bvModalEvt.preventDefault();
+
       }
     },
 

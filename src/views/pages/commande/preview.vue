@@ -1,8 +1,6 @@
 <template>
-
   <div class="row">
-
-       <!-- Modal pour affecter une commande au livreur -->
+    <!-- Modal pour affecter une commande au livreur -->
     <b-modal
       id="modal-send"
       ref="modalUser"
@@ -11,7 +9,7 @@
       cancel-title="Annuler"
       centered
       hide-footer
-    :title="'Affecter la commande N°' + recoverCommande.code"
+      :title="'Affecter la commande N°' + recoverCommande.code"
     >
       <validation-observer ref="registerForm">
         <b-form class="auth-register-form mt-2" @submit.prevent>
@@ -97,29 +95,31 @@
       </validation-observer>
     </b-modal>
     <div class="col-md-12">
-    
-        <div class="card-body float-right pb-1 pt-0">
-            <div class="demo-inline-spacing">
-    <b-button
-      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-      variant="primary"
-      v-b-modal.v-b-modal.modal-send
-    >
-     <feather-icon icon="SendIcon" />
-     Affecter
-    </b-button>
+      <div class="card-body float-right pb-1 pt-0">
+        <div class="demo-inline-spacing">
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="primary"
+            v-b-modal.v-b-modal.modal-send
+            :disabled="recoverCommande.etat.title === 'Affectée' ? true : false"
+          >
+            <feather-icon icon="SendIcon" />
+            <span v-if="recoverCommande.etat.title === 'Affectée'">
+              Déjà affectée</span
+            >
+            <span v-else> Affecter</span>
+          </b-button>
 
-    <b-button
-      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-      variant="danger"
-      @click="destroy(recoverCommande.id)"
-    >
-     <feather-icon icon="TrashIcon" />
-     Supprimer
-    </b-button>
-  </div>
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="danger"
+            @click="destroy(recoverCommande.id)"
+          >
+            <feather-icon icon="TrashIcon" />
+            Supprimer
+          </b-button>
         </div>
-   
+      </div>
     </div>
 
     <div class="col-md-6">
@@ -136,35 +136,35 @@
             <div class="col-md-6">
               <p class="card-text font-weight-bold">
                 N° commande <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.code }}
                 </span>
               </p>
               <p class="card-text font-weight-bold">
                 Total HT <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.total_ht }} FCFA</span
                 >
               </p>
-              <p class="card-text font-weight-bold">
+              <p class="card-text font-weight-bold" v-if="recoverCommande.total_remise">
                 Remise <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.total_remise }} FCFA</span
                 >
               </p>
-              <p class="card-text font-weight-bold">
+              <p class="card-text font-weight-bold" v-if="recoverCommande.total_livraison">
                 Montant livraison <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.total_livraison }} FCFA</span
                 >
               </p>
               <p class="card-text font-weight-bold">
                 Montant Total<br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.total_ttc }} FCFA</span
                 >
@@ -174,44 +174,47 @@
             <div class="col-md-6">
               <p class="card-text font-weight-bold">
                 Date de livraison prevue <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.livraison_prevue }}
                 </span>
               </p>
-              <p class="card-text font-weight-bold">
+              <p class="card-text font-weight-bold" v-if=" recoverCommande.livraison_exacte">
                 Date de livraison exacte <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.livraison_exacte }}</span
                 >
               </p>
               <p class="card-text font-weight-bold">
                 Total HT <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.total_ht }} FCFA</span
                 >
               </p>
-              <p class="card-text font-weight-bold">
+              <p class="card-text font-weight-bold" v-if="recoverCommande.etat">
                 Etat <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.etat.title }}</span
                 >
               </p>
 
-               <p class="card-text font-weight-bold">
+              <p class="card-text font-weight-bold" v-if="recoverCommande.status">
                 Statut <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.status }}</span
                 >
               </p>
 
-                <p class="card-text font-weight-bold">
+              <p
+                class="card-text font-weight-bold"
+                v-if="recoverCommande.livreur"
+              >
                 Livreur <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                  class="text-success font-weight-bol"
                 >
                   {{ recoverCommande.livreur.nom }}</span
                 >
@@ -233,7 +236,7 @@
           <hr />
           <p class="card-text font-weight-bold">
             Nom <br /><span
-              class="badge badge-light-info badge-pill font-weight-bol"
+              class="text-success  font-weight-bol"
             >
               {{ recoverCommande.client.nom }}</span
             >
@@ -241,21 +244,23 @@
 
           <p class="card-text font-weight-bold">
             Prenoms <br /><span
-              class="badge badge-light-info badge-pill font-weight-bol"
+              class="text-success font-weight-bol"
             >
               {{ recoverCommande.client.prenoms }}</span
             >
           </p>
 
           <p class="card-text font-weight-bold">
-            Contact <br /><span class="badge badge-light-info font-weight-bol">
+            Contact <br /><span
+              class="text-success font-weight-bol"
+            >
               {{ recoverCommande.client.phone }}</span
             >
           </p>
 
           <p class="card-text font-weight-bold">
             Email <br /><span
-              class="badge badge-light-info badge-pill font-weight-bol"
+              class="text-success font-weight-bol"
             >
               {{ recoverCommande.client.email }}</span
             >
@@ -264,121 +269,85 @@
       </div>
     </div>
 
-    <div class="col-md-6">
+    <div
+      class="col-md-6"
+      v-for="(item, index) in recoverCommande.kits"
+      :key="index.id"
+    >
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">
             <feather-icon icon="BookOpenIcon" />
 
-            Details kit
+            Details kit {{ index + 1 }}
           </h4>
           <hr />
 
           <div class="row">
-            <div class="col-md-6">
-              <p class="card-text font-weight-bold">
-                N° commande <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
-                >
-                  {{ recoverCommande.code }}
-                </span>
-              </p>
-              <p class="card-text font-weight-bold">
-                Total HT <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
-                >
-                  {{ recoverCommande.total_ht }} FCFA</span
-                >
-              </p>
-              <p class="card-text font-weight-bold">
-                Remise <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
-                >
-                  {{ recoverCommande.total_remise }} FCFA</span
-                >
-              </p>
-              <p class="card-text font-weight-bold">
-                Montant livraison <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
-                >
-                  {{ recoverCommande.total_livraison }} FCFA</span
-                >
-              </p>
-              <p class="card-text font-weight-bold">
-                Montant Total<br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
-                >
-                  {{ recoverCommande.total_ttc }} FCFA</span
-                >
-              </p>
-            </div>
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6">
+                  <h3>
+                    Code: <span class="text-success"> {{ item.code }}</span>
+                  </h3>
+                </div>
 
-            <div class="col-md-6">
-              <p class="card-text font-weight-bold">
-                Date de livraison prevue <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+                <div class="col-md-6">
+                   <h3>
+                    Montant: <span class="text-success"> {{ item.montant }} FCFA</span>
+                  </h3>
+                </div>
+              </div>
+
+              <div class="row py-2">
+                <div class="col-md-12">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Article</th>
+                        <th scope="col">Quantité</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(item, index) in item.article_commandes"
+                        :key="index.id"
+                      >
+                        <th scope="row">{{ index + 1 }}</th>
+                        <td>{{ item.title }}</td>
+                        <td>{{ item.quantite }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- <p class="card-text font-weight-bold">
+                Code <br /><span
+                  class="text-success font-weight-bol"
                 >
-                  {{ recoverCommande.livraison_prevue }}
+                  {{ item.code }}
                 </span>
               </p>
-              <p class="card-text font-weight-bold">
-                Date de livraison exacte <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+
+               <p class="card-text font-weight-bold">
+                Montant <br /><span
+                  class="text-success font-weight-bol"
                 >
-                  {{ recoverCommande.livraison_exacte }}</span
-                >
+                  {{ item.montant }} 
+                </span>
               </p>
-              <p class="card-text font-weight-bold">
-                Total HT <br /><span
-                  class="badge badge-light-info badge-pill font-weight-bol"
+
+               <p  class="card-text font-weight-bold">
+                Article du kit <br /><span v-for="(item,index) in item.article_commandes" :key="index.id"
+                  class="text-success font-weight-bol"
                 >
-                  {{ recoverCommande.total_ht }} FCFA</span
-                >
-              </p>
+            <br> {{ item.title }} 
+                  <br><span> {{ item.quantite }} </span>
+                </span>
+              </p> -->
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">
-            <feather-icon icon="BookIcon" />
-
-            Details etablissement
-          </h4>
-          <hr />
-          <p class="card-text font-weight-bold">
-            Nom <br /><span
-              class="badge badge-light-info badge-pill font-weight-bol"
-            >
-              {{ recoverCommande.client.nom }}</span
-            >
-          </p>
-
-          <p class="card-text font-weight-bold">
-            Prenoms <br /><span
-              class="badge badge-light-info badge-pill font-weight-bol"
-            >
-              {{ recoverCommande.client.prenoms }}</span
-            >
-          </p>
-
-          <p class="card-text font-weight-bold">
-            Contact <br /><span class="badge badge-light-info font-weight-bol">
-              {{ recoverCommande.client.phone }}</span
-            >
-          </p>
-
-          <p class="card-text font-weight-bold">
-            Email <br /><span
-              class="badge badge-light-info badge-pill font-weight-bol"
-            >
-              {{ recoverCommande.client.email }}</span
-            >
-          </p>
         </div>
       </div>
     </div>
@@ -399,13 +368,15 @@ import {
   BCard,
   BFormCheckbox,
   BInputGroup,
+  BTable,
   BInputGroupAppend,
   BImg,
   BPagination,
-  BTable,
   BFormTextarea,
   BDropdown,
   BDropdownItem,
+  BListGroup,
+  BListGroupItem,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -430,6 +401,7 @@ export default {
     moment,
     BFormGroup,
     VBModal,
+    BTable,
     BForm,
     BLink,
     BFormCheckbox,
@@ -443,11 +415,12 @@ export default {
     axios,
     BCard,
     BPagination,
-    BTable,
     BInputGroupAppend,
     BFormTextarea,
     BDropdown,
     BDropdownItem,
+    BListGroup,
+    BListGroupItem,
   },
   mixins: [togglePasswordVisibility],
   directives: {
@@ -455,16 +428,22 @@ export default {
   },
   data() {
     return {
-        prenom:"",
-        email:"",
-        contact:"",
-              livreur: "",
+      prenom: "",
+      email: "",
+      contact: "",
+      livreur: "",
 
-
-      recoverCommande:[],
-      users:[],
-      recover:"",
+      recoverCommande: [],
+      users: [],
+      recover: "",
       loading: false,
+      items: [
+        {
+          num: 40,
+          Article: "Dickerson",
+          Quantite: "Macdonald",
+        },
+      ],
     };
   },
 
@@ -476,17 +455,17 @@ export default {
     console.log("recover", this.recoverCommande.id);
 
     try {
-         await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
+      await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
         this.users = response.data.liste;
-        console.log('livreur', this.users);
+        console.log("livreur", this.users);
       });
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   },
 
   methods: {
-        topEnd() {
+    topEnd() {
       this.$toast({
         component: ToastificationContent,
         props: {
@@ -503,7 +482,7 @@ export default {
       }
     },
 
-      validateLivreur() {
+    validateLivreur() {
       const selectedLivreur = this.livreur;
       localStorage.setItem("livreur", JSON.stringify(selectedLivreur));
       this.recover = JSON.parse(localStorage.getItem("livreur"));
@@ -515,8 +494,7 @@ export default {
       console.log(this.recover.id);
     },
 
-
-        async save() {
+    async save() {
       try {
         this.validateLivreur();
 
@@ -526,29 +504,26 @@ export default {
           },
         };
 
-        if (
-          this.livreur 
-        ) {
+        if (this.livreur) {
           const data = {
-            id:this.recoverCommande.id,
+            id: this.recoverCommande.id,
             livreur_id: this.livreur.id,
             etat: 14,
           };
           this.loading = true;
           console.log(data);
-          await axios
-            .post(URL.AFFECTE, data, config)
-            .then((response) => {
-              if (response.data) {
-                this.loading = false;
-                this.$refs.modalUser.hide();
+          await axios.post(URL.AFFECTE, data, config).then((response) => {
+            if (response.data) {
+              this.loading = false;
+              this.$refs.modalUser.hide();
 
-                    this.livreur = ""
-                  this.topEnd();
-                this.users.unshift(response.data.user);
-                console.log(this.users);
-              }
-            });
+              this.livreur = "";
+              this.topEnd();
+              this.users.unshift(response.data.user);
+              console.log(this.users);
+              this.$router.push({ name: "commande" });
+            }
+          });
         }
       } catch (error) {
         this.loading = false;
@@ -567,14 +542,11 @@ export default {
       };
       try {
         await axios
-          .post(URL.USER_DESTROY + `/${id.id}`, config)
+          .post(URL.COMMANDE_DESTROY + `/${id.id}`, config)
           .then((response) => {
             response.data;
-            axios.get(URL.LIST_USER).then((response) => {
-              this.users = response.data.liste;
-              console.log("liste", this.users);
-              this.pTotal = this.users.length;
-            });
+            localStorage.removeItem("commande");
+            this.$router.push({ name: "commande" });
           })
           .catch((error) => {
             if (error.response) {
@@ -590,7 +562,7 @@ export default {
     destroy(id) {
       this.$swal({
         title: "Êtes vous sûr?",
-        text: "Ce utilisateur sera supprimé définitivement !",
+        text: "Cette commande sera supprimé définitivement !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Oui",

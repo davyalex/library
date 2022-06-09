@@ -266,13 +266,24 @@ export default {
         // this.validatePassword();
         await axios.post(URL.LOGIN, data, config).then((response) => {
           this.userData = response.data;
-                  if (this.userData) {
+           console.log('userConnect',this.userData[3]);
+           if (this.userData[3]!=='superadmin') {
+                          this.$router.push({ name: "404" });
+
+           }
+
+            if (this.userData[3]!=='admin') {
+                          this.$router.push({ name: "404" });
+
+           }
+                  if (this.userData[3]==='superadmin' || this.userData[3]==='admin') {
                     setAuthHeader(response.data[1]);
                       localStorage.setItem('token', this.userData[1])
                   }
                    if (localStorage.getItem("token")) {
               localStorage.setItem("connected", true);
               this.$router.push({ name: "home" });
+
             }
             if (this.userData ==="mauvaises informations entrées") {
               this.error_login = true;
@@ -284,7 +295,7 @@ export default {
                 this.error_login = false;
                  this.topEnd();
             }
-          console.log(this.userData);
+         
 
         });
         

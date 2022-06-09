@@ -20,13 +20,15 @@ export const APP_HOST = 'https://127.0.0.1:8000'
 export const APP_PROD = false
 
 const URL = {
+  //auth
   LOGIN: `${baseUrl}/login`,
-
   REGISTER: `${baseUrl}/register`,
 
+//user
   USER_CONNECTE: `${baseUrl}/user-connect`,
   LIST_USER: `${baseUrl}/user`,
   USER_STORE:`${baseUrl}/user/store`,
+  USER_UPDATE:`${baseUrl}/user/update`,
   USER_DESTROY:`${baseUrl}/user/destroy`,
 
 
@@ -61,7 +63,6 @@ const URL = {
   KIT_DESTROY: `${baseUrl}/kit/destroy`,
 
   //Point de retrait
-
   LIST_POINTRETRAIT: `${baseUrl}/point-retrait`,
   CREATE_POINTRETRAIT: `${baseUrl}/point-retrait/store`,
   UPDATE_POINTRETRAIT: `${baseUrl}/point-retrait/update`,
@@ -71,8 +72,12 @@ const URL = {
   //commande
   LIST_COMMANDE: `${baseUrl}/commande`,
   AFFECTE: `${baseUrl}/commande_etat`,
-
+  COMMANDE_DESTROY: `${baseUrl}/commande/destroy`,
   
+
+  //dashboard
+  DASHBOARD: `${baseUrl}/web/dashboard`,
+
 
 };
 

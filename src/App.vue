@@ -49,6 +49,24 @@ export default {
       return this.$store.state.appConfig.layout.type
     },
   },
+
+  methods:{
+    getUser(){
+        const userConnect = JSON.parse(localStorage.getItem('user'))
+        const roleUser = userConnect.roles[0].name
+      console.log('uuuuu',roleUser);
+
+      if (roleUser !=='superadmin' && roleUser !=='admin') {
+        localStorage.removeItem('user')
+        // this.$router.push({name:'404'})
+         location.assign('/404');
+      }
+    }
+  },
+
+  beforeMount(){
+    this.getUser()
+  },
   
 //stockage des type parametre dans local storage
    async mounted() {

@@ -9,7 +9,7 @@
       cancel-title="Annuler"
       centered
       hide-footer
-    title="Affecter la commande N°"
+      :title="'Affecter la commande N°' + commande_code"
     >
       <validation-observer ref="registerForm">
         <b-form class="auth-register-form mt-2" @submit.prevent>
@@ -146,29 +146,35 @@
             <b-dropdown
               id="dropdown-1"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-              icon="ShoppingCartIcon"
-              text="Filtrer"
+              :text="titre ? titre : 'Filtrer'"
               variant="primary"
             >
-              <feather-icon icon="ShoppingCartIcon" />
+
               <b-dropdown-item @click="getName('livre')">
                 <feather-icon icon="ShoppingCartIcon" />
-                <span class="align-middle ml-50 text-success"
+                <span class="align-middle ml-50 text-success font-weight-bold"
                   >Commandes livrées</span
                 >
               </b-dropdown-item>
 
               <b-dropdown-item @click="getName('attente')">
                 <feather-icon icon="ShoppingCartIcon" />
-                <span class="align-middle ml-50 text-warning"
+                <span class="align-middle ml-50 text-warning font-weight-bold"
                   >Commandes en attentes</span
                 >
               </b-dropdown-item>
 
               <b-dropdown-item @click="getName('affecte')">
                 <feather-icon icon="ShoppingCartIcon" />
-                <span class="align-middle ml-50 text-primary"
+                <span class="align-middle ml-50 text-primary font-weight-bold"
                   >Commandes affectées</span
+                >
+              </b-dropdown-item>
+
+                <b-dropdown-item @click="getName('all')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-dark font-weight-bold"
+                  >Toutes les commandes</span
                 >
               </b-dropdown-item>
             </b-dropdown>
@@ -197,7 +203,7 @@
           responsive
           :per-page="perPage"
           :current-page="currentPage"
-          :items="commandes"
+          :items="commandesFiltre"
           :fields="tableColumns"
           :filter="filtrecommandes"
           show-empty
@@ -208,33 +214,43 @@
             {{ format_date(data.item.created_at) }}
           </template>
 
-           <template #cell(client)="data">
+          <template #cell(client)="data">
+                            <feather-icon size="20" icon="UserIcon" class="cursor-pointer" />
+
             {{ data.item.client.nom }}
           </template>
 
-            <template #cell(etat)="data">
-                    <span class="badge badge-light-warning badge-pill font-weight-bol">
-                            {{ data.item.etat.title }}
-                    </span>
-          </template>
 
-           <template #cell(status)="data">
-                    <span class="badge badge-light-info badge-pill font-weight-bol">
-                            {{ data.item.status}}
-                    </span>
-          </template>
+ <template #cell(code)="data">
 
-          <!-- <template #cell(role)="data">
-            <div
-              class="badge badge-light-success badge-pill font-weight-bol"
-              v-if="data.item.roles.length > 0"
+         <span class="text-primary font-weight-bold">   {{ data.item.code }}</span>
+          </template>
+          <template #cell(etat)="data">
+            <span v-if=" data.item.etat.title==='En attente'" class="badge badge-light-warning badge-pill font-weight-bold">
+              <feather-icon size="20" icon="ArrowDownIcon" class="cursor-pointer" />
+               {{ data.item.etat.title }}</span
             >
-              {{ data.item.roles[0].name }}
-            </div>
-          </template> -->
 
+              <span v-if=" data.item.etat.title==='Affectée'" class="badge badge-light-primary badge-pill font-weight-bold">
+              <feather-icon size="20" icon="TruckIcon" class="cursor-pointer" />
+               {{ data.item.etat.title }}</span
+            >
+
+                <span v-if=" data.item.etat.title==='Livrée'" class="badge badge-light-success badge-pill font-weight-bold">
+              <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
+               {{ data.item.etat.title }}</span
+            >
+
+          </template>
+
+             <template #cell(total_ttc)="data">
+              <span class="text-success font-weight-bold"> {{ data.item.total_ttc }} FCFA</span>
+             </template>
+
+        
+          
           <template #cell(actions)="data">
-            <div class="text-nowrap text-center py-3">
+            <div class="text-nowrap text-center">
               <!-- Dropdown -->
               <b-dropdown
                 variant="link"
@@ -246,22 +262,29 @@
                   <feather-icon
                     icon="MoreVerticalIcon"
                     size="16"
-                    class="align-middle text-body"
+                    class="align-middle text-body text-center"
                   />
                 </template>
-                <b-dropdown-item v-b-modal.v-b-modal.modal-add>
+                <b-dropdown-item
+                  @click="affecte(data.item.id, data.item.code)"
+                  v-b-modal.v-b-modal.modal-add
+                  :disabled="data.item.etat.title === 'Affectée' ? true : false"
+                >
                   <feather-icon icon="SendIcon" />
-                  <span class="align-middle ml-50">Affecter</span>
+                  <span
+                    v-if="data.item.etat.title === 'Affectée'"
+                    class="align-middle ml-50"
+                    >Déjà affectée</span
+                  >
+                  <span v-else class="align-middle ml-50">Affecter</span>
                 </b-dropdown-item>
 
-                <b-dropdown-item
-                    @click="preview(data.item.id)"
-                >
+                <b-dropdown-item @click="preview(data.item.id)">
                   <feather-icon icon="EyeIcon" />
                   <span class="align-middle ml-50">Details</span>
                 </b-dropdown-item>
 
-                <b-dropdown-item>
+                <b-dropdown-item @click="destroy(data.item.id)">
                   <feather-icon icon="TrashIcon" />
                   <span class="align-middle ml-50">Supprimer</span>
                 </b-dropdown-item>
@@ -288,7 +311,7 @@
             >
               <b-pagination
                 v-model="currentPage"
-                :total-rows="pTotal"
+                :total-rows="commandesFiltre.length"
                 :per-page="perPage"
                 first-number
                 last-number
@@ -386,51 +409,58 @@ export default {
       contact: "",
       email: "",
 
+      //
+      commande_id: "",
+      commande_code: "",
+
+      titre:"",
+
       role: "",
       loading: false,
 
       // errorMsg: "",
       users: [],
-      commandes:[],
-      recoverCommande:"",
+      commandes: [],
+      recoverCommande: "",
       recover: "",
+      recoverItem: "",
+      commandesFiltre:[],
 
-      perPage: 5,
+      perPage: 30,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
-        { key: "total_ttc", label: "montant", sortable: true },
-        { key: "quantite", label: "quantite", sortable: true },
         { key: "client", label: "client", sortable: true },
-        { key: "status", label: "statut", sortable: true },
-                { key: "etat", label: "etat", sortable: true },
+        { key: "created_at", label: "date", sortable: true },
+        { key: "total_ttc", label: "montant", sortable: true },
+        // { key: "quantite", label: "quantite", sortable: true },
+        // { key: "status", label: "statut", sortable: true },
+        { key: "etat", label: "etat", sortable: true },
 
         // { key: "phone", label: "contact", sortable: true },
         // { key: "role", label: "role", sortable: true },
-        { key: "created_at", label: "date", sortable: true },
         { key: "actions" },
       ],
       filtrecommandes: "",
       perPageOptions: [30, 50, 100],
     };
   },
- 
 
   async mounted() {
     document.title = "Commande";
 
     try {
-
-         await axios.get(URL.LIST_COMMANDE).then((response) => {
+      await axios.get(URL.LIST_COMMANDE).then((response) => {
         this.commandes = response.data.commande;
-        this.pTotal = this.commandes.length;
-        console.log('commande',this.commandes);
+        this.commandesFiltre = this.commandes
+        // this.pTotal = this.commandes.length;
+        console.log("commande", this.commandes);
       });
       await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
         this.users = response.data.liste;
         this.pTotal = this.users.length;
-        console.log('livreur', this.users);
+        console.log("livreur", this.users);
       });
     } catch (error) {
       console.log(error);
@@ -438,7 +468,7 @@ export default {
   },
 
   methods: {
-     topEnd() {
+    topEnd() {
       this.$toast({
         component: ToastificationContent,
         props: {
@@ -457,25 +487,66 @@ export default {
     },
     //envoi des item en localStorage
     getName(item) {
-      console.log("item", item);
+
       localStorage.setItem("Item", item);
+
+      this.recoverItem = localStorage.getItem("Item");
+
+      //   filtrage
+      if (this.recoverItem === "livre") {
+        const filterLivre = this.commandes.filter((item) => {
+          return item.etat_id === 16;
+        });
+        this.commandesFiltre = filterLivre;
+                this.titre = "Liste des commandes livrées"
+
+        console.log(this.commandesFiltre,this.titre);
+      }
+      
+      else if (this.recoverItem === "affecte") {
+       const filterAffecte = this.commandes.filter((item) => {
+          return item.etat_id === 14;
+        });
+        this.commandesFiltre = filterAffecte;
+                        this.titre = "Liste des commandes affectées"
+
+                console.log(this.commandesFiltre,this.titre);
+
+      }
+      
+      else if (this.recoverItem === "attente") {
+        const filterAttente = this.commandes.filter((item) => {
+          return item.etat_id === 13;
+        });
+        this.commandesFiltre = filterAttente;
+             this.titre = "Liste des commandes en attentes"
+            console.log(this.commandesFiltre,this.titre);
+
+      }else if (this.recoverItem === "all") {
+                      this.commandesFiltre = this.commandes;
+            this.titre =""
+      }
     },
 
     //envoi des details commande en localstorage
-    preview(id){
-          const previewCmd = this.commandes.filter((item)=> {
-              return item.id === id
-          })
-          //insertion dans le localstorage
-            localStorage.setItem("commande",JSON.stringify(previewCmd[0]))
+    preview(id) {
+      const previewCmd = this.commandesFiltre.filter((item) => {
+        return item.id === id;
+      });
+      //insertion dans le localstorage
+      localStorage.setItem("commande", JSON.stringify(previewCmd[0]));
 
-             //recuperation du local storage
-            this.recoverCommande = JSON.parse(localStorage.getItem('commande'))
-            console.log('recover', this.recoverCommande );
+      //recuperation du local storage
+      this.recoverCommande = JSON.parse(localStorage.getItem("commande"));
+      console.log("recover", this.recoverCommande);
 
-            this.$router.push({name:'detail'})
+      this.$router.push({ name: "detail" });
+    },
 
-        
+    affecte(id, code) {
+      this.commande_id = id;
+      this.commande_code = code;
+      console.log(this.commande_id, this.commande_code);
     },
 
     //validation
@@ -492,7 +563,7 @@ export default {
       console.log(this.recover.id);
     },
 
-        async save() {
+    async save() {
       try {
         this.validateLivreur();
 
@@ -502,35 +573,35 @@ export default {
           },
         };
 
-        if (
-          this.livreur 
-        ) {
+        if (this.livreur) {
           const data = {
-              id:this.recoverCommande.id,
+            id: this.commande_id,
             livreur_id: this.livreur.id,
             etat: 14,
           };
           this.loading = true;
           console.log(data);
-          await axios
-            .post(URL.AFFECTE, data, config)
-            .then((response) => {
-              if (response.data) {
-                this.loading = false;
-                this.$refs.modalUser.hide();
-
-                    this.livreur = ""
-                  this.topEnd();
-                this.users.unshift(response.data.user);
-                console.log(this.users);
-              }
-            });
+          await axios.post(URL.AFFECTE, data, config).then((response) => {
+            if (response.data) {
+              this.loading = false;
+              this.commandes.push(response.data.commande);
+              this.$refs.modalUser.hide();
+              axios.get(URL.LIST_COMMANDE).then((response) => {
+                this.commandesFiltre = response.data.commande;
+                this.pTotal = this.commandes.length;
+                console.log("commande", this.commandes);
+              });
+              this.livreur = "";
+              this.topEnd();
+              this.users.unshift(response.data.user);
+              console.log(this.users);
+            }
+          });
         }
       } catch (error) {
         this.loading = false;
       }
     },
-
 
     //destroy
     async deletecmd(indentifiant) {
@@ -544,13 +615,12 @@ export default {
       };
       try {
         await axios
-          .post(URL.USER_DESTROY + `/${id.id}`, config)
+          .post(URL.COMMANDE_DESTROY + `/${id.id}`, config)
           .then((response) => {
             response.data;
             axios.get(URL.LIST_USER).then((response) => {
-              this.users = response.data.liste;
-              console.log("liste", this.users);
-              this.pTotal = this.users.length;
+              this.commandes = response.data.commande;
+              this.pTotal = this.commandes.length;
             });
           })
           .catch((error) => {
@@ -558,7 +628,7 @@ export default {
               console.log(error.response.data);
             }
           });
-        this.users.splice(index, 1);
+        this.commandes.splice(index, 1);
       } catch (error) {
         console.log(error.type);
       }
