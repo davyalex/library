@@ -49,10 +49,35 @@ export default {
       return this.$store.state.appConfig.layout.type
     },
   },
+
+  methods:{
+    getUser(){
+        const userConnect = JSON.parse(localStorage.getItem('user'))
+        const roleUser = userConnect.roles[0].name
+      console.log('uuuuu',roleUser);
+
+      if (roleUser !=='superadmin' && roleUser !=='admin') {
+        localStorage.removeItem('user')
+        // this.$router.push({name:'404'})
+         location.assign('/404');
+      }
+    }
+  },
+
+  beforeMount(){
+    this.getUser()
+  },
   
 //stockage des type parametre dans local storage
    async mounted() {
     try {
+      
+  // axios.get(URL.USER_CONNECTE, config).then((response) => {
+  //       this.user_connecte = response.data.auth
+  //          this.role = response.data.role
+  //          localStorage.setItem('user',JSON.stringify(this.user_connecte))
+  //     });
+
       await axios.get(URL.TYPEPARAMETRE).then((response) => {
         this.typeParametre = response.data.liste;
           if (this.typeParametre) {

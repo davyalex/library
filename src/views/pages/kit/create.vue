@@ -2,8 +2,6 @@
   <validation-observer ref="simpleRules">
     <b-form @submit.prevent>
       <b-card>
-
-    
         <b-row>
           <b-col cols="4">
             <b-form-group label-for="title">
@@ -141,60 +139,59 @@
                         @input="(val) => updateItemForm(index, val)"
                       >
                       </v-select>
-                        <small v-if="valideArticle" class="text-danger">
-                           Vous devez sélectionner un article
-                       </small>
+                      <small v-if="valideArticle" class="text-danger">
+                        Vous devez sélectionner un article
+                      </small>
                     </b-form-group>
                   </b-col>
 
-                            <b-col cols="4">
-            <b-form-group label-for="title">
-              <label for="title"
-                >quantite <span class="p-0 text-danger h6"> *</span></label
-              >
+                  <b-col cols="4">
+                    <b-form-group label-for="title">
+                      <label for="title"
+                        >quantite
+                        <span class="p-0 text-danger h6"> *</span></label
+                      >
 
-              <validation-provider
-                #default="{ errors }"
-                name="title"
-                rules="required"
-              >
-                <b-form-input
-                  id="title"
-                  @input="validateQte(index)"
-                  type="number"
-                
-                  v-model="item.quantite"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="00000"
-                />
-              </validation-provider>
-            </b-form-group>
-          </b-col>
+                      <validation-provider
+                        #default="{ errors }"
+                        name="title"
+                        rules="required"
+                      >
+                        <b-form-input
+                          id="title"
+                          @input="validateQte(index)"
+                          type="number"
+                          v-model="item.quantite"
+                          :state="errors.length > 0 ? false : null"
+                          placeholder="00000"
+                        />
+                      </validation-provider>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col cols="4">
-            <b-form-group label-for="title">
-              <label for="title"
-                >prix <span class="p-0 text-danger h6"> *</span></label
-              >
+                  <b-col cols="4">
+                    <b-form-group label-for="title">
+                      <label for="title"
+                        >prix <span class="p-0 text-danger h6"> *</span></label
+                      >
 
-              <validation-provider
-                #default="{ errors }"
-                name="title"
-                rules="required"
-              >
-                <b-form-input
-                  id="title"
-                  disabled
-                  @input="validateArticle"
-                  type="number"
-                  v-model="item.prix"
-                  :state="errors.length > 0 ? false : null"
-                  placeholder="00000"
-                />
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-
+                      <validation-provider
+                        #default="{ errors }"
+                        name="title"
+                        rules="required"
+                      >
+                        <b-form-input
+                          id="title"
+                          disabled
+                          @input="validateArticle"
+                          type="number"
+                          v-model="item.prix"
+                          :state="errors.length > 0 ? false : null"
+                          placeholder="00000"
+                        />
+                      </validation-provider>
+                    </b-form-group>
+                  </b-col>
                 </b-row>
 
                 <div
@@ -221,13 +218,17 @@
             >
               Ajouter des articles au kit
             </b-button>
-            <br> <small v-if="valideAddItem" class="text-danger">
-                           Vous devez sélectionner un article
-                       </small>
+            <br />
+            <small v-if="valideAddItem" class="text-danger">
+              Vous devez sélectionner un article
+            </small>
           </b-col>
         </b-row>
 
-            <h3 v-if="montant" class="text-right text-success">Montant du kit: <br> {{montant}}FCFA</h3>
+        <h3 v-if="montant" class="text-right text-success">
+          Montant du kit: <br />
+          {{ montant }}FCFA
+        </h3>
 
         <!-- login button -->
         <b-col cols="12 mt-2">
@@ -307,19 +308,19 @@ export default {
     return {
       title: "",
       etablissement: "",
-   
+
       niveau: "",
       description: "",
       valideTitle: false,
       valideEtablissement: false,
-      valideArticle:false,
-    valideAddItem:false,
+      valideArticle: false,
+      valideAddItem: false,
       valideNiveau: false,
 
       file: "",
       etablissementList: [],
-      montant:"",
-      pU:"",
+      montant: "",
+      pU: "",
 
       niveauList: [],
       articleList: [],
@@ -327,11 +328,10 @@ export default {
 
       multiArticle: [],
 
-     articleItem: {
-    //    article:"",
-        quantite:1,
-        prix:"",
-     
+      articleItem: {
+        //    article:"",
+        quantite: 1,
+        prix: "",
       },
       loading: false,
 
@@ -349,12 +349,12 @@ export default {
         .then((response) => {
           this.niveauList = response.data.parametre;
           this.niveauListFilter = response.data.parametre;
-          console.log('niveau',this.niveauListFilter);
+          console.log("niveau", this.niveauListFilter);
         });
 
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
         this.etablissementList = response.data.etablissements;
-        console.log(  'etablissement',this.etablissementList)
+        console.log("etablissement", this.etablissementList);
       });
 
       await axios.get(URL.LIST_ARTICLE).then((response) => {
@@ -373,9 +373,7 @@ export default {
     window.removeEventListener("resize", this.initTrHeight);
   },
 
-  computed:{
-     
-  },
+  computed: {},
 
   methods: {
     processFile(event) {
@@ -386,62 +384,55 @@ export default {
       }
     },
 
-    
- 
-
     updateItemForm(index, val) {
-        const { prix } = val;
-         const { id } = val;
+      const { prix } = val;
+      const { id } = val;
 
-      const price = (this.multiArticle[index].prix = prix); 
-       const q = (this.multiArticle[index].id = id);
-           this.pU = this.multiArticle[index].article.prix;
-       this.prix = price;
+      const price = (this.multiArticle[index].prix = prix);
+      const q = (this.multiArticle[index].id = id);
+      this.pU = this.multiArticle[index].article.prix;
+      this.prix = price;
 
-   
-      console.log("article",price,q,this.pU);
-   
+      console.log("article", price, q, this.pU);
+
       // let mt =0
       // for (let index = 0; index < this.multiArticle.length; index++) {
       //  this.montant= mt += Number(this.multiArticle[index].article.prix);
       // }
       // console.log('montant',this.montant)
-
-    
     },
 
-    validateArticle(){
-        if (!this.multiArticle[0].prix || this.multiArticle.length === 0) {
-            this.valideArticle = true
+    validateArticle() {
+      if (!this.multiArticle[0].prix || this.multiArticle.length === 0) {
+        this.valideArticle = true;
       } else {
-          this.valideArticle = false
-          this.valideAddItem = false
+        this.valideArticle = false;
+        this.valideAddItem = false;
       }
     },
 
-
-validateQte(index){
-  let mont = 0
-       for (let i = 0; i < this.multiArticle.length; i++) {
-         if (i===index && parseInt(this.multiArticle[i].quantite)>0 ||i===index && this.multiArticle[i].quantite.length>0 ) {
-             this.multiArticle[i].prix =  this.multiArticle[i].article.prix * this.multiArticle[i].quantite
+    validateQte(index) {
+      let mont = 0;
+      for (let i = 0; i < this.multiArticle.length; i++) {
+        if (
+          (i === index && parseInt(this.multiArticle[i].quantite) > 0) ||
+          (i === index && this.multiArticle[i].quantite.length > 0)
+        ) {
+          this.multiArticle[i].prix =
+            this.multiArticle[i].article.prix * this.multiArticle[i].quantite;
           //  this.montant =    mont +=Number(this.multiArticle[i].prix)
           //  console.log(this.montant);
-     }else if(i===index && parseInt(this.multiArticle[i].quantite)<=1 ||i===index && this.multiArticle[i].quantite.length<=1 ){
-         this.multiArticle[i].prix =  this.multiArticle[i].article.prix
+        } else if (
+          (i === index && parseInt(this.multiArticle[i].quantite) <= 1) ||
+          (i === index && this.multiArticle[i].quantite.length <= 1)
+        ) {
+          this.multiArticle[i].prix = this.multiArticle[i].article.prix;
+        }
       }
-}
     },
-    
-
-   
-
-    
-
 
     //duplicateur
     addNewItemInItemForm() {
-   
       this.$refs.form.style.overflow = "hidden";
 
       this.multiArticle.push(JSON.parse(JSON.stringify(this.articleItem)));
@@ -457,7 +448,6 @@ validateQte(index){
     removeItem(index) {
       this.multiArticle.splice(index, 1);
       this.trTrimHeight(this.$refs.row[0].offsetHeight);
-     
     },
 
     //animate duplicateur
@@ -482,31 +472,30 @@ validateQte(index){
 
     //message validation
 
-   
     validateEtablissement() {
-    //     let filtre =[]
-    //     for (let index = 0; index < this.etablissement.niveaux.length; index++) {
-    //         const element = this.etablissement.niveaux[index];
-    //         filtre.push(element.id)
-    //          console.log(filtre);
-    //     }
-    //                 // console.log(this.etablissement.niveaux);
-    //                 let niveauFilter = []
-    //                 this.niveauList.forEach((element,index) => {
-    //                     if (element.id === filtre[index]) {
-    //                             niveauFilter.push(element)
-    //                     }
-    //                 });
+      //     let filtre =[]
+      //     for (let index = 0; index < this.etablissement.niveaux.length; index++) {
+      //         const element = this.etablissement.niveaux[index];
+      //         filtre.push(element.id)
+      //          console.log(filtre);
+      //     }
+      //                 // console.log(this.etablissement.niveaux);
+      //                 let niveauFilter = []
+      //                 this.niveauList.forEach((element,index) => {
+      //                     if (element.id === filtre[index]) {
+      //                             niveauFilter.push(element)
+      //                     }
+      //                 });
 
-    //   this.niveauList = niveauFilter
-    //     console.log( this.niveauList);
+      //   this.niveauList = niveauFilter
+      //     console.log( this.niveauList);
 
-    console.log(this.multiArticle);
+      console.log(this.multiArticle);
 
       if (!this.etablissement) {
-        this.valideEtablissement= true;
+        this.valideEtablissement = true;
       } else {
-        this.valideEtablissement= false;
+        this.valideEtablissement = false;
       }
     },
 
@@ -528,9 +517,9 @@ validateQte(index){
       }
     },
 
-        validateSelectedArticle() {
-      if (this.multiArticle.length === 0 ) {
-        this.valideAddItem = true
+    validateSelectedArticle() {
+      if (this.multiArticle.length === 0) {
+        this.valideAddItem = true;
         // this.$swal({
         //   title: "Ajouter un article au kit",
         //   customClass: {
@@ -544,19 +533,18 @@ validateQte(index){
       }
     },
 
-    
-    getMontant(){
-    let ttc = 0
+    getMontant() {
+      let ttc = 0;
       for (let index = 0; index < this.multiArticle.length; index++) {
-       this.montant = ttc+=Number(this.multiArticle[index].prix);
+        this.montant = ttc += Number(this.multiArticle[index].prix);
       }
-      return this.montant
+      return this.montant;
     },
 
-     confirmSave() {
+    confirmSave() {
       this.$swal({
         title: "Voulez-vous enregistrer ?",
-        text: 'Le montant du kit est de :'+ ' '+this.getMontant() + 'FCFA',
+        text: "Le montant du kit est de :" + " " + this.getMontant() + "FCFA",
         icon: "info",
         showCancelButton: true,
         confirmButtonText: "Oui",
@@ -573,9 +561,8 @@ validateQte(index){
     },
 
     async save(bvModalEvt) {
-  
       try {
-             this.getMontant()
+        this.getMontant();
         this.validateTitle();
         this.validateEtablissement();
         this.validateNiveau();
@@ -586,81 +573,77 @@ validateQte(index){
             Accept: "application/json",
           },
         };
-     
+
         if (
-          this.title || this.etablissement || this.niveau||
-          this.multiArticle.length > 0 ||  this.multiArticle[0].prix
-        )
-         {
+          this.title ||
+          this.etablissement ||
+          this.niveau ||
+          this.multiArticle.length > 0 ||
+          this.multiArticle[0].prix
+        ) {
+          const articles = this.multiArticle.map((item) => {
+            return { id: item.id, quantite: item.quantite, montant: this.pU };
+          });
 
-              const articles = this.multiArticle.map((item) => {
-          return {id:item.id, quantite:item.quantite,montant:this.pU};
-        });
+          const newFormdata = new FormData();
 
-        const newFormdata = new FormData();
+          newFormdata.append("image", this.file);
 
-        newFormdata.append("image", this.file);
+          newFormdata.append("title", this.title);
 
-        newFormdata.append("title", this.title);
+          newFormdata.append("etablissement_id", this.etablissement.id);
 
-        newFormdata.append("etablissement_id", this.etablissement.id);
+          newFormdata.append("niveau_id", this.niveau.id);
 
-        newFormdata.append("niveau_id", this.niveau.id);
+          //         newFormdata.append("description", this.description);
+          //         articles.forEach((item,index) => {
+          //    newFormdata.append(`articles[${index}]`, JSON.stringify([item]));
+          // });
+          newFormdata.append("articles", JSON.stringify(articles));
 
-//         newFormdata.append("description", this.description);
-//         articles.forEach((item,index) => {
-//    newFormdata.append(`articles[${index}]`, JSON.stringify([item]));
-// });
-         newFormdata.append("articles",JSON.stringify(articles));
+          //   for (let index = 0; index < articles.length; index++) {
+          //     const element = articles[index];
+          //     newFormdata.append(`articles[${index}]`, JSON.stringify([{id:articles[index].id},{quantite:articles[index].quantite},{montant: articles[index].montant}]));
+          //  }
 
-      //   for (let index = 0; index < articles.length; index++) {
-      //     const element = articles[index];
-      //     newFormdata.append(`articles[${index}]`, JSON.stringify([{id:articles[index].id},{quantite:articles[index].quantite},{montant: articles[index].montant}]));
-      //  }
-
-        newFormdata.append("count", this.multiArticle.length);
+          newFormdata.append("count", this.multiArticle.length);
           const data = {
-          title: this.title,
-          etablissement_id: this.etablissement.id,
-          niveau_id: this.niveau.id,
-          description: this.description,
-          count: this.multiArticle.length,
-          montant:this.montant,
-        //   articles:this.multiArticle,
-          articles: this.multiArticle.map((item) => {
-            return { id:item.id, quantite:item.quantite,montant:this.pU};
-          }),
-        };
-       
-        this.loading = true;
-        await axios
-          .post(URL.KIT_STORE, data, config)
-          .then((response) => {
-            this.topEnd();
-                        this.title=""
-this.etablissement =""
-this.niveau =""
-this.description =""
-this.prix = ""
-this.quantite = ""
+            title: this.title,
+            etablissement_id: this.etablissement.id,
+            niveau_id: this.niveau.id,
+            description: this.description,
+            count: this.multiArticle.length,
+            montant: this.montant,
+            //   articles:this.multiArticle,
+            articles: this.multiArticle.map((item) => {
+              return { id: item.id, quantite: item.quantite, montant: this.pU };
+            }),
+          };
 
-for (let index = 0; index < this.multiArticle.length; index++) {
-  this.multiArticle[index].article = ""
-   this.multiArticle[index].prix = ""
-    this.multiArticle[index].quantite = ""
-  
-}
+          this.loading = true;
+          await axios.post(URL.KIT_STORE, data, config).then((response) => {
+            this.topEnd();
+                          this.$router.push("/kit");
+
+            this.title = "";
+            this.etablissement = "";
+            this.niveau = "";
+            this.description = "";
+            this.prix = "";
+            this.quantite = "";
+
+            for (let index = 0; index < this.multiArticle.length; index++) {
+              this.multiArticle[index].article = "";
+              this.multiArticle[index].prix = "";
+              this.multiArticle[index].quantite = "";
+            }
             if (response.data) {
               this.kitList.unshift(data);
               this.loading = false;
 
-                
-              // this.$router.push("/kit/create");
             }
           });
         }
-
-
       } catch (error) {
         console.log(error);
         this.loading = false;
@@ -669,7 +652,6 @@ for (let index = 0; index < this.multiArticle.length; index++) {
     },
   },
 };
-
 </script>
 
 <style lang="scss">

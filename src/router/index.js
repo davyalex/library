@@ -27,9 +27,19 @@ const router = new VueRouter({
     },
 
     {
-      path: '/user',
-      name: 'user',
-      component: () => import('@/views/pages/user/index.vue'),
+      path: '/404',
+      name: '404',
+      component: () => import('@/views/pages/Error.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+
+//utilisateur
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('@/views/pages/user/administrateur.vue'),
       meta: {
         pageTitle: 'Utilisteurs',
         breadcrumb: [
@@ -43,9 +53,59 @@ const router = new VueRouter({
     },
 
     {
-      path: '/user/create',
-      name: 'user/create',
-      component: () => import('@/views/pages/user/create.vue'),
+      path: '/etab',
+      name: 'compte-etablissement',
+      component: () => import('@/views/pages/user/compte_etablissement.vue'),
+      meta: {
+        pageTitle: 'Utilisteurs',
+        breadcrumb: [
+          {
+            text: 'Liste des utilisteurs',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/livreur',
+      name: 'livreur',
+      component: () => import('@/views/pages/user/livreur.vue'),
+      meta: {
+        pageTitle: 'Utilisteurs',
+        breadcrumb: [
+          {
+            text: 'Liste des utilisteurs',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/client',
+      name: 'client',
+      component: () => import('@/views/pages/user/client.vue'),
+      meta: {
+        pageTitle: 'Utilisteurs',
+        breadcrumb: [
+          {
+            text: 'Liste des utilisteurs',
+            active: true,
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+    //utilisateur//
+
+    {
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/pages/user/index.vue'),
       meta: {
         pageTitle: 'Utlisateurs',
         breadcrumb: [
@@ -81,7 +141,7 @@ const router = new VueRouter({
 
     {
       path: '/kit/update',
-      name: 'edit',
+      name: 'kit/edit',
       component: () => import('@/views/pages/kit/update.vue'),
       meta: {
         pageTitle: 'Kit',

@@ -358,7 +358,7 @@ export default {
       );
 
       localStorage.setItem("kit", JSON.stringify(updateKit[0]));
-      this.$router.push({ name: "edit" });
+      this.$router.push({ name: "kit/edit" });
     },
 
     confirmText(id) {

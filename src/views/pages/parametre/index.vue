@@ -207,9 +207,9 @@
           <b-col cols="12" md="6" class="mt-1">
             <div class="d-flex align-items-center justify-content-end">
               <b-input-group class="input-group-merge">
-                <b-input-group-prepend is-text>
+                <!-- <b-input-group-prepend is-text>
                   <feather-icon icon="SearchIcon" />
-                </b-input-group-prepend>
+                </b-input-group-prepend> -->
                 <b-form-input
                   v-model="filtreParametre"
                   class="d-inline-block mr-1"

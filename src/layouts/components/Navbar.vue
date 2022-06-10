@@ -139,6 +139,7 @@ export default {
        axios.get(URL.USER_CONNECTE, config).then((response) => {
         this.user_connecte = response.data.auth
            this.role = response.data.role
+           localStorage.setItem('user',JSON.stringify(this.user_connecte))
         console.log(this.user_connecte);
       });
       } catch (error) {

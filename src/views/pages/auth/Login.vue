@@ -22,10 +22,10 @@
       <b-col lg="4" class="d-flex align-items-center auth-bg px-2 p-lg-5">
         <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
           <b-card-title title-tag="h2" class="font-weight-bold mb-1">
-            Welcome to Vuexy! 👋
+          Connectez-vous! 👋
           </b-card-title>
           <b-card-text class="mb-2 text-center" v-if="error_login">
-           <span class="text-danger"> {{ msg_error }}</span>
+            <span class="text-danger"> {{ msg_error }}</span>
           </b-card-text>
 
           <!-- form -->
@@ -100,12 +100,7 @@
               </b-form-group>
 
               <!-- submit buttons -->
-              <b-button
-                type="submit"
-                variant="primary"
-                block
-                @click="save"
-              >
+              <b-button type="submit" variant="primary" block @click="save">
                 Connexion
               </b-button>
             </b-form>
@@ -168,7 +163,7 @@ import { required, email } from "@validations";
 import { togglePasswordVisibility } from "@core/mixins/ui/forms";
 import store from "@/store/index";
 import URL, { APP_HOST } from "@/views/pages/request";
-import setAuthHeader from "../../../auth/jwt/token"
+import setAuthHeader from "../../../auth/jwt/token";
 import axios from "axios";
 // import axios from "axios";
 // import URL from "@/views/pages/request";
@@ -193,7 +188,7 @@ export default {
     axios,
     ValidationProvider,
     ValidationObserver,
-    setAuthHeader
+    setAuthHeader,
   },
   mixins: [togglePasswordVisibility],
 
@@ -206,8 +201,8 @@ export default {
       // validation rulesimport store from '@/store/index'
       required,
       email,
-      error_login:false,
-      msg_error:""
+      error_login: false,
+      msg_error: "",
     };
   },
   computed: {
@@ -224,30 +219,29 @@ export default {
     },
   },
   methods: {
-   topEnd(){
+    topEnd() {
       this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: "Connexion réussi",
-              icon: "UserIcon",
-              variant: "success",
-            },
-          });
-   },
+        component: ToastificationContent,
+        props: {
+          title: "Connexion réussi",
+          icon: "UserIcon",
+          variant: "success",
+        },
+      });
+    },
 
-     topEndError(){
+    topEndError() {
       this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: "Erreur de connexion",
-              icon: "UserIcon",
-              variant: "danger",
-            },
-          });
-   },
+        component: ToastificationContent,
+        props: {
+          title: "Erreur de connexion",
+          icon: "UserIcon",
+          variant: "danger",
+        },
+      });
+    },
 
     async save() {
-
       try {
         // e.preventDefault();
         // this.marche = true;
@@ -266,28 +260,41 @@ export default {
         // this.validatePassword();
         await axios.post(URL.LOGIN, data, config).then((response) => {
           this.userData = response.data;
-                  if (this.userData) {
-                    setAuthHeader(response.data[1]);
-                      localStorage.setItem('token', this.userData[1])
-                  }
-                   if (localStorage.getItem("token")) {
-              localStorage.setItem("connected", true);
-              this.$router.push({ name: "home" });
-            }
-            if (this.userData ==="mauvaises informations entrées") {
-              this.error_login = true;
-               this.topEndError();
-              this.msg_error = "Email ou mot de passe incorrect"
-               localStorage.setItem("connected", false);
-              this.$router.push({ name: "login" });
-            }else{
-                this.error_login = false;
-                 this.topEnd();
-            }
-          console.log(this.userData);
+          console.log("userConnect", this.userData[3]);
+          localStorage.clear()
+          if (this.userData[3] !== "superadmin") {
+            this.$router.push({ name: "404" });
+          }
 
+          if (this.userData[3] !== "admin") {
+            this.$router.push({ name: "404" });
+          }
+          if (
+            this.userData[3] === "superadmin" ||
+            this.userData[3] === "admin"
+          ) {
+            setAuthHeader(response.data[1]);
+            localStorage.setItem("token", this.userData[1]);
+            localStorage.setItem("user", JSON.stringify(this.userData[2]));
+          }
+          if (localStorage.getItem("token")) {
+            localStorage.setItem("connected", true);
+            localStorage.setItem("user", JSON.stringify(this.userData[2]));
+
+            // this.$router.push({ name: "home" });
+            location.assign('/')
+          }
+          if (this.userData === "mauvaises informations entrées") {
+            this.error_login = true;
+            this.topEndError();
+            this.msg_error = "Email ou mot de passe incorrect";
+            localStorage.setItem("connected", false);
+            this.$router.push({ name: "login" });
+          } else {
+            this.error_login = false;
+            this.topEnd();
+          }
         });
-        
       } catch (error) {
         console.log(error);
       }

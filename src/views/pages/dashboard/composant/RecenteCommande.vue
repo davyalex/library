@@ -1,5 +1,101 @@
 <template>
   <div class="">
+    <!-- Modal pour affecter une commande au livreur -->
+    <b-modal
+      id="modal-add"
+      ref="modalUser"
+      cancel-variant="outline-secondary"
+      ok-title="Créer"
+      cancel-title="Annuler"
+      centered
+      hide-footer
+      :title="'Affecter la commande N°' + commande_code"
+    >
+      <validation-observer ref="registerForm">
+        <b-form class="auth-register-form mt-2" @submit.prevent>
+          <!-- code de commande -->
+          <b-form-group label="" label-for="register-libelle">
+            <label for=""
+              >Choisir un livreur<span class="p-0 text-danger h6"></span
+            ></label>
+            <v-select
+              v-model="livreur"
+              @input="validateLivreur"
+              placeholder="Selectionnez un livreur"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              rules="required"
+              label="nom"
+              :options="users"
+            >
+              <template v-slot:option="option">
+                {{ option.nom }}
+                {{ option.prenoms }}
+              </template>
+            </v-select>
+          </b-form-group>
+
+          <b-form-group label="Prenom" label-for="code" v-if="livreur">
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="prenom"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+                disabled
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <b-form-group label="Contact" label-for="code" v-if="livreur">
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="contact"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+                disabled
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <b-form-group label="Email" label-for="code" v-if="livreur">
+            <validation-provider
+              #default="{ errors }"
+              name="code"
+              rules="required"
+            >
+              <b-form-input
+                v-model="email"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+                disabled
+              />
+            </validation-provider>
+          </b-form-group>
+
+          <b-button
+            variant="primary"
+            block
+            type="submit"
+            @click.prevent="save"
+            :disabled="loading === true ? true : false"
+          >
+            <div
+              v-if="loading === true"
+              class="spinner-border text-light"
+            ></div>
+            <span v-else> <feather-icon icon="SendIcon" /> Affecter</span>
+          </b-button>
+        </b-form>
+      </validation-observer>
+    </b-modal>
+
     <!-- Tableau pour afficher les taxes -->
     <div class="tableau">
       <b-card no-body class="py-1">
@@ -20,110 +116,128 @@
               class="per-page-selector d-inline-block ml-50 mr-1"
             />
 
-            <b-button variant="primary">
+  <b-col md="8">
+             <b-button variant="primary">
               <feather-icon icon="EyeIcon" class="mx-auto" />
-              <!-- Ajouter un etablissement -->
-              <b-link :to="{ name: '#' }">
-                <span class="text-white"> Voir toutes les commandes </span>
+              <b-link :to="{ name: 'commande' }">
+                <span class="text-white">Voir toutes les commandes</span>
               </b-link>
             </b-button>
-
-            <!-- <b-link :to="{ name: 'register' }">
-              <span>&nbsp;Créer un compte</span>
-            </b-link> -->
           </b-col>
 
+            <!-- primary -->
+            <!-- <b-dropdown
+              id="dropdown-1"
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              :text="titre ? titre : 'Filtrer'"
+              variant="primary"
+            >
+
+              <b-dropdown-item @click="getName('livre')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-success font-weight-bold"
+                  >Commandes livrées</span
+                >
+              </b-dropdown-item>
+
+              <b-dropdown-item @click="getName('attente')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-warning font-weight-bold"
+                  >Commandes en attentes</span
+                >
+              </b-dropdown-item>
+
+              <b-dropdown-item @click="getName('affecte')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-primary font-weight-bold"
+                  >Commandes affectées</span
+                >
+              </b-dropdown-item>
+
+                <b-dropdown-item @click="getName('all')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-dark font-weight-bold"
+                  >Toutes les commandes</span
+                >
+              </b-dropdown-item>
+            </b-dropdown> -->
+          </b-col>
+
+        
+
           <!-- Search -->
-          <b-col cols="12" md="6" class="mt-1">
+          <b-col cols="12" md="4" class="mt-1">
             <div class="d-flex align-items-center justify-content-end">
               <b-input-group class="input-group-merge">
-                <!-- <b-input-group-prepend is-text>
+                <!-- <b-input-group-prepend is-text  class="px-1">
                   <feather-icon icon="SearchIcon" />
                 </b-input-group-prepend> -->
                 <b-form-input
-                  v-model="filtreetablissement"
+                  v-model="filtrecommandes"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : date, numero, client..."
+                  placeholder="Rechercher par : N°, statut, date..."
                 />
               </b-input-group>
             </div>
           </b-col>
         </b-row>
 
-        <!-- Le tableau affichant les typeParametre -->
+        <!-- Le tableau affichant les users -->
         <b-table
           hover
           responsive
-          primary-key="id"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="transactionData"
+          :items="commandesFiltre"
           :fields="tableColumns"
-          :filter="filtreetablissement"
+          :filter="filtrecommandes"
           show-empty
           empty-text=""
           class="bg-white"
         >
-          <template #cell(code)="data">
-            <span class="text-primary font-weight-bold">
-              <feather-icon
-                size="20"
-                icon="ShoppingBagIcon"
-                class="cursor-pointer"
-              />
-              {{ data.item.code }}</span
-            >
+          <template #cell(created_at)="data">
+            {{ format_date(data.item.created_at) }}
           </template>
+
+             <template #cell(total_ttc)="data">
+              <span class="text-success font-weight-bold"> {{ data.item.total_ttc }} FCFA</span>
+             </template>
+
 
           <template #cell(client)="data">
-            <span class="text-warning font-weight-bold">
-              <feather-icon size="20" icon="UserIcon" class="cursor-pointer" />
-              {{ data.item.client }}</span
-            >
+                            <feather-icon size="20" icon="UserIcon" class="cursor-pointer" />
+
+            {{ data.item.client.nom }}
           </template>
 
-          <template #cell(statut)="data">
-            <span v-if="data.item.statut==='livrée'" class="badge badge-light-success badge-pill font-weight-bold">
-              <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
-              {{ data.item.statut }}</span
+
+ <template #cell(code)="data">
+
+         <span class="text-primary font-weight-bold">   {{ data.item.code }}</span>
+          </template>
+          <template #cell(etat)="data">
+            <span v-if=" data.item.etat.title==='En attente'" class="badge badge-light-warning badge-pill font-weight-bold">
+              <feather-icon size="20" icon="ArrowDownIcon" class="cursor-pointer" />
+               {{ data.item.etat.title }}</span
             >
-            <span v-if="data.item.statut==='En cour de livraison'" class="badge badge-light-warning badge-pill font-weight-bold">
+
+              <span v-if=" data.item.etat.title==='Affectée'" class="badge badge-light-primary badge-pill font-weight-bold">
               <feather-icon size="20" icon="TruckIcon" class="cursor-pointer" />
-              {{ data.item.statut }}</span
+               {{ data.item.etat.title }}</span
             >
+
+                <span v-if=" data.item.etat.title==='Livrée'" class="badge badge-light-success badge-pill font-weight-bold">
+              <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
+               {{ data.item.etat.title }}</span
+            >
+
           </template>
 
+           
+        
+          
           <template #cell(actions)="data">
-            <div class="text-nowrap">
-              <feather-icon
-                :id="`invoice-row-${data.item.id}-send-icon`"
-                icon="SendIcon"
-                class="cursor-pointer"
-                size="16"
-              />
-              <b-tooltip
-                title="Send Invoice"
-                class="cursor-pointer"
-                :target="`invoice-row-${data.item.id}-send-icon`"
-              />
-
-              <feather-icon
-                :id="`invoice-row-${data.item.id}-preview-icon`"
-                icon="EyeIcon"
-                size="16"
-                class="mx-1"
-                @click="
-                  $router.push({
-                    name: 'apps-invoice-preview',
-                    params: { id: data.item.id },
-                  })
-                "
-              />
-              <b-tooltip
-                title="Preview Invoice"
-                :target="`invoice-row-${data.item.id}-preview-icon`"
-              />
-
+            <div class="text-nowrap text-center">
               <!-- Dropdown -->
               <b-dropdown
                 variant="link"
@@ -135,29 +249,31 @@
                   <feather-icon
                     icon="MoreVerticalIcon"
                     size="16"
-                    class="align-middle text-body"
+                    class="align-middle text-body text-center"
                   />
                 </template>
-                <b-dropdown-item>
-                  <feather-icon icon="DownloadIcon" />
-                  <span class="align-middle ml-50">Download</span>
-                </b-dropdown-item>
                 <b-dropdown-item
-                  :to="{
-                    name: 'apps-invoice-edit',
-                    params: { id: data.item.id },
-                  }"
+                  @click="affecte(data.item.id, data.item.code)"
+                  v-b-modal.v-b-modal.modal-add
+                  :disabled="data.item.etat.title === 'Affectée' ? true : false"
                 >
-                  <feather-icon icon="EditIcon" />
-                  <span class="align-middle ml-50">Edit</span>
+                  <feather-icon icon="SendIcon" />
+                  <span
+                    v-if="data.item.etat.title === 'Affectée'"
+                    class="align-middle ml-50"
+                    >Déjà affectée</span
+                  >
+                  <span v-else class="align-middle ml-50">Affecter</span>
                 </b-dropdown-item>
-                <b-dropdown-item>
+
+                <b-dropdown-item @click="preview(data.item.id)">
+                  <feather-icon icon="EyeIcon" />
+                  <span class="align-middle ml-50">Details</span>
+                </b-dropdown-item>
+
+                <b-dropdown-item @click="destroy(data.item.id)">
                   <feather-icon icon="TrashIcon" />
-                  <span class="align-middle ml-50">Delete</span>
-                </b-dropdown-item>
-                <b-dropdown-item>
-                  <feather-icon icon="CopyIcon" />
-                  <span class="align-middle ml-50">Duplicate</span>
+                  <span class="align-middle ml-50">Supprimer</span>
                 </b-dropdown-item>
               </b-dropdown>
             </div>
@@ -182,7 +298,7 @@
             >
               <b-pagination
                 v-model="currentPage"
-                :total-rows="pTotal"
+                :total-rows="commandesFiltre.length"
                 :per-page="perPage"
                 first-number
                 last-number
@@ -190,16 +306,6 @@
                 prev-class="prev-item"
                 next-class="next-item"
               >
-                <template #cell(title)="data">
-                  <div class="py-50">
-                    <span
-                      variant="info"
-                      class="text-uppercase font-weight-bolder"
-                    >
-                      {{ data.item.title }}
-                    </span>
-                  </div>
-                </template>
                 <template #prev-text>
                   <feather-icon icon="ChevronLeftIcon" size="18" />
                 </template>
@@ -236,13 +342,14 @@ import {
   BFormTextarea,
   BDropdown,
   BDropdownItem,
-  BTooltip,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
 import URL from "@/views/pages/request";
+import { togglePasswordVisibility } from "@core/mixins/ui/forms";
+
 import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
@@ -263,7 +370,6 @@ export default {
     BLink,
     BFormCheckbox,
     BInputGroup,
-    BInputGroupAppend,
     BImg,
     required,
     email,
@@ -278,81 +384,260 @@ export default {
     BFormTextarea,
     BDropdown,
     BDropdownItem,
-    BTooltip,
   },
+  mixins: [togglePasswordVisibility],
   directives: {
     Ripple,
   },
   data() {
     return {
-      transactionData: [
-        {
-          id: 1,
-          code: "#00026",
-          statut: "livrée",
-          avatar: "CheckIcon",
-          client: "cheick",
-          avatarVariant: "light-success",
-          montant: "12000 FCFA",
-          date: moment(new Date().toString()).format("YYYY-MM-DD"),
-        },
+      livreur: "",
+      prenom: "",
+      contact: "",
+      email: "",
 
-        {
-          id: 2,
-          code: "#00026",
-          statut: "livrée",
-          avatar: "CheckIcon",
-          client: "Ivan",
-          avatarVariant: "light-success",
-          montant: "12000 FCFA",
-          date: moment(new Date().toString()).format("YYYY-MM-DD"),
-        },
+      //
+      commande_id: "",
+      commande_code: "",
 
-           {
-          id: 2,
-          code: "#00026",
-          statut: "En cour de livraison",
-          avatar: "CheckIcon",
-          client: "Yakou",
-          avatarVariant: "light-success",
-          montant: "12000 FCFA",
-          date: moment(new Date().toString()).format("YYYY-MM-DD"),
-        },
-      ],
+      titre:"",
+
+      role: "",
+      loading: false,
+
+      // errorMsg: "",
+      users: [],
+      commandes: [],
+      recoverCommande: "",
+      recover: "",
+      recoverItem: "",
+      commandesFiltre:[],
 
       perPage: 30,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
-        { key: "code", label: "#", sortable: true },
-        { key: "client", label: "Client", sortable: true },
-        { key: "date", label: "Date", sortable: true },
-        { key: "montant", label: "Montant", sortable: true },
-        { key: "statut", label: "statut", sortable: true },
-        // { key: "created_at", label: "crée le", sortable: true },
+        { key: "code", label: "Code", sortable: true },
+        { key: "client", label: "client", sortable: true },
+        { key: "created_at", label: "date", sortable: true },
+        { key: "total_ttc", label: "montant", sortable: true },
+        // { key: "quantite", label: "quantite", sortable: true },
+        // { key: "status", label: "statut", sortable: true },
+        { key: "etat", label: "etat", sortable: true },
+
+        // { key: "phone", label: "contact", sortable: true },
+        // { key: "role", label: "role", sortable: true },
         { key: "actions" },
       ],
-      filtreetablissement: "",
+      filtrecommandes: "",
       perPageOptions: [30, 50, 100],
-      error: [],
     };
   },
 
-  async mounted() {},
+  async mounted() {
+    document.title = "Commande";
+
+    try {
+      await axios.get(URL.LIST_COMMANDE + `/?filter_field=created_at&filter_value=DESC&limit=10`).then((response) => {
+        this.commandes = response.data.commande;
+        this.commandesFiltre = this.commandes
+        // this.pTotal = this.commandes.length;
+        console.log("commande", this.commandes);
+      });
+      await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
+        this.users = response.data.liste;
+        this.pTotal = this.users.length;
+        console.log("livreur", this.users);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   methods: {
-    get timestamp() {
-      const today = new Date();
-      const date =
-        today.getFullYear() +
-        "-" +
-        (today.getMonth() + 1) +
-        "-" +
-        today.getDate();
-      const time =
-        today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      const timestamp = date + " " + time;
-      return timestamp;
+    topEnd() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: "Commande affectée avec avec success",
+          icon: "ThumbsUpIcon",
+          variant: "success",
+        },
+      });
+    },
+
+    //formatage date
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
+    },
+    //envoi des item en localStorage
+    getName(item) {
+
+      localStorage.setItem("Item", item);
+
+      this.recoverItem = localStorage.getItem("Item");
+
+      //   filtrage
+      if (this.recoverItem === "livre") {
+        const filterLivre = this.commandes.filter((item) => {
+          return item.etat_id === 16;
+        });
+        this.commandesFiltre = filterLivre;
+                this.titre = "Liste des commandes livrées"
+
+        console.log(this.commandesFiltre,this.titre);
+      }
+      
+      else if (this.recoverItem === "affecte") {
+       const filterAffecte = this.commandes.filter((item) => {
+          return item.etat_id === 14;
+        });
+        this.commandesFiltre = filterAffecte;
+                        this.titre = "Liste des commandes affectées"
+
+                console.log(this.commandesFiltre,this.titre);
+
+      }
+      
+      else if (this.recoverItem === "attente") {
+        const filterAttente = this.commandes.filter((item) => {
+          return item.etat_id === 13;
+        });
+        this.commandesFiltre = filterAttente;
+             this.titre = "Liste des commandes en attentes"
+            console.log(this.commandesFiltre,this.titre);
+
+      }else if (this.recoverItem === "all") {
+                      this.commandesFiltre = this.commandes;
+            this.titre =""
+      }
+    },
+
+    //envoi des details commande en localstorage
+    preview(id) {
+      const previewCmd = this.commandesFiltre.filter((item) => {
+        return item.id === id;
+      });
+      //insertion dans le localstorage
+      localStorage.setItem("commande", JSON.stringify(previewCmd[0]));
+
+      //recuperation du local storage
+      this.recoverCommande = JSON.parse(localStorage.getItem("commande"));
+      console.log("recover", this.recoverCommande);
+
+      this.$router.push({ name: "detail" });
+    },
+
+    affecte(id, code) {
+      this.commande_id = id;
+      this.commande_code = code;
+      console.log(this.commande_id, this.commande_code);
+    },
+
+    //validation
+
+    validateLivreur() {
+      const selectedLivreur = this.livreur;
+      localStorage.setItem("livreur", JSON.stringify(selectedLivreur));
+      this.recover = JSON.parse(localStorage.getItem("livreur"));
+
+      //affectation
+      this.prenom = this.recover.prenoms;
+      this.contact = this.recover.phone;
+      this.email = this.recover.email;
+      console.log(this.recover.id);
+    },
+
+    async save() {
+      try {
+        this.validateLivreur();
+
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+
+        if (this.livreur) {
+          const data = {
+            id: this.commande_id,
+            livreur_id: this.livreur.id,
+            etat: 14,
+          };
+          this.loading = true;
+          console.log(data);
+          await axios.post(URL.AFFECTE, data, config).then((response) => {
+            if (response.data) {
+              this.loading = false;
+              this.commandes.push(response.data.commande);
+              this.$refs.modalUser.hide();
+              axios.get(URL.LIST_COMMANDE).then((response) => {
+                this.commandesFiltre = response.data.commande;
+                this.pTotal = this.commandes.length;
+                console.log("commande", this.commandes);
+              });
+              this.livreur = "";
+              this.topEnd();
+              this.users.unshift(response.data.user);
+              console.log(this.users);
+            }
+          });
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+    },
+
+    //destroy
+    async deletecmd(indentifiant) {
+      const id = {
+        id: indentifiant,
+      };
+      const config = {
+        headers: {
+          Accept: "application/json",
+        },
+      };
+      try {
+        await axios
+          .post(URL.COMMANDE_DESTROY + `/${id.id}`, config)
+          .then((response) => {
+            response.data;
+            axios.get(URL.LIST_USER).then((response) => {
+              this.commandes = response.data.commande;
+              this.pTotal = this.commandes.length;
+            });
+          })
+          .catch((error) => {
+            if (error.response) {
+              console.log(error.response.data);
+            }
+          });
+        this.commandes.splice(index, 1);
+      } catch (error) {
+        console.log(error.type);
+      }
+    },
+
+    destroy(id) {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: "Cette commande sera supprimé définitivement !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.deletecmd(id);
+        }
+      });
     },
   },
 };
@@ -397,7 +682,4 @@ export default {
 .block {
   display: inline-block;
 }
-</style>
-<style scoped lang="scss">
-@import "@core/scss/vue/libs/vue-select.scss";
 </style>

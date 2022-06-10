@@ -15,38 +15,34 @@
         <b-form class="auth-register-form mt-2" @submit.prevent>
           <!-- code de l'etablissement -->
           <b-form-group
-            label="Etablissement"
-            
-            v-if="userItem === 'client' || userItem === 'etablissement'" 
+            label="code"
+            label-for="code"
+            v-if="userItem === 'client'"
           >
             <validation-provider
               #default="{ errors }"
               name="code"
               rules="required"
             >
-               <v-select
-                  v-model="etablissement"
-                  @input="validateEtablissement"
-                  placeholder="Selectionnez un etablissement"
-                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  :options="etablissements"
-                  label="title"
-                  :state="errors.length > 0 ? false : null"
-                >
-                </v-select>
-              <small v-if="valideEtablissement" class="text-danger">
-                Veuillez choisir un etablissement'
+              <b-form-input
+                v-model="code"
+                @input="validateCode"
+                :state="errors.length > 0 ? false : null"
+                placeholder="ETA009"
+              />
+              <small v-if="valideCode" class="text-danger">
+                Veuillez entrer le code de l'etablissement'
               </small>
-              <!-- <small v-if="valideExiste === true" class="text-danger">
+              <small v-if="valideExiste === true" class="text-danger">
                 {{ code_exist }}
-              </small> -->
+              </small>
             </validation-provider>
           </b-form-group>
           <!-- Nom -->
           <b-form-group
             label="Nom"
             label-for="nom"
-            v-if="userItem"
+            v-if="userItem !== 'etablissement'"
           >
             <validation-provider
               #default="{ errors }"
@@ -69,7 +65,7 @@
           <b-form-group
             label="Prenoms"
             label-for="prenoms"
-            v-if="userItem"
+            v-if="userItem !== 'etablissement'"
           >
             <validation-provider
               #default="{ errors }"
@@ -227,7 +223,7 @@
             >
               <b-form-input
                 v-model="editCode"
-                @input="validateEtablissement"
+                @input="validateCode"
                 :state="errors.length > 0 ? false : null"
                 placeholder="ETA009"
               />
@@ -400,7 +396,7 @@
                 @click="getName('admin')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold"
+                <span class="align-middle ml-50"
                   >Ajouter un administrateur</span
                 >
               </b-dropdown-item>
@@ -410,7 +406,7 @@
                 @click="getName('etablissement')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold">Ajouter un chef etablissement</span>
+                <span class="align-middle ml-50">Ajouter un etablissement</span>
               </b-dropdown-item>
 
               <b-dropdown-item
@@ -418,7 +414,7 @@
                 @click="getName('client')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold">Ajouter un client</span>
+                <span class="align-middle ml-50">Ajouter un client</span>
               </b-dropdown-item>
 
               <b-dropdown-item
@@ -426,7 +422,7 @@
                 @click="getName('livreur')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold">Ajouter un livreur</span>
+                <span class="align-middle ml-50">Ajouter un livreur</span>
               </b-dropdown-item>
             </b-dropdown>
           </b-col>
@@ -614,11 +610,10 @@ export default {
       phone: "",
       password: "",
       code: "",
-      etablissement:"",
       required,
       email,
       valideNom: false,
-      valideEtablissement: false,
+      valideCode: false,
       validePrenom: false,
       validePhone: false,
       valideEmail: false,
@@ -775,28 +770,28 @@ export default {
       }
     },
 
-    validateEtablissement() {
-      if (!this.etablissement) {
-        this.valideEtablissement = true;
+    validateCode() {
+      if (!this.code) {
+        this.valideCode = true;
         this.code_exist = "";
       } else {
-        this.valideEtablissement = false;
+        this.valideCode = false;
       }
-      // for (let index = 0; index < this.etablissements.length; index++) {
-      //   if (this.code !== this.etablissements[index].code) {
-      //     this.valideExiste = true;
-      //     this.code_exist =
-      //       "Ce code n'existe pas, veuillez renseigner un autre";
-      //   } else {
-      //     this.valideExiste = false;
-      //     this.code_exist = "";
-      //   }
-      // }
+      for (let index = 0; index < this.etablissements.length; index++) {
+        if (this.code !== this.etablissements[index].code) {
+          this.valideExiste = true;
+          this.code_exist =
+            "Ce code n'existe pas, veuillez renseigner un autre";
+        } else {
+          this.valideExiste = false;
+          this.code_exist = "";
+        }
+      }
 
-      // if (!this.code) {
-      //   this.valideExiste = false;
-      //   this.code_exist = "";
-      // }
+      if (!this.code) {
+        this.valideExiste = false;
+        this.code_exist = "";
+      }
     },
     validatePrenom() {
       if (!this.prenoms) {
@@ -834,8 +829,8 @@ export default {
         this.validatePrenom();
         this.validatePhone();
 
-        if (this.userItem === "client" || this.userItem==="etablissement") {
-          this.validateEtablissement();
+        if (this.userItem === "client") {
+          this.validateCode();
         }
         const config = {
           headers: {
@@ -857,12 +852,12 @@ export default {
             phone: this.phone,
             password: this.password,
             role: this.userItem,
-            etablissement_id: this.etablissement.id,
+            code: this.code,
           };
           this.loading = true;
-          console.log(data);
+          // console.log(data);
           await axios
-            .post(URL.USER_STORE , data, config)
+            .post(URL.USER_STORE + `/${data.role}`, data, config)
             .then((response) => {
               if (response.data) {
                 this.loading = false;
@@ -873,7 +868,7 @@ export default {
                   (this.phone = ""),
                   (this.email = ""),
                   (this.password = ""),
-                  (this.etablissement = ""),
+                  (this.code = ""),
                   this.topEnd();
                 this.users.unshift(response.data.user);
                 console.log(this.users);
@@ -895,7 +890,7 @@ export default {
         // this.validatePhone();
 
         // if (this.roleUser === "client") {
-        //   this.validateEtablissement();
+        //   this.validateCode();
         // }
         const config = {
           headers: {

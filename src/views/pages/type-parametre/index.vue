@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <!-- Modal pour ajouter une nouvelle prospection -->
+    <!-- Modal pour ajouter un nouveau type parametre -->
     <b-modal
       id="modal-add"
       cancel-variant="outline-secondary"
@@ -60,6 +60,66 @@
       </b-form>
     </b-modal>
 
+       <!-- Modal pour ajouter un nouveau type parametre -->
+    <b-modal
+      id="modal-update"
+      cancel-variant="outline-secondary"
+      ok-title="Modifier"
+      cancel-title="Annuler"
+      centered
+      title="Modifier un  type parametre"
+      @ok="edit"
+    >
+      <b-form>
+        <div class="text-center">
+          <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
+        </div>
+        <b-form-group label="" label-for="register-nom">
+          <label for="">Title <span class="p-0 text-danger h6">*</span></label>
+          <validation-provider
+            #default="{ errors }"
+            name="nom"
+            rules="required"
+          >
+            <b-form-input
+              id="register-nom"
+              @input="validateTitle"
+              v-model="editTitle"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <small v-if="valideTitle" class="text-danger">
+              Vous devez renseigner le libelle
+            </small>
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group label="" label-for="register-nom">
+          <label for="">Subtitle</label>
+          <validation-provider #default="{ errors }" name="nom" rules="">
+            <b-form-input
+              id="register-nom"
+              v-model="editSubtitle"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group label="Description" label-for="register-description">
+          <b-form-textarea
+            id="textarea"
+            v-model="editDescription"
+            placeholder="Saisissez une description"
+            rows="3"
+            max-rows="6"
+          ></b-form-textarea>
+        </b-form-group>
+      </b-form>
+    </b-modal>
+
     <!-- Tableau pour afficher les taxes -->
     <div class="tableau">
       <b-card no-body class="py-1">
@@ -90,9 +150,9 @@
           <b-col cols="12" md="6" class="mt-1">
             <div class="d-flex align-items-center justify-content-end">
               <b-input-group class="input-group-merge">
-                <b-input-group-prepend is-text>
+                <!-- <b-input-group-prepend is-text>
                   <feather-icon icon="SearchIcon" />
-                </b-input-group-prepend>
+                </b-input-group-prepend> -->
                 <b-form-input
                   v-model="filtreTypeParametre"
                   class="d-inline-block mr-1"
@@ -123,7 +183,26 @@
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- Dropdown -->
-              <b-dropdown
+                <b-link v-b-modal.modal-update>
+                <feather-icon
+                  icon="Edit3Icon"
+                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                  size="16"
+                  class="cursor-pointer mr-1"
+                  @click="update(data.item)"
+                />
+              </b-link>
+
+                <b-link>
+                <feather-icon
+                  icon="TrashIcon"
+                  :id="`invoice-row-${data.item.id}-Trash-icon`"
+                  size="16"
+                  class="cursor-pointer"
+                  @click="destroy(data.item.id)"
+                />
+              </b-link>
+              <!-- <b-dropdown
                 variant="link"
                 toggle-class="p-0"
                 no-caret
@@ -138,13 +217,6 @@
                 </template>
 
                 <b-dropdown-item
-                  @click="addParametre(data.item.id, data.item.slug)"
-                >
-                  <feather-icon icon="PlusIcon" />
-                  <span class="align-middle ml-50">Ajouter un parametre</span>
-                </b-dropdown-item>
-
-                <b-dropdown-item
                   v-b-modal.modal-reglement
                   @click="modify(data.item)"
                 >
@@ -156,7 +228,7 @@
                   <feather-icon icon="TrashIcon" />
                   <span class="align-middle ml-50"> Supprimer</span>
                 </b-dropdown-item>
-              </b-dropdown>
+              </b-dropdown> -->
             </div>
           </template>
         </b-table>
@@ -273,6 +345,10 @@ export default {
       subtitle: "",
       description: "",
 
+      editDescription:"",
+      editTitle:"",
+      editSubtitle:"",
+
       valideTitle: false,
       msgError: "",
       typeParametre: [],
@@ -328,6 +404,19 @@ export default {
       });
     },
     //envoi des infos en localStorage
+
+update(data){
+const typePara = data;
+localStorage.setItem('typeParametre',JSON.stringify(typePara));
+const getTypeParametre = JSON.parse(localStorage.getItem('typeParametre'))
+console.log(getTypeParametre);
+
+this.editTitle = getTypeParametre.title
+this.editSubtitle = getTypeParametre.subtitle
+this.editDescription = getTypeParametre.description
+
+},
+
 
     addParametre(id, slug) {
       const currectTp = this.typeParametre.filter((item) => item.id === id);
