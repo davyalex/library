@@ -373,7 +373,7 @@ export default {
 
     try {
       await axios
-        .get(URL.LIST_CATEGORIE + `/?type_parametre=categorie`)
+        .get(URL.LIST_CATEGORIE + `?type_parametre=categorie`)
         .then((response) => {
           this.categorieList = response.data.parametre;
         });

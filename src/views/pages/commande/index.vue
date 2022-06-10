@@ -216,8 +216,8 @@
 
           <template #cell(client)="data">
                             <feather-icon size="20" icon="UserIcon" class="cursor-pointer" />
-
-            {{ data.item.client.nom }}
+<span> {{ data.item.client.nom }}</span>
+           
           </template>
 
 
@@ -457,7 +457,7 @@ export default {
         // this.pTotal = this.commandes.length;
         console.log("commande", this.commandes);
       });
-      await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
+      await axios.get(URL.LIST_USER + `?role=livreur`).then((response) => {
         this.users = response.data.liste;
         this.pTotal = this.users.length;
         console.log("livreur", this.users);

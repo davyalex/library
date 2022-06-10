@@ -238,6 +238,7 @@ export default {
   },
 
    async mounted() {
+        document.title = "Liste des etablissements";
     try {
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
         this.returnData = response.data;

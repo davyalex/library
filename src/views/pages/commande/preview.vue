@@ -455,7 +455,7 @@ export default {
     console.log("recover", this.recoverCommande.id);
 
     try {
-      await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
+      await axios.get(URL.LIST_USER + `?role=livreur`).then((response) => {
         this.users = response.data.liste;
         console.log("livreur", this.users);
       });

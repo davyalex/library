@@ -76,6 +76,23 @@
             </span>
           </template>
 
+           <template #cell(title)="data">
+                  <div class="py-50">
+                    <span
+                      variant="info"
+                      class="text-uppercase font-weight-bolder"
+                    >
+                      {{ data.item.title }}
+                    </span>
+                  </div>
+                </template>
+
+                  <template #cell(created_at)="data">
+                  <div class="py-50">
+                    {{ format_date(data.item.created_at) }}
+                  </div>
+                </template>
+
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- <b-link "> -->
@@ -83,28 +100,34 @@
                 icon="Edit3Icon"
                 :id="`invoice-row-${data.item.id}-Edit3-icon`"
                 size="16"
-                class="cursor-pointer mr-1"
+                class="cursor-pointer mr-1 text-primary"
                 @click="updateKit(data.item.id)"
+                  v-b-tooltip.hover.v-primary
+      title="Modifier"
               />
               <!-- </b-link> -->
 
               <b-link v-b-modal.modal-update>
                 <feather-icon
                   icon="EyeIcon"
-                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                  :id="`invoice-row-${data.item.id}-Eye-icon`"
                   size="16"
-                  class="cursor-pointer mr-1"
+                  class="cursor-pointer mr-1 text-success"
                   @click="preview(data.item.id)"
+                    v-b-tooltip.hover.v-success
+      title="Detail"
                 />
               </b-link>
 
               <!-- <b-link :to="{ name: 'create' }"> -->
               <feather-icon
                 icon="TrashIcon"
-                :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                :id="`invoice-row-${data.item.id}-Trash-icon`"
                 size="16"
-                class="cursor-pointer mr-1"
+                class="cursor-pointer mr-1 text-danger"
                 @click="confirmText(data.item.id)"
+                  v-b-tooltip.hover.v-danger
+      title="Supprimer"
               />
             </div>
           </template>
@@ -136,16 +159,8 @@
                 prev-class="prev-item"
                 next-class="next-item"
               >
-                <template #cell(title)="data">
-                  <div class="py-50">
-                    <span
-                      variant="info"
-                      class="text-uppercase font-weight-bolder"
-                    >
-                      {{ data.item.title }}
-                    </span>
-                  </div>
-                </template>
+               
+                
                 <template #prev-text>
                   <feather-icon icon="ChevronLeftIcon" size="18" />
                 </template>
@@ -253,7 +268,6 @@ import {
   BModal,
   BFormInput,
   BFormGroup,
-  BButton,
   VBModal,
   BForm,
   BLink,
@@ -267,6 +281,7 @@ import {
   BFormTextarea,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
+import {VBTooltip, BButton} from 'bootstrap-vue'
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
@@ -307,6 +322,8 @@ export default {
   },
   directives: {
     Ripple,
+         'b-tooltip': VBTooltip,
+
   },
   data() {
     return {
@@ -320,7 +337,7 @@ export default {
         { key: "title", label: "Nom", sortable: true },
         { key: "etablissement", label: "etablissement", sortable: true },
         { key: "niveau", label: "niveau", sortable: true },
-        // { key: "prix", label: "prix", sortable: true },
+        { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
       filtreKit: "",
@@ -343,6 +360,13 @@ export default {
   },
 
   methods: {
+
+format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
+    },
+
     preview(id) {
       this.articleList = this.kitList.filter((item) => {
         return item.id === id;

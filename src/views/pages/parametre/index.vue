@@ -7,14 +7,16 @@
       ok-title="Créer"
       cancel-title="Annuler"
       centered
-      :title="'Ajouter un'+ ' '+titleParms[0].title"
+      :title="'Ajouter un' + ' ' + titleParms[0].title"
       @ok="save"
     >
       <b-form @submit.prevent>
         <!-- si sedec -->
 
         <!-- si sedec -->
-          <div class="text-center">  <span class="text-danger" v-if="msgError"> {{ msgError }} </span></div>
+        <!-- <div class="text-center">
+          <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
+        </div> -->
 
         <b-form-group
           label=""
@@ -128,10 +130,39 @@
             <small v-if="valideTitle" class="text-danger">
               Vous devez renseigner le libelle
             </small>
+           <small v-if="titleExist.length > 0" class="text-danger">
+               {{title}} existe déjà, veuillez renseigner un autre
+              </small>
           </validation-provider>
         </b-form-group>
 
-        <b-form-group label="" label-for="register-nom">
+        <b-form-group
+          label=""
+          label-for="register-nom"
+          v-if="this.titleParms[0].title === 'Commune'"
+        >
+          <label for="">Frais de livraison</label>
+          <validation-provider
+            #default="{ errors }"
+            name="nom"
+            rules="required"
+          >
+            <b-form-input
+              type="number"
+              id="register-nom"
+              v-model="subtitle"
+              @input="validateFrais"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <small :class="valideFrais ? 'block' : 'none'" class="text-danger">
+              Vous devez definir les frais de livraison
+            </small>
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group label="" label-for="register-nom" v-else>
           <label for="">Subtitle</label>
           <validation-provider #default="{ errors }" name="nom" rules="">
             <b-form-input
@@ -167,6 +198,66 @@
           <b-form-textarea
             id="textarea"
             v-model="description"
+            placeholder="Saisissez une description"
+            rows="3"
+            max-rows="6"
+          ></b-form-textarea>
+        </b-form-group>
+      </b-form>
+    </b-modal>
+
+    <!-- Modal pour modifier un parametre -->
+    <b-modal
+      id="modal-update"
+      cancel-variant="outline-secondary"
+      ok-title="Modifier"
+      cancel-title="Annuler"
+      centered
+      title="Modifier un parametre"
+      @ok="edit"
+    >
+      <b-form>
+        <div class="text-center">
+          <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
+        </div>
+        <b-form-group label="" label-for="register-nom">
+          <label for="">Title <span class="p-0 text-danger h6">*</span></label>
+          <validation-provider
+            #default="{ errors }"
+            name="nom"
+            rules="required"
+          >
+            <b-form-input
+              id="register-nom"
+              @input="validateTitle"
+              v-model="editTitle"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <small v-if="valideTitle" class="text-danger">
+              Vous devez renseigner le libelle
+            </small>
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group label="" label-for="register-nom">
+          <label for="">Subtitle</label>
+          <validation-provider #default="{ errors }" name="nom" rules="">
+            <b-form-input
+              id="register-nom"
+              v-model="editSubtitle"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group label="Description" label-for="register-description">
+          <b-form-textarea
+            id="textarea"
+            v-model="editDescription"
             placeholder="Saisissez une description"
             rows="3"
             max-rows="6"
@@ -239,44 +330,32 @@
           <template #cell(created_at)="data">
             {{ format_date(data.item.created_at) }}
           </template>
-
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- Dropdown -->
-              <b-dropdown
-                variant="link"
-                toggle-class="p-0"
-                no-caret
-                :right="$store.state.appConfig.isRTL"
-              >
-                <template #button-content>
-                  <feather-icon
-                    icon="MoreVerticalIcon"
-                    size="16"
-                    class="align-middle text-body"
-                  />
-                </template>
+              <b-link v-b-modal.modal-update>
+                <feather-icon
+                  icon="Edit3Icon"
+                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
+                  size="16"
+                  class="cursor-pointer mr-2"
+                  @click="update(data.item)"
+                  v-b-tooltip.hover.v-primary
+                  title="Modifier"
+                />
+              </b-link>
 
-                <!-- <b-dropdown-item
-                  @click="addParametre(data.item.id)"
-                >
-                  <feather-icon icon="PlusIcon" />
-                  <span class="align-middle ml-50">Ajouter un parametre</span>
-                </b-dropdown-item> -->
-
-                <b-dropdown-item
-                  v-b-modal.modal-reglement
-                  @click="modify(data.item)"
-                >
-                  <feather-icon icon="EditIcon" />
-                  <span class="align-middle ml-50">Editer</span>
-                </b-dropdown-item>
-
-                <b-dropdown-item @click="confirmText(data.item.id)">
-                  <feather-icon icon="TrashIcon" />
-                  <span class="align-middle ml-50"> Supprimer</span>
-                </b-dropdown-item>
-              </b-dropdown>
+              <b-link>
+                <feather-icon
+                  icon="TrashIcon"
+                  :id="`invoice-row-${data.item.id}-Trash-icon`"
+                  size="16"
+                  class="cursor-pointer text-danger"
+                  @click="confirmText(data.item.id)"
+                  v-b-tooltip.hover.v-danger
+                  title="Supprimer"
+                />
+              </b-link>
             </div>
           </template>
         </b-table>
@@ -330,7 +409,7 @@ import {
   BModal,
   BFormInput,
   BFormGroup,
-  BButton,
+  // BButton,
   VBModal,
   BForm,
   BLink,
@@ -345,6 +424,7 @@ import {
   BDropdown,
   BDropdownItem,
 } from "bootstrap-vue";
+import { VBTooltip, BButton } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
@@ -388,6 +468,7 @@ export default {
   },
   directives: {
     Ripple,
+    "b-tooltip": VBTooltip,
   },
   data() {
     return {
@@ -401,19 +482,24 @@ export default {
       selectedDiocese: "",
 
       valideTitle: false,
+      valideFrais: false,
       valideSelectedCycle: false,
       valideSelectedCommune: false,
       valideSelectedDiocese: false,
+   
+      titleExist:"",
 
-msgError:"",
+      msgError: "",
 
       cycle: [],
       commune: [],
       diocese: [],
 
+
       typePara: [],
 
       Parametre: [],
+      paramAll:[],
 
       titleParms: {},
       perPage: 30,
@@ -434,7 +520,7 @@ msgError:"",
   },
 
   async mounted() {
-    document.title = "parametre";
+    document.title = "parametre" + "-" + this.$route.params.slug;
 
     console.log("slug", this.$route.params.slug);
     this.typePara = JSON.parse(localStorage.getItem("typeParametre"));
@@ -446,20 +532,22 @@ msgError:"",
     try {
       await axios.get(URL.PARAMETRE).then((response) => {
         this.Parametre = response.data.parametre;
+        this.paramAll=response.data.parametre;
         console.log("List Parm", this.Parametre);
         const listParametre = this.Parametre.filter(
           (item) => item.slug_type_para === this.$route.params.slug
         );
         this.Parametre = listParametre;
         this.pTotal = this.Parametre.length;
-        console.log("All", this.Parametre);
+        console.log("All", this.paramAll);
+
       });
 
       await axios.get(URL.PARAMETRE_CREATE).then((response) => {
         this.cycle = response.data.cycle;
         this.commune = response.data.commune;
         this.diocese = response.data.diocese;
-        console.log('cycle',this.commune);
+        console.log("cycle", this.commune);
       });
     } catch (error) {
       console.log(error);
@@ -501,7 +589,7 @@ msgError:"",
       });
     },
 
-     topEndE() {
+    topEndE() {
       this.$toast({
         component: ToastificationContent,
         props: {
@@ -525,6 +613,26 @@ msgError:"",
       } else {
         this.valideTitle = false;
         this.error = false;
+      }
+
+
+      this.titleExist = this.paramAll.filter((item) => {
+        return item.title === this.title;
+      });
+      console.log(this.titleExist.length);
+
+
+    },
+
+    validateFrais() {
+      if (this.titleParms[0].title === "Commune") {
+        if (!this.subtitle) {
+          this.valideFrais = true;
+          this.error = true;
+        } else {
+          this.valideFrais = false;
+          this.error = false;
+        }
       }
     },
 
@@ -559,72 +667,70 @@ msgError:"",
     },
 
     async save(bvModalEvt) {
-     
       try {
         this.validateTitle();
         this.validateSelectedCycle();
         this.validateSelectedCommune();
         this.validateSelectedDiocese();
+        this.validateFrais();
         const config = {
           headers: {
             Accept: "application/json",
           },
         };
 
-          if (this.error=true) {
-             bvModalEvt.preventDefault();
-          }
         let selected = "";
         if (this.selectedCycle) {
           selected = this.selectedCycle.id;
-        }else if(this.selectedCommune){
-            selected = this.selectedCommune.id;
-        }else if(this.selectedDiocese){
-            selected = this.selectedDiocese.id;
+        } else if (this.selectedCommune) {
+          selected = this.selectedCommune.id;
+        } else if (this.selectedDiocese) {
+          selected = this.selectedDiocese.id;
         }
 
-        const data = {
-          title: this.title,
-          subtitle: this.subtitle,
-          quartier: this.quartier,
-          parent_id: selected,
-          description: this.description,
-          slug: this.$route.params.slug,
-        };
-        console.log("dat", data);
-        await axios
-          .post(URL.PARAMETRE_STORE, data, this.config)
-          .then((response) => {
-           
-            this.userData = response.data.parametre;
-            this.msgError = response.data.error;
-            console.log("user", this.msgError);
-            if (this.userData) {
-                 this.Parametre.push(this.userData);
-            this.topEnd();
-            this.title = "";
-            this.subtitle = "";
-            this.description = "";
-            this.selectedCycle = "";
-            this.selectedCommune = "";
-            this.selectedDiocese = "";
-            }
-         
+     if (!this.title || !this.subtitle && this.titleParms[0].title === "Commune") {
+          bvModalEvt.preventDefault();
+        }else if(!this.selectedCycle && this.titleParms[0].title === "Niveau"){
+   bvModalEvt.preventDefault();
+        }else if(!this.selectedDiocese && this.titleParms[0].title === "Sedec"){
+   bvModalEvt.preventDefault();
 
-           else if(this.msgError !==""){
-                this.topEndE()
-               bvModalEvt.preventDefault();
-            }
-          });
+        }
+
+
+      else {
+          const data = {
+            title: this.title,
+            subtitle: this.subtitle,
+            quartier: this.quartier,
+            parent_id: selected,
+            description: this.description,
+            slug: this.$route.params.slug,
+          };
+          console.log("dat", data);
+          await axios
+            .post(URL.PARAMETRE_STORE, data, this.config)
+            .then((response) => {
+              this.userData = response.data.parametre;
+              this.msgError = response.data.error;
+              console.log("user", this.msgError);
+              this.Parametre.unshift(this.userData);
+              this.topEnd();
+              this.title = "";
+              this.subtitle = "";
+              this.description = "";
+              this.selectedCycle = "";
+              this.selectedCommune = "";
+              this.selectedDiocese = "";
+            });
+        }
       } catch (error) {
         console.log(error);
       }
-     
     },
 
-
     //destroy
-      async deleteParametre(indentifiant) {
+    async deleteParametre(indentifiant) {
       const id_delete = {
         id: indentifiant,
       };
@@ -633,16 +739,16 @@ msgError:"",
           .post(URL.PARAMETRE_DESTROY, id_delete)
           .then((response) => {
             response.data;
-           axios.get(URL.PARAMETRE).then((response) => {
-        this.Parametre = response.data.parametre;
-        console.log("List Parm", this.Parametre);
-        const listParametre = this.Parametre.filter(
-          (item) => item.slug_type_para === this.$route.params.slug
-        );
-        this.Parametre = listParametre;
-        this.pTotal = this.Parametre.length;
-        console.log("All", this.Parametre);
-      });
+            axios.get(URL.PARAMETRE).then((response) => {
+              this.Parametre = response.data.parametre;
+              console.log("List Parm", this.Parametre);
+              const listParametre = this.Parametre.filter(
+                (item) => item.slug_type_para === this.$route.params.slug
+              );
+              this.Parametre = listParametre;
+              this.pTotal = this.Parametre.length;
+              console.log("All", this.Parametre);
+            });
           })
           .catch((error) => {
             if (error.response) {
@@ -655,10 +761,10 @@ msgError:"",
       }
     },
 
-      confirmText(id) {
+    confirmText(id) {
       this.$swal({
         title: "Êtes vous sûr?",
-        text: "Cette prospection sera supprimée définitivement !",
+        text: "Ce parametre sera supprimée définitivement !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Oui",

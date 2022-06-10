@@ -6,168 +6,175 @@ const sideBar = [
     route: "home",
     icon: "HomeIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
   },
 
   {
-    title: "Compte utilisateur",
+    title: "Compte utilisateurs",
     route: "user",
     icon: "UsersIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
     // children:[
     //   {
     //     title: "Compte administrateur",
     //     route: "admin",
     //     icon: "UsersIcon",
     //     role: "superadmin",
-    //     noRole: "",
+    //     noView: "",
     //   },
     //   {
     //     title: "Compte etablissement",
     //     route: "etab",
     //     icon: "UsersIcon",
     //     role: "superadmin",
-    //     noRole: "",
+    //     noView: "",
     //   },
     //   {
     //     title: "Compte livreur",
     //     route: "livreur",
     //     icon: "UsersIcon",
     //     role: "superadmin",
-    //     noRole: "",
+    //     noView: "",
     //   },
     //   {
     //     title: "Compte client",
     //     route: "client",
     //     icon: "UsersIcon",
     //     role: "superadmin",
-    //     noRole: "",
+    //     noView: "",
     //   }
     // ]
   },
 
   {
-    title: "Etablissement",
+    title: "Etablissements",
     route: "etablissement",
     icon: "BookIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
   },
 
   {
     title: "Articles",
     route: "article",
-    icon: "BookIcon",
+    icon: "BookOpenIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
   },
 
   {
-    title: "Kit",
+    title: "Kits",
     route: "kit",
-    icon: "BookIcon",
+    icon: "BriefcaseIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
   },
 
   {
-    title: "Point Retrait",
+    title: "Point Retraits",
     route: "point-retrait",
     icon: "NavigationIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
   },
 
   {
-    title: "Commande",
+    title: "Commandes",
     route: "commande",
     icon: "ShoppingCartIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
   },
 
   {
-    title: "Parametre",
+    title: "Parametres",
     route: "",
     icon: "SettingsIcon",
     role: "superadmin",
-    noRole: "",
+    noView: "",
 
     children: [
       {
-        title: "Type parametre",
+        title: "Type parametres",
         route: "type-parametre",
         icon: "ToolIcon",
         role: "superadmin",
-        noRole: "admin",
+        noView: "admin",
       },
 
       {
-        title: "Enseignement",
+        title: "Enseignements",
         route: { path: `/parametre/enseignement` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "admin",
+        noView: "admin",
       },
       {
-        title: "Diocèse",
+        title: "Diocèses",
         route: { path: `/parametre/diocese` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "",
+        noView: "",
       },
       {
-        title: "Sedec",
+        title: "Sedecs",
         route: { path: `/parametre/sedec` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "",
+        noView: "",
       },
 
       {
-        title: "Cycle",
+        title: "Cycles",
         route: { path: `/parametre/cycle` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "admin",
+        noView: "admin",
       },
       {
-        title: "Niveau",
+        title: "Niveaux",
         route: { path: `/parametre/niveau` },
         icon: "SettingsIcon",
-        noRole: "admin",
+        noView: "admin",
       },
       {
-        title: "Commune",
+        title: "Communes",
         route: { path: `/parametre/commune` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "",
+        noView: "",
       },
 
       {
-        title: "Etat de la commande",
+        title: "Etats de la commande",
         route: { path: `/parametre/etat-de-la-commande` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "admin",
+        noView: "admin",
       },
 
       {
-        title: "Categorie",
+        title: "Categories",
         route: { path: `/parametre/categorie` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "",
+        noView: "",
       },
 
       {
-        title: "Mode de livraison",
+        title: "Modes de livraison",
         route: { path: `/parametre/mode-de-livraison` },
         icon: "SettingsIcon",
         role: "superadmin",
-        noRole: "admin",
+        noView: "admin",
+      },
+      {
+        title: "Modes de paiement",
+        route: { path: `/parametre/mode-de-paiement` },
+        icon: "SettingsIcon",
+        role: "superadmin",
+        noView: "admin",
       },
 
       //  mode-de-livraison
@@ -190,9 +197,9 @@ sideBar.forEach((element, index) => {
   if (element.children) {
     element.children.forEach((children, index) => {
 
-      if (children.noRole === role) {
+      if (children.noView === role) {
         element.children = element.children.filter((item) => {
-          return item.noRole !== role
+          return item.noView !== role
         })
       }
     });

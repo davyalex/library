@@ -51,7 +51,7 @@
         </b-row>
 
         <!-- Le tableau affichant les typeParametre -->
-        <b-table 
+        <b-table
           hover
           responsive
           primary-key="id"
@@ -64,12 +64,50 @@
           empty-text=""
           class="bg-white"
         >
-<template #cell(categorie)="data">
-    <span>
-      {{ data.item.categorie.title }}
-    </span>
-</template>
-        
+          <template #cell(categorie)="data">
+            <span>
+              {{ data.item.categorie.title }}
+            </span>
+          </template>
+
+               <template #cell(prix)="data">
+                    <span> {{ data.item.prix }} FCFA </span>
+                </template>
+
+            <template #cell(title)="data">
+                  <div class="py-50">
+                    <span
+                      variant="info"
+                      class="text-uppercase font-weight-bolder"
+                    >
+                      {{ data.item.title }}
+                      <small>
+                         <div class="py-50" v-for="(item, index) in data.item.jumeler" :key="index" >
+                    <span 
+                      variant="info"
+                      class="text-capitalize text-secondary"
+                      v-if="data.item.jumeler.length >0"
+                    >
+                      {{ item.title + ' ' + '(jumelé)' }}
+                    </span>
+                  </div>
+                      </small>
+                    </span>
+                  </div>
+                </template>
+           
+
+                 <template #cell(jumeler)="data">
+                  <div class="py-50" v-for="(item, index) in data.item.jumeler" :key="index" >
+                    <span 
+                      variant="info"
+                      class="text-uppercase font-weight-bolder"
+                      v-if="data.item.jumeler.length >0"
+                    >
+                      {{ item.title }}
+                    </span>
+                  </div>
+                </template>
 
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
@@ -78,19 +116,23 @@
                 icon="Edit3Icon"
                 :id="`invoice-row-${data.item.id}-Edit3-icon`"
                 size="16"
-                class="cursor-pointer mr-1"
+                class="cursor-pointer  mr-2 text-primary"
                 @click="updateEtablissement(data.item.id)"
+                    v-b-tooltip.hover.v-primary
+      title="Modifier"
+
               />
 
               <!-- <b-link :to="{ name: 'create' }"> -->
-                <feather-icon
-                  icon="TrashIcon"
-                  :id="`invoice-row-${data.item.id}-Edit3-icon`"
-                  size="16"
-                  class="cursor-pointer mr-1"
-                  @click="confirmText(data.item.id)"
-                />
-             
+              <feather-icon
+                icon="TrashIcon"
+                :id="`invoice-row-${data.item.id}-Trash-icon`"
+                size="16"
+                class="cursor-pointer  text-danger"
+                @click="confirmText(data.item.id)"
+                  v-b-tooltip.hover.v-danger
+      title="Supprimer"
+              />
             </div>
           </template>
         </b-table>
@@ -121,16 +163,7 @@
                 prev-class="prev-item"
                 next-class="next-item"
               >
-                <template #cell(title)="data">
-                  <div class="py-50">
-                    <span
-                      variant="info"
-                      class="text-uppercase font-weight-bolder"
-                    >
-                      {{ data.item.title }}
-                    </span>
-                  </div>
-                </template>
+              
                 <template #prev-text>
                   <feather-icon icon="ChevronLeftIcon" size="18" />
                 </template>
@@ -153,7 +186,7 @@ import {
   BModal,
   BFormInput,
   BFormGroup,
-  BButton,
+  // BButton,
   VBModal,
   BForm,
   BLink,
@@ -167,6 +200,9 @@ import {
   BFormTextarea,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
+import {VBTooltip, BButton} from 'bootstrap-vue'
+
+
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
@@ -207,20 +243,21 @@ export default {
   },
   directives: {
     Ripple,
+      'b-tooltip': VBTooltip,
   },
   data() {
     return {
-
       articleList: [],
       perPage: 5,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
-        { key: "title", label: "Nom", sortable: true }, 
+        { key: "title", label: "Nom", sortable: true },
         { key: "categorie", label: "categorie", sortable: true },
         { key: "quantite", label: "quantite", sortable: true },
         { key: "prix", label: "prix", sortable: true },
+        // { key: "jumeler", label: "jumeler", sortable: true },
         { key: "actions" },
       ],
       filtreArticle: "",
@@ -230,16 +267,14 @@ export default {
   },
 
   async mounted() {
-
-    document.title ="Liste des articles"
+    document.title = "Liste des articles";
     try {
       await axios.get(URL.LIST_ARTICLE).then((response) => {
         this.articleList = response.data.article;
-      //  this.articleList =  this.returnData.article
-           this.pTotal = this.articleList.length;
-         console.log(this.articleList);
+        //  this.articleList =  this.returnData.article
+        this.pTotal = this.articleList.length;
+        console.log(this.articleList);
       });
-
     } catch (error) {
       console.log(error);
     }
@@ -257,7 +292,6 @@ export default {
       });
     },
 
-  
     updateEtablissement(id) {
       const etat = this.etablissement.filter(
         (item) => item.id === id,
@@ -268,9 +302,8 @@ export default {
       this.$router.push({ name: "edit" });
     },
 
-
     confirmText(id) {
-       this.$swal({
+      this.$swal({
         title: "Êtes vous sûr?",
         text: "Cet etablissement sera supprimé définitivement !",
         icon: "warning",
@@ -298,15 +331,12 @@ export default {
             Accept: "application/json",
           },
         };
-        axios
-          .post(URL.DESTROY_ETABLISSEMENT, id, config)
-          .then((response) => {
-            if(response.data){
-              response.data;
-              topEnd();
-              
-            }
-          })
+        axios.post(URL.DESTROY_ETABLISSEMENT, id, config).then((response) => {
+          if (response.data) {
+            response.data;
+            topEnd();
+          }
+        });
         this.etablissement.splice(index, 1);
       } catch (error) {
         console.log(error.type);

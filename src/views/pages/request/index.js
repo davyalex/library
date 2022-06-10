@@ -14,10 +14,10 @@
 
 // export const APP_HOST = 'https://127.0.0.1:8000'
 
-export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website'
+// export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website'
 // const baseUrl = 'https://nx6sqasslr.preview.infomaniak.website/api'
 // export const APP_HOST = 'https://nx6sqasslr.preview.infomaniak.website/api'
-export const APP_PROD = false
+export const APP_PROD = true
 
 const URL = {
   //auth

@@ -391,7 +391,7 @@ export default {
       console.log(this.niveaux);
 
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre=commune`)
+        .get(URL.PARAMETRE + `?type_parametre=commune`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.communes = this.returnDatas;
@@ -404,7 +404,7 @@ export default {
         });
 
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre=enseignement`)
+        .get(URL.PARAMETRE + `?type_parametre=enseignement`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.enseignements = this.returnDatas;
@@ -413,7 +413,7 @@ export default {
         });
 
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre=diocese`)
+        .get(URL.PARAMETRE + `?type_parametre=diocese`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.dioceses = this.returnDatas;
@@ -422,7 +422,7 @@ export default {
         });
 
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre=sedec`)
+        .get(URL.PARAMETRE + `?type_parametre=sedec`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.sedecs = this.returnDatas;
@@ -433,7 +433,7 @@ export default {
       const __Niveau = [];
 
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre=cycle`)
+        .get(URL.PARAMETRE + `?type_parametre=cycle`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.cycle = this.returnDatas;
@@ -458,7 +458,7 @@ export default {
 
       // console.log(this.datas)
 
-      //  await axios.get( URL.PARAMETRE + `/?type_parametre=niveau`).then((response) => {
+      //  await axios.get( URL.PARAMETRE + `?type_parametre=niveau`).then((response) => {
       //   this.returnDatas = response.data;
       //   this.niveau = this.returnDatas
 

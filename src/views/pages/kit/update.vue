@@ -366,7 +366,7 @@ export default {
 
     try {
       await axios
-        .get(URL.PARAMETRE + `/?type_parametre=niveau`)
+        .get(URL.PARAMETRE + `?type_parametre=niveau`)
         .then((response) => {
           this.niveauList = response.data.parametre;
           this.niveauListFilter = response.data.parametre;

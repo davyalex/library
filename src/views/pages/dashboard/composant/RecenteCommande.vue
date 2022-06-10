@@ -438,13 +438,13 @@ export default {
     document.title = "Commande";
 
     try {
-      await axios.get(URL.LIST_COMMANDE + `/?filter_field=created_at&filter_value=DESC&limit=10`).then((response) => {
+      await axios.get(URL.LIST_COMMANDE + `?filter_field=created_at&filter_value=DESC&limit=10`).then((response) => {
         this.commandes = response.data.commande;
         this.commandesFiltre = this.commandes
         // this.pTotal = this.commandes.length;
         console.log("commande", this.commandes);
       });
-      await axios.get(URL.LIST_USER + `/?role=livreur`).then((response) => {
+      await axios.get(URL.LIST_USER + `?role=livreur`).then((response) => {
         this.users = response.data.liste;
         this.pTotal = this.users.length;
         console.log("livreur", this.users);

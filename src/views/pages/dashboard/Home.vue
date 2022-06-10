@@ -20,7 +20,7 @@
           Bienvenue, {{ user_connecte.nom }} {{ user_connecte.prenoms }}
         </h1>
         <b-card-text class="m-auto w-75">
-          Vvous avez réalisé <strong> {{ dashboard.chiffreAffaire }} </strong>de chiffre
+          Vvous avez réalisé <strong> {{ dashboard.chiffre_affaire }} </strong>de chiffre
           d'affaire ce mois.
         </b-card-text>
       </b-card>
@@ -157,6 +157,7 @@ import {
 import { reactive, ref, computed, onMounted } from "@vue/composition-api";
 import StatisticCardVertical from "./composant/StatisticCardVertical.vue";
 import RecenteCommande from "./composant/RecenteCommande.vue";
+import Ripple from "vue-ripple-directive";
 
 import StatisticCardHorizontal from "./composant/StatisticCardHorizontal.vue";
 import moment from "moment";
@@ -188,6 +189,10 @@ export default {
     StatisticCardHorizontal,
     RecenteCommande,
     moment,
+  },
+
+   directives: {
+    Ripple,
   },
 
   data() {
@@ -321,24 +326,25 @@ export default {
           Accept: "application/json",
         },
       };
-      axios.get(URL.USER_CONNECTE, config).then((response) => {
+       axios.get(URL.USER_CONNECTE, config).then((response) => {
         this.user_connecte = response.data.auth;
         this.role = response.data.role;
         console.log(this.user_connecte);
       });
+      
 
-      axios.get(URL.DASHBOARD + `/?role=client`, config).then((response) => {
+      await axios.get(URL.DASHBOARD, config).then((response) => {
         this.dashboard = response.data;
-        this.statisticsItems[0].title = this.dashboard.client;
-        this.statisticsItems[1].title = this.dashboard.etablissements;
+        this.statisticsItems[0].title = this.dashboard.nombre_client;
+        this.statisticsItems[1].title = this.dashboard.nombre_etablissement;
 
-        this.commandesItems[0].number = this.dashboard.dayCommande;
-        this.commandesItems[1].number = this.dashboard.commandeAttente;
-        this.commandesItems[2].number = this.dashboard.commandeLivree;
+        this.commandesItems[0].number = this.dashboard.nombre_commande_jour;
+        this.commandesItems[1].number = this.dashboard.nombre_commande_attente;
+        this.commandesItems[2].number = this.dashboard.nombre_commande_livree;
 
-        this.othersItems[0].number = this.dashboard.kit;
-        this.othersItems[1].number = this.dashboard.enseignements;
-        this.othersItems[2].number = this.dashboard.dioceses;
+        this.othersItems[0].number = this.dashboard.nombre_kit;
+        this.othersItems[1].number = this.dashboard.nombre_enseignement;
+        this.othersItems[2].number = this.dashboard.nombre_diocese;
 
 
 

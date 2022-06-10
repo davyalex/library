@@ -183,13 +183,17 @@
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- Dropdown -->
-                <b-link v-b-modal.modal-update>
+                <b-link v-b-modal.modal-update
+                  disabled
+                >
                 <feather-icon
                   icon="Edit3Icon"
                   :id="`invoice-row-${data.item.id}-Edit3-icon`"
                   size="16"
                   class="cursor-pointer mr-1"
                   @click="update(data.item)"
+                 v-b-tooltip.hover.v-primary
+      title="Modifier"
                 />
               </b-link>
 
@@ -198,8 +202,10 @@
                   icon="TrashIcon"
                   :id="`invoice-row-${data.item.id}-Trash-icon`"
                   size="16"
-                  class="cursor-pointer"
+                  class="cursor-pointer text-danger"
                   @click="destroy(data.item.id)"
+                    v-b-tooltip.hover.v-danger
+      title="Modifier"
                 />
               </b-link>
               <!-- <b-dropdown
@@ -281,7 +287,7 @@ import {
   BModal,
   BFormInput,
   BFormGroup,
-  BButton,
+  // BButton,
   VBModal,
   BForm,
   BLink,
@@ -296,6 +302,9 @@ import {
   BDropdown,
   BDropdownItem,
 } from "bootstrap-vue";
+ 
+import {VBTooltip, BButton} from 'bootstrap-vue'
+
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
@@ -338,6 +347,7 @@ export default {
   },
   directives: {
     Ripple,
+     'b-tooltip': VBTooltip,
   },
   data() {
     return {
