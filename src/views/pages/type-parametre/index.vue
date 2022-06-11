@@ -60,7 +60,7 @@
       </b-form>
     </b-modal>
 
-       <!-- Modal pour ajouter un nouveau type parametre -->
+    <!-- Modal pour ajouter un nouveau type parametre -->
     <b-modal
       id="modal-update"
       cancel-variant="outline-secondary"
@@ -183,29 +183,27 @@
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- Dropdown -->
-                <b-link v-b-modal.modal-update
-                  disabled
-                >
+              <b-link v-b-modal.modal-update disabled>
                 <feather-icon
                   icon="Edit3Icon"
                   :id="`invoice-row-${data.item.id}-Edit3-icon`"
                   size="16"
                   class="cursor-pointer mr-1"
                   @click="update(data.item)"
-                 v-b-tooltip.hover.v-primary
-      title="Modifier"
+                  v-b-tooltip.hover.v-primary
+                  title="Modifier"
                 />
               </b-link>
 
-                <b-link>
+              <b-link>
                 <feather-icon
                   icon="TrashIcon"
                   :id="`invoice-row-${data.item.id}-Trash-icon`"
                   size="16"
                   class="cursor-pointer text-danger"
                   @click="destroy(data.item.id)"
-                    v-b-tooltip.hover.v-danger
-      title="Modifier"
+                  v-b-tooltip.hover.v-danger
+                  title="Supprimer"
                 />
               </b-link>
               <!-- <b-dropdown
@@ -302,8 +300,8 @@ import {
   BDropdown,
   BDropdownItem,
 } from "bootstrap-vue";
- 
-import {VBTooltip, BButton} from 'bootstrap-vue'
+
+import { VBTooltip, BButton } from "bootstrap-vue";
 
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -347,7 +345,7 @@ export default {
   },
   directives: {
     Ripple,
-     'b-tooltip': VBTooltip,
+    "b-tooltip": VBTooltip,
   },
   data() {
     return {
@@ -355,9 +353,9 @@ export default {
       subtitle: "",
       description: "",
 
-      editDescription:"",
-      editTitle:"",
-      editSubtitle:"",
+      editDescription: "",
+      editTitle: "",
+      editSubtitle: "",
 
       valideTitle: false,
       msgError: "",
@@ -415,18 +413,18 @@ export default {
     },
     //envoi des infos en localStorage
 
-update(data){
-const typePara = data;
-localStorage.setItem('typeParametre',JSON.stringify(typePara));
-const getTypeParametre = JSON.parse(localStorage.getItem('typeParametre'))
-console.log(getTypeParametre);
+    update(data) {
+      const typePara = data;
+      localStorage.setItem("typeParametre", JSON.stringify(typePara));
+      const getTypeParametre = JSON.parse(
+        localStorage.getItem("typeParametre")
+      );
+      console.log(getTypeParametre);
 
-this.editTitle = getTypeParametre.title
-this.editSubtitle = getTypeParametre.subtitle
-this.editDescription = getTypeParametre.description
-
-},
-
+      this.editTitle = getTypeParametre.title;
+      this.editSubtitle = getTypeParametre.subtitle;
+      this.editDescription = getTypeParametre.description;
+    },
 
     addParametre(id, slug) {
       const currectTp = this.typeParametre.filter((item) => item.id === id);
@@ -489,8 +487,8 @@ this.editDescription = getTypeParametre.description
       bvModalEvt.preventDefault();
     },
 
-      //destroy
-      async deleteTypeParametre(indentifiant) {
+    //destroy
+    async deleteTypeParametre(indentifiant) {
       const id_delete = {
         id: indentifiant,
       };
@@ -499,11 +497,11 @@ this.editDescription = getTypeParametre.description
           .post(URL.TYPEPARAMETRE_DESTROY, id_delete)
           .then((response) => {
             response.data;
-           axios.get(URL.TYPEPARAMETRE).then((response) => {
-        this.typeParametre = response.data.liste;
-        console.log("liste", this.typeParametre);
-        this.pTotal = this.typeParametre.length;
-      });
+            axios.get(URL.TYPEPARAMETRE).then((response) => {
+              this.typeParametre = response.data.liste;
+              console.log("liste", this.typeParametre);
+              this.pTotal = this.typeParametre.length;
+            });
           })
           .catch((error) => {
             if (error.response) {
@@ -516,7 +514,7 @@ this.editDescription = getTypeParametre.description
       }
     },
 
-      destroy(id) {
+    destroy(id) {
       this.$swal({
         title: "Êtes vous sûr?",
         text: "Ce type parametre sera supprimée définitivement !",
@@ -578,4 +576,3 @@ this.editDescription = getTypeParametre.description
   display: inline-block;
 }
 </style>
-

@@ -96,15 +96,29 @@
           </b-col>
 
           <b-col cols="6">
-            <div>
-              <label for="">Image du kit</label>
-              <b-form-file
-                class="text-center mb-1"
-                @change="processFile($event)"
-                placeholder="Images du produit"
-                drop-placeholder="Glisser un fichier ici..."
-              />
-            </div>
+            <b-row>
+              <b-col cols="8">
+                <div>
+                  <label for="">Image du kit</label>
+
+                  <b-form-file
+                    class="text-center mt-2"
+                    @change="processFile($event)"
+                    placeholder="Images du produit"
+                    drop-placeholder="Glisser un fichier ici..."
+                  />
+                </div>
+              </b-col>
+
+              <b-col cols="4">
+                <img
+                  v-if="getKit.image"
+                  style="width: 100px; height: 100px"
+                  :src="getKit.image"
+                  alt=""
+                />
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
 
@@ -482,7 +496,7 @@ export default {
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: "Kit enregistré avec succès",
+          title: "Kit modifié avec succès",
           icon: "BookIcon",
           variant: "success",
         },
@@ -599,7 +613,7 @@ export default {
           this.multiArticle[0].prix
         ) {
           const articles = this.multiArticle.map((item) => {
-            return { id: item.id, quantite: item.quantite, montant: this.pU };
+            return { id: item.id, quantite: item.quantite, montant: item.prix};
           });
 
           const newFormdata = new FormData();
@@ -641,11 +655,11 @@ export default {
             }),
           };
 
-          console.log('update',data);
+          console.log("update", data);
 
           this.loading = true;
           await axios
-            .post(URL.KIT_UPDATE + `/${data.id}`, data, config)
+            .post(URL.KIT_UPDATE + `/${data.id}`, newFormdata, config)
             .then((response) => {
               if (response.data) {
                 this.topEnd();

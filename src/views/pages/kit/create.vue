@@ -69,7 +69,7 @@
                   @input="validateNiveau"
                   placeholder="Selectionnez un niveau"
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  :options="niveauList"
+                  :options="newNiveau"
                   label="title"
                   :state="errors.length > 0 ? false : null"
                 >
@@ -325,6 +325,7 @@ export default {
       niveauList: [],
       articleList: [],
       niveauListFilter: [],
+      newNiveau:[],
 
       multiArticle: [],
 
@@ -348,8 +349,8 @@ export default {
         .get(URL.PARAMETRE + `?type_parametre=niveau`)
         .then((response) => {
           this.niveauList = response.data.parametre;
-          this.niveauListFilter = response.data.parametre;
-          console.log("niveau", this.niveauListFilter);
+          // this.niveauListFilter = response.data.parametre;
+          // console.log("niveau", this.niveauListFilter);
         });
 
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
@@ -473,24 +474,11 @@ export default {
     //message validation
 
     validateEtablissement() {
-      //     let filtre =[]
-      //     for (let index = 0; index < this.etablissement.niveaux.length; index++) {
-      //         const element = this.etablissement.niveaux[index];
-      //         filtre.push(element.id)
-      //          console.log(filtre);
-      //     }
-      //                 // console.log(this.etablissement.niveaux);
-      //                 let niveauFilter = []
-      //                 this.niveauList.forEach((element,index) => {
-      //                     if (element.id === filtre[index]) {
-      //                             niveauFilter.push(element)
-      //                     }
-      //                 });
-
-      //   this.niveauList = niveauFilter
-      //     console.log( this.niveauList);
-
-      console.log(this.multiArticle);
+    localStorage.setItem('etab',JSON.stringify(this.etablissement))
+    this.newNiveau = JSON.parse(localStorage.getItem('etab'))
+this.newNiveau = this.newNiveau.niveaux
+   
+console.log(this.newNiveau);
 
       if (!this.etablissement) {
         this.valideEtablissement = true;
@@ -621,7 +609,7 @@ export default {
           };
 
           this.loading = true;
-          await axios.post(URL.KIT_STORE, data, config).then((response) => {
+          await axios.post(URL.KIT_STORE, newFormdata, config).then((response) => {
             this.topEnd();
                           this.$router.push("/kit");
 

@@ -7,7 +7,7 @@
       ok-title="Créer"
       cancel-title="Annuler"
       centered
-      :title="'Ajouter un' + ' ' + titleParms[0].title"
+      :title="'Ajouter un(e)' + ' ' + titleParms[0].title"
       @ok="save"
     >
       <b-form @submit.prevent>
@@ -141,7 +141,7 @@
           label-for="register-nom"
           v-if="this.titleParms[0].title === 'Commune'"
         >
-          <label for="">Frais de livraison</label>
+          <label for="">Frais de livraison <span class="p-0 text-danger h6">*</span></label>
           <validation-provider
             #default="{ errors }"
             name="nom"
@@ -216,10 +216,108 @@
       title="Modifier un parametre"
       @ok="edit"
     >
-      <b-form>
-        <div class="text-center">
+    <b-form @submit.prevent>
+        <!-- si sedec -->
+
+        <!-- si sedec -->
+        <!-- <div class="text-center">
           <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
-        </div>
+        </div> -->
+
+        <b-form-group
+          label=""
+          label-for="register-libelle"
+          v-if="this.titleParms[0].title === 'Sedec'"
+        >
+          <label> Diocese <span class="p-0 text-danger h6">*</span> </label>
+          <validation-provider
+            #default="{ errors }"
+            name="montant"
+            rules="required"
+          >
+            <v-select
+              v-model="editSelectedDiocese"
+              @input="evalidateSelectedDiocese"
+              placeholder="Selectionnez un diocese"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              label="title"
+              :options="diocese"
+              :state="errors.length > 0 ? false : null"
+            >
+            </v-select>
+            <small
+              :class="evalideSelectedDiocese ? 'block' : 'none'"
+              class="text-danger"
+            >
+              Vous devez sélectionner un diocese
+            </small>
+          </validation-provider>
+        </b-form-group>
+
+        <!-- si diocese -->
+
+        <b-form-group
+          label=""
+          label-for="register-libelle"
+          v-if="this.titleParms[0].title === 'Diocese'"
+        >
+          <label> Commune <span class="p-0 text-danger h6">*</span> </label>
+          <validation-provider
+            #default="{ errors }"
+            name="montant"
+            rules="required"
+          >
+            <v-select
+              v-model="editSelectedCommune"
+              @input="evalidateSelectedCommune"
+              placeholder="Selectionnez une commune"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              label="title"
+              :options="commune"
+              :state="errors.length > 0 ? false : null"
+            >
+            </v-select>
+            <small
+              :class="evalideSelectedCommune ? 'block' : 'none'"
+              class="text-danger"
+            >
+              Vous devez sélectionner une commune
+            </small>
+          </validation-provider>
+        </b-form-group>
+
+        <!-- si niveau -->
+
+        <b-form-group
+          label=""
+          label-for="register-libelle"
+          v-if="this.titleParms[0].title === 'Niveau'"
+        >
+          <label> Cycle <span class="p-0 text-danger h6">*</span> </label>
+          <validation-provider
+            #default="{ errors }"
+            name="montant"
+            rules="required"
+          >
+            <v-select
+              v-model="editSelectedCycle"
+              @input="evalidateSelectedCycle"
+              placeholder="Selectionnez un cycle"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              label="title"
+              :options="cycle"
+              :state="errors.length > 0 ? false : null"
+            >
+            </v-select>
+            <small
+              :class="evalideSelectedCycle ? 'block' : 'none'"
+              class="text-danger"
+            >
+              Vous devez sélectionner un cycle
+            </small>
+          </validation-provider>
+        </b-form-group>
+
         <b-form-group label="" label-for="register-nom">
           <label for="">Title <span class="p-0 text-danger h6">*</span></label>
           <validation-provider
@@ -229,24 +327,72 @@
           >
             <b-form-input
               id="register-nom"
-              @input="validateTitle"
+              @input="evalidateTitle"
               v-model="editTitle"
               name="register-nom"
               :state="errors.length > 0 ? false : null"
               placeholder=""
             />
-            <small v-if="valideTitle" class="text-danger">
+            <small v-if="evalideTitle" class="text-danger">
               Vous devez renseigner le libelle
+            </small>
+           <small v-if="titleExist.length > 0" class="text-danger">
+               {{title}} existe déjà, veuillez renseigner un autre
+              </small>
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group
+          label=""
+          label-for="register-nom"
+          v-if="this.titleParms[0].title === 'Commune'"
+        >
+          <label for="">Frais de livraison <span class="p-0 text-danger h6">*</span></label>
+          <validation-provider
+            #default="{ errors }"
+            name="nom"
+            rules="required"
+          >
+            <b-form-input
+              type="number"
+              id="register-nom"
+              v-model="editSubtitle"
+              @input="evalidateFrais"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <small :class="evalideFrais ? 'block' : 'none'" class="text-danger">
+              Vous devez definir les frais de livraison
             </small>
           </validation-provider>
         </b-form-group>
 
-        <b-form-group label="" label-for="register-nom">
+        <b-form-group label="" label-for="register-nom" v-else>
           <label for="">Subtitle</label>
           <validation-provider #default="{ errors }" name="nom" rules="">
             <b-form-input
               id="register-nom"
               v-model="editSubtitle"
+              name="register-nom"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+          </validation-provider>
+        </b-form-group>
+
+        <b-form-group
+          label=""
+          label-for="register-nom"
+          v-if="
+            typePara.title === 'diocese' || typePara.title === 'localisation'
+          "
+        >
+          <label for="">Quartier</label>
+          <validation-provider #default="{ errors }" name="nom" rules="">
+            <b-form-input
+              id="register-nom"
+              v-model="editQuartier"
               name="register-nom"
               :state="errors.length > 0 ? false : null"
               placeholder=""
@@ -481,11 +627,25 @@ export default {
       selectedCommune: "",
       selectedDiocese: "",
 
+      //update
+      editTitle:"",
+      editSubtitle:"",
+      editDescription:"",
+          editSelectedCycle: "",
+      editSelectedCommune: "",
+      editSelectedDiocese: "",
+
       valideTitle: false,
       valideFrais: false,
       valideSelectedCycle: false,
       valideSelectedCommune: false,
       valideSelectedDiocese: false,
+
+        evalideTitle: false,
+      evalideFrais: false,
+      evalideSelectedCycle: false,
+      evalideSelectedCommune: false,
+      evalideSelectedDiocese: false,
    
       titleExist:"",
 
@@ -497,6 +657,7 @@ export default {
 
 
       typePara: [],
+   getParametre:[],
 
       Parametre: [],
       paramAll:[],
@@ -578,11 +739,44 @@ export default {
   methods: {
     //envoi des infos en localStorage
 
+  update(data) {
+      const Para = data;
+      localStorage.setItem("paraUpdate", JSON.stringify(Para));
+      this.getParametre = JSON.parse(
+        localStorage.getItem("paraUpdate")
+      );
+      console.log(this.getParametre.parent.title);
+
+      this.editTitle = this.getParametre.title;
+      this.editSubtitle = this.getParametre.subtitle;
+      this.editDescription = this.getParametre.description;
+      if (this.getParametre.parent) {
+        
+        this.editSelectedCycle = this.getParametre.parent.title
+        this.editSelectedCommune = this.getParametre.parent.title
+        this.editSelectedDiocese = this.getParametre.parent.title
+      }
+
+
+    },
+
+
     topEnd() {
       this.$toast({
         component: ToastificationContent,
         props: {
           title: "Enregistrement réussi",
+          icon: "ThumbsUpIcon",
+          variant: "success",
+        },
+      });
+    },
+
+        topEndU() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: "Modifié avec réussi",
           icon: "ThumbsUpIcon",
           variant: "success",
         },
@@ -614,13 +808,26 @@ export default {
         this.valideTitle = false;
         this.error = false;
       }
-
-
       this.titleExist = this.paramAll.filter((item) => {
         return item.title === this.title;
       });
       console.log(this.titleExist.length);
 
+    },
+
+
+        evalidateTitle() {
+      if (!this.editTitle) {
+        this.evalideTitle = true;
+        this.error = true;
+      } else {
+        this.evalideTitle = false;
+        this.error = false;
+      }
+      this.titleExist = this.paramAll.filter((item) => {
+        return item.title === this.title;
+      });
+      console.log(this.titleExist.length);
 
     },
 
@@ -636,12 +843,35 @@ export default {
       }
     },
 
+        evalidateFrais() {
+      if (this.titleParms[0].title === "Commune") {
+        if (!this.editSubtitle) {
+          this.evalideFrais = true;
+          this.error = true;
+        } else {
+          this.ealideFrais = false;
+          this.error = false;
+        }
+      }
+    },
+
+
     validateSelectedCycle() {
       if (!this.selectedCycle) {
         this.valideSelectedCycle = true;
         this.error = true;
       } else {
         this.valideSelectedCycle = false;
+        this.error = false;
+      }
+    },
+
+     evalidateSelectedCycle() {
+      if (!this.editSelectedCycle) {
+        this.evalideSelectedCycle = true;
+        this.error = true;
+      } else {
+        this.evalideSelectedCycle = false;
         this.error = false;
       }
     },
@@ -656,12 +886,33 @@ export default {
       }
     },
 
+        evalidateSelectedCommune() {
+      if (!this.editSelectedCommune) {
+        this.evalideSelectedCommune = true;
+        this.error = true;
+      } else {
+        this.evalideSelectedCommune = false;
+        this.error = false;
+      }
+    },
+
+
     validateSelectedDiocese() {
       if (!this.selectedDiocese) {
         this.valideSelectedDiocese = true;
         this.error = true;
       } else {
         this.valideSelectedDiocese = false;
+        this.error = false;
+      }
+    },
+
+        evalidateSelectedDiocese() {
+      if (!this.editSelectedDiocese) {
+        this.evalideSelectedDiocese = true;
+        this.error = true;
+      } else {
+        this.evalideSelectedDiocese = false;
         this.error = false;
       }
     },
@@ -722,6 +973,74 @@ export default {
               this.selectedCycle = "";
               this.selectedCommune = "";
               this.selectedDiocese = "";
+            });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+
+
+    //update
+
+       async edit(bvModalEvt) {
+        console.log(this.titleParms[0].title);
+      try {
+        this.evalidateTitle();
+        this.evalidateSelectedCycle();
+        this.evalidateSelectedCommune();
+        this.evalidateSelectedDiocese();
+        this.evalidateFrais();
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+
+        let eselected = "";
+        if (this.editSelectedCycle) {
+          eselected = this.getParametre.parent.id;
+        } else if (this.getParametre.parent.id) {
+          eselected = this.getParametre.parent.id;
+        } else if (this.editSelectedDiocese) {
+          eselected = this.getParametre.parent.id;
+        }
+        console.log(eselected);
+
+     if (!this.editTitle || !this.editSubtitle && this.titleParms[0].title === "Commune") {
+          bvModalEvt.preventDefault();
+        }else if(!this.editSelectedCycle && this.titleParms[0].title === "Niveau"){
+   bvModalEvt.preventDefault();
+        }else if(!this.editSelectedDiocese && this.titleParms[0].title === "Sedec"){
+   bvModalEvt.preventDefault();
+
+        }
+
+
+      else {
+          const data = {
+            id:this.getParametre.id,
+            title: this.editTitle,
+            subtitle: this.editSubtitle,
+            quartier: this.editQuartier,
+            parent_id: eselected,
+            description: this.editDescription,
+            slug: this.$route.params.slug,
+          };
+          console.log("dat", data);
+          await axios
+            .post(URL.PARAMETRE_UPDATE +`/${data.id}`, data, this.config)
+            .then((response) => {
+              this.userData = response.data.parametre;
+              this.Parametre.unshift(this.userData);
+              this.topEndU();
+              this.editTitle = "";
+              this.editSubtitle = "";
+              this.editDescription = "";
+              this.editSelectedCycle = "";
+              this.editSelectedCommune = "";
+              this.editSelectedDiocese = "";
             });
         }
       } catch (error) {

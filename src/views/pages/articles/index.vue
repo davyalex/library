@@ -74,6 +74,14 @@
                     <span> {{ data.item.prix }} FCFA </span>
                 </template>
 
+                  <template #cell(image)="data">
+                      <img v-if="data.item.image"
+                style="width: 32px; height: 32px"
+                :src="data.item.image"
+                alt=""
+              />
+                </template>
+
             <template #cell(title)="data">
                   <div class="py-50">
                     <span
@@ -95,6 +103,7 @@
                     </span>
                   </div>
                 </template>
+                
            
 
                  <template #cell(jumeler)="data">
@@ -117,7 +126,7 @@
                 :id="`invoice-row-${data.item.id}-Edit3-icon`"
                 size="16"
                 class="cursor-pointer  mr-2 text-primary"
-                @click="updateEtablissement(data.item.id)"
+                @click="update(data.item)"
                     v-b-tooltip.hover.v-primary
       title="Modifier"
 
@@ -253,11 +262,11 @@ export default {
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
+        { key: "image", label: "image", sortable: true },
         { key: "title", label: "Nom", sortable: true },
         { key: "categorie", label: "categorie", sortable: true },
         { key: "quantite", label: "quantite", sortable: true },
         { key: "prix", label: "prix", sortable: true },
-        // { key: "jumeler", label: "jumeler", sortable: true },
         { key: "actions" },
       ],
       filtreArticle: "",
@@ -292,14 +301,9 @@ export default {
       });
     },
 
-    updateEtablissement(id) {
-      const etat = this.etablissement.filter(
-        (item) => item.id === id,
-        console.log(etat)
-      );
-
-      localStorage.setItem("etablissement", JSON.stringify(etat[0]));
-      this.$router.push({ name: "edit" });
+    update(data) {
+      localStorage.setItem("article", JSON.stringify(data));
+      this.$router.push({ name: "article/update" });
     },
 
     confirmText(id) {

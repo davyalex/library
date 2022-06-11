@@ -379,12 +379,32 @@ const router = new VueRouter({
         breadcrumb: [
           {
             text: 'Liste des articles',
-            active: true,
+            to: { name: 'article' },
           },
         ],
         requiresAuth: true,
       },
     },
+
+    {
+      path: '/article/update',
+      name: 'article/update',
+      component: () => import('@/views/pages/articles/update.vue'),
+      meta: {
+        pageTitle: 'Article',
+        breadcrumb: [ {
+          text: 'Modifier un article',
+          active: true,
+        },
+          {
+            text: 'Liste des articles',
+            to: {name:'article'}
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
 
 
     {

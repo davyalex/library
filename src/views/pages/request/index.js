@@ -41,6 +41,7 @@ const URL = {
   PARAMETRE: `${baseUrl}/parametre`,
   PARAMETRE_CREATE: `${baseUrl}/parametre/create`,
   PARAMETRE_STORE: `${baseUrl}/parametre/store`,
+  PARAMETRE_UPDATE: `${baseUrl}/parametre/update`,
   PARAMETRE_DESTROY: `${baseUrl}/parametre/destroy`,
 
 //etablissement
@@ -55,6 +56,8 @@ const URL = {
   LIST_CATEGORIE: `${baseUrl}/parametre`,
   LIST_ARTICLE: `${baseUrl}/article`,
   ARTICLE_STORE: `${baseUrl}/article/store`,
+  ARTICLE_UPDATE: `${baseUrl}/article/update`,
+
 
   //kit
   KIT_STORE: `${baseUrl}/kit/store`,

@@ -136,7 +136,8 @@ const sideBar = [
         title: "Niveaux",
         route: { path: `/parametre/niveau` },
         icon: "SettingsIcon",
-        noView: "admin",
+        role: "superadmin",
+        noView: "",
       },
       {
         title: "Communes",

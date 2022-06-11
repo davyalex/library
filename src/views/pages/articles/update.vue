@@ -108,30 +108,44 @@
             </b-form-group>
           </b-col>
         </b-row>
-        
+
         <b-row>
           <b-col cols="6">
-  <b-form-group label="Description" label-for="register-description">
-          <b-form-textarea
-            id="textarea"
-            v-model="description"
-            placeholder="Decrivez l'article"
-            rows="3"
-            max-rows="6"
-          ></b-form-textarea>
-        </b-form-group>
+            <b-form-group label="Description" label-for="register-description">
+              <b-form-textarea
+                id="textarea"
+                v-model="description"
+                placeholder="Decrivez l'article"
+                rows="3"
+                max-rows="6"
+              ></b-form-textarea>
+            </b-form-group>
           </b-col>
 
           <b-col cols="6">
-               <div>
-               <label for="">Image du produit</label>
-               <b-form-file
-                  class="text-center mb-1"
-                  @change="processFile($event)"
-                  placeholder="Images du produit"
-                  drop-placeholder="Glisser un fichier ici..."
-               />
-            </div>
+            <b-row>
+              <b-col cols="8">
+                <div>
+                  <label for="">Image du kit</label>
+
+                  <b-form-file
+                    class="text-center mt-2"
+                    @change="processFile($event)"
+                    placeholder="Images du produit"
+                    drop-placeholder="Glisser un fichier ici..."
+                  />
+                </div>
+              </b-col>
+
+              <b-col cols="4">
+                <img
+                  v-if="getArticle.image"
+                  style="width: 100px; height: 100px"
+                  :src="getArticle.image"
+                  alt=""
+                />
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
 
@@ -269,18 +283,18 @@
         <!-- login button -->
         <b-col cols="12 mt-2">
           <b-button
-                variant="primary"
-                block
-                type="submit"
-                @click.prevent="save"
-                :disabled="loading === true ? true : false"
-              >
-                <div
-                  v-if="loading === true"
-                  class="spinner-border text-light"
-                ></div>
-                <span v-else> Enregistrer</span>
-            </b-button>
+            variant="primary"
+            block
+            type="submit"
+            @click.prevent="save"
+            :disabled="loading === true ? true : false"
+          >
+            <div
+              v-if="loading === true"
+              class="spinner-border text-light"
+            ></div>
+            <span v-else> Enregistrer</span>
+          </b-button>
         </b-col>
       </b-card>
     </b-form>
@@ -307,8 +321,8 @@ import {
   BDropdown,
   BDropdownItem,
   BFormTextarea,
- BImg,
- BFormFile,
+  BImg,
+  BFormFile,
   BRow,
   BCol,
   BButton,
@@ -331,45 +345,62 @@ export default {
     BCardText,
     BForm,
     BRow,
-     BImg,
-     BFormFile,
+    BImg,
+    BFormFile,
     BCol,
     BButton,
-    BFormTextarea
-
+    BFormTextarea,
   },
-   directives: {
+  directives: {
     Ripple,
   },
   data() {
     return {
       title: "",
       prix: "",
-      quantite: "",
+      //   quantite: "",
       categorie: "",
       description: "",
       valideTitle: false,
       validePrix: false,
-      valideQte: false,
+      //   valideQte: false,
       valideCategorie: false,
-      
-        file:"",
+
+      file: "",
       categorieList: [],
+      getArticle: [],
 
       multiJumele: [],
+      articleJumeler: [],
 
-     jumeleItem: {
+      jumeleItem: {
         articleJumele: "",
+        id: "",
       },
-      loading:false,
+      loading: false,
 
       // sideImg: require("@/assets/images/pages/register-v2.svg"),
     };
   },
 
   async mounted() {
-    document.title = "Ajouter un article";
-    this.initTrHeight();
+    document.title = "Modifier un article";
+    this.getArticle = JSON.parse(localStorage.getItem("article"));
+    console.log(this.getArticle);
+
+    this.title = this.getArticle.title;
+    this.prix = this.getArticle.prix;
+    // this.quantite = this.getArticle.quantite
+    this.categorie = this.getArticle.categorie.title;
+    this.articleJumeler = this.getArticle.jumeler;
+
+    for (let index = 0; index < this.articleJumeler.length; index++) {
+      this.multiJumele.push({
+        articleJumele: this.articleJumeler[index].title,
+        id:this.articleJumeler[index].id
+      });
+      console.log(this.multiJumele);
+    }
 
     try {
       await axios
@@ -377,12 +408,10 @@ export default {
         .then((response) => {
           this.categorieList = response.data.parametre;
         });
-       await axios
-        .get(URL.LIST_ARTICLE)
-        .then((response) => {
-          this.articleList = response.data.article;
-          console.log("article", this.articleList);
-        });
+      await axios.get(URL.LIST_ARTICLE).then((response) => {
+        this.articleList = response.data.article;
+        console.log("article", this.articleList);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -397,7 +426,7 @@ export default {
   },
 
   methods: {
- processFile(event) {
+    processFile(event) {
       this.file = event.target.files[0];
 
       if (event.target.files.length !== 0) {
@@ -405,20 +434,17 @@ export default {
       }
     },
 
-
     updateItemForm(index, val) {
       const { id } = val;
-     const j =  this.multiJumele[index].articleJumele_id = id;
-      console.log('jumele',j);
+      const j = (this.multiJumele[index].articleJumele_id = id);
+      console.log("jumele", j);
     },
 
     //duplicateur
     addNewItemInItemForm() {
       this.$refs.form.style.overflow = "hidden";
 
-      this.multiJumele.push(
-        JSON.parse(JSON.stringify(this.jumeleItem))
-      );
+      this.multiJumele.push(JSON.parse(JSON.stringify(this.jumeleItem)));
       this.$nextTick(() => {
         this.trAddHeight(this.$refs.row[0].offsetHeight);
         setTimeout(() => {
@@ -446,7 +472,7 @@ export default {
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: "Article enregistré avec succès",
+          title: "Article modifié avec succès",
           icon: "BookIcon",
           variant: "success",
         },
@@ -498,81 +524,71 @@ export default {
             Accept: "application/json",
           },
         };
-const jumele=this.multiJumele.map(item=>{
-          return{jumeler_id:item.articleJumele_id}
-         })
-          console.log('jumele',jumele);
+        
+        const jumele = this.multiJumele.map((item) => {
+          return { jumeler_id: item.articleJumele_id };
+        });
+        console.log("jumele", jumele);
 
         const newFormdata = new FormData();
 
-      newFormdata.append("image", this.file);
+        newFormdata.append("image", this.file);
 
-      newFormdata.append("title", `${this.title}`);
+        newFormdata.append("title", `${this.title}`);
 
-      // newFormdata.append("quantite", `${this.quantite}`);
+        //   newFormdata.append("quantite", `${this.quantite}`);
 
-      newFormdata.append("prix", this.prix);
-
-      newFormdata.append("categorie_id", this.categorie.id);
-
-      newFormdata.append("description", this.description);
-
-    
-
-      for (let index = 0; index < jumele.length; index++) {
-        const element = jumele[index];
-          newFormdata.append(`jumele[${index}]`,jumele[index].jumeler_id);
-      }
-
-      newFormdata.append("count", this.multiJumele.length);
-
-
+        newFormdata.append("prix", this.prix);
         
+        if (this.getArticle.categorie) {
+          newFormdata.append("categorie_id", this.getArticle.categorie.id);
+        } else {
+          newFormdata.append("categorie_id", this.categorie.id);
+        }
+
+        newFormdata.append("description", this.description);
+        for (let index = 0; index < jumele.length; index++) {
+          const element = jumele[index];
+          newFormdata.append(`jumele[${index}]`, jumele[index].jumeler_id);
+        }
+
+        newFormdata.append("count", this.multiJumele.length);
 
         const data = {
+          id: this.getArticle.id,
           title: this.title,
-          // quantite: this.quantite,
+          quantite: this.quantite,
           prix: this.prix,
-          description:this.description,
-          categorie_id:this.categorie.id,
-          count:this.multiJumele.length,
-          jumele: this.multiJumele.map(item=>{
-            return{jumeler_id:item.articleJumele_id}
-          })
+          description: this.description,
+          categorie_id: this.categorie.id,
+          count: this.multiJumele.length,
+          jumele: this.multiJumele.map((item) => {
+            return { jumeler_id: item.articleJumele_id };
+          }),
         };
-       
-                  this.loading = true;
-        await axios.post(URL.ARTICLE_STORE, newFormdata, config).then((response) => {
-          if (response.data) {
+
+        this.loading = true;
+        await axios
+          .post(URL.ARTICLE_UPDATE + `/${data.id}`, newFormdata, config)
+          .then((response) => {
+            if (response.data) {
               this.articleList.unshift(newFormdata);
-                      this.loading = false;
-            this.title = "",
-              this.quantite = "",
-              this.prix = "",
-              this.categorie = "",
-              this.topEnd();
-              this.$router.push('/article')
-          }
-        });
+              this.loading = false;
+              (this.title = ""),
+                (this.prix = ""),
+                (this.categorie = ""),
+                this.topEnd();
+              this.$router.push("/article");
+            }
+          });
       } catch (error) {
         console.log(error);
         this.loading = false;
-
       }
       bvModalEvt.preventDefault();
     },
   },
 };
-
-// let togg1 = document.getElementById("togg1");
-// let d1 = document.getElementById("d1");
-// togg1.addEventListener("click", () => {
-//   if(getComputedStyle(d1).display != "none"){
-//     d1.style.display = "none";
-//   } else {
-//     d1.style.display = "block";
-//   }
-// })
 </script>
 
 <style lang="scss">

@@ -70,6 +70,14 @@
             </span>
           </template>
 
+           <template #cell(image)="data">
+                      <img v-if="data.item.image"
+                style="width: 32px; height: 32px"
+                :src="data.item.image"
+                alt=""
+              />
+                </template>
+
           <template #cell(niveau)="data">
             <span>
               {{ data.item.niveau.title }}
@@ -215,7 +223,7 @@
                   <b-col cols="12" lg="12">
                     <b-row class="d-flex justify-items-center">
                       <b-col cols="4" lg="4">
-                        <label class="d-inline d-lg-none">{{index}}</label>
+                        <label class="d-inline d-lg-none">Libelle</label>
 
                         <b-form-input
                           v-model="item.title"
@@ -334,6 +342,8 @@ export default {
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
+                { key: "image", label: "image", sortable: true },
+
         { key: "title", label: "Nom", sortable: true },
         { key: "etablissement", label: "etablissement", sortable: true },
         { key: "niveau", label: "niveau", sortable: true },
