@@ -88,6 +88,14 @@ const sideBar = [
   },
 
   {
+    title: "Code promo",
+    route: "code-promo",
+    icon: "WatchIcon",
+    role: "superadmin",
+    noView: "",
+  },
+
+  {
     title: "Parametres",
     route: "",
     icon: "SettingsIcon",

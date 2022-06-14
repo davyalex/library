@@ -230,6 +230,38 @@ const router = new VueRouter({
       },
     },
 
+    {
+      path: '/facture',
+      name: 'commande/facture',
+      component: () => import('@/views/pages/commande/facture.vue'),
+      meta: {
+        pageTitle: 'Detail de la commande',
+        breadcrumb: [
+          {
+            text: 'Liste des commandes',
+            to: {name:'commande'},
+          
+
+          },
+        ],
+        requiresAuth: true,
+      },
+    },
+
+
+    {
+      path: '/code-promo',
+      name: 'code-promo',
+      component: () => import('@/views/pages/code/index.vue'),
+      meta: {
+        pageTitle: 'Creer un code promo',
+        breadcrumb: [
+        ],
+        requiresAuth: true,
+      },
+    },
+
+
 
     {
       path: '/parametre/:slug',

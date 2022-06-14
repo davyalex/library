@@ -20,7 +20,7 @@
           Bienvenue, {{ user_connecte.nom }} {{ user_connecte.prenoms }}
         </h1>
         <b-card-text class="m-auto w-75">
-          Vvous avez réalisé <strong> {{ dashboard.chiffre_affaire }} </strong>de chiffre
+          Vvous avez réalisé <strong> {{ convert(dashboard.chiffre_affaire )}} </strong>de chiffre
           d'affaire ce mois.
         </b-card-text>
       </b-card>
@@ -357,7 +357,16 @@ export default {
     }
   },
 
-  methods: {},
+  methods: {
+     convert(amount) {
+      const formatter = new Intl.NumberFormat("ci-CI", {
+        style: "currency",
+        currency: "XOF",
+        minimumFractionDigits: 2,
+      }).format(parseInt(amount))
+      return formatter
+      },
+  },
 };
 </script>
 

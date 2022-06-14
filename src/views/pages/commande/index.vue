@@ -244,7 +244,7 @@
           </template>
 
              <template #cell(total_ttc)="data">
-              <span class="text-success font-weight-bold"> {{ data.item.total_ttc }} FCFA</span>
+              <span class="text-success font-weight-bold"> {{ convert(data.item.total_ttc) }}</span>
              </template>
 
         
@@ -468,6 +468,16 @@ export default {
   },
 
   methods: {
+
+     convert(amount) {
+      const formatter = new Intl.NumberFormat("ci-CI", {
+        style: "currency",
+        currency: "XOF",
+        minimumFractionDigits: 2,
+      }).format(parseInt(amount))
+      return formatter
+      },
+
     topEnd() {
       this.$toast({
         component: ToastificationContent,

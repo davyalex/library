@@ -101,6 +101,12 @@
                   </div>
                 </template>
 
+                   <template #cell(montant)="data">
+                  <div class="py-50">
+                    {{ convert(data.item.montant) }}
+                  </div>
+                </template>
+
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- <b-link "> -->
@@ -347,6 +353,8 @@ export default {
         { key: "title", label: "Nom", sortable: true },
         { key: "etablissement", label: "etablissement", sortable: true },
         { key: "niveau", label: "niveau", sortable: true },
+                { key: "montant", label: "montant", sortable: true },
+
         { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
@@ -370,6 +378,15 @@ export default {
   },
 
   methods: {
+
+     convert(amount) {
+      const formatter = new Intl.NumberFormat("ci-CI", {
+        style: "currency",
+        currency: "XOF",
+        minimumFractionDigits: 2,
+      }).format(parseInt(amount))
+      return formatter
+      },
 
 format_date(value) {
       if (value) {

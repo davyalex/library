@@ -71,7 +71,7 @@
           </template>
 
                <template #cell(prix)="data">
-                    <span> {{ data.item.prix }} FCFA </span>
+                    <span> {{ convert(data.item.prix) }} </span>
                 </template>
 
                   <template #cell(image)="data">
@@ -277,6 +277,8 @@ export default {
 
   async mounted() {
     document.title = "Liste des articles";
+    
+
     try {
       await axios.get(URL.LIST_ARTICLE).then((response) => {
         this.articleList = response.data.article;
@@ -290,6 +292,19 @@ export default {
   },
 
   methods: {
+
+    
+
+ convert(amount) {
+      const formatter = new Intl.NumberFormat("ci-CI", {
+        style: "currency",
+        currency: "XOF",
+        minimumFractionDigits: 2,
+      }).format(parseInt(amount))
+      return formatter
+      },
+
+
     topEnd() {
       this.$toast({
         component: ToastificationContent,

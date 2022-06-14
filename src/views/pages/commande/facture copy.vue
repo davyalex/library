@@ -1,140 +1,29 @@
 <template>
-  <div class="row" ref="document">
-    <!-- Modal pour affecter une commande au livreur -->
-    <b-modal
-      id="modal-send"
-      ref="modalUser"
-      cancel-variant="outline-secondary"
-      ok-title="Créer"
-      cancel-title="Annuler"
-      centered
-      hide-footer
-      :title="'Affecter la commande N°' + recoverCommande.code"
-    >
-      <validation-observer ref="registerForm">
-        <b-form class="auth-register-form mt-2" @submit.prevent>
-          <!-- code de commande -->
-          <b-form-group label="" label-for="register-libelle">
-            <label for=""
-              >Choisir un livreur<span class="p-0 text-danger h6"></span
-            ></label>
-            <v-select
-              v-model="livreur"
-              @input="validateLivreur"
-              placeholder="Selectionnez un livreur"
-              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-              rules="required"
-              label="nom"
-              :options="users"
-            >
-              <template v-slot:option="option">
-                {{ option.nom }}
-                {{ option.prenoms }}
-              </template>
-            </v-select>
-          </b-form-group>
+<div>
 
-          <b-form-group label="Prenom" label-for="code" v-if="livreur">
-            <validation-provider
-              #default="{ errors }"
-              name="code"
-              rules="required"
-            >
-              <b-form-input
-                v-model="prenom"
-                :state="errors.length > 0 ? false : null"
-                placeholder="ETA009"
-                disabled
-              />
-            </validation-provider>
-          </b-form-group>
-
-          <b-form-group label="Contact" label-for="code" v-if="livreur">
-            <validation-provider
-              #default="{ errors }"
-              name="code"
-              rules="required"
-            >
-              <b-form-input
-                v-model="contact"
-                :state="errors.length > 0 ? false : null"
-                placeholder="ETA009"
-                disabled
-              />
-            </validation-provider>
-          </b-form-group>
-
-          <b-form-group label="Email" label-for="code" v-if="livreur">
-            <validation-provider
-              #default="{ errors }"
-              name="code"
-              rules="required"
-            >
-              <b-form-input
-                v-model="email"
-                :state="errors.length > 0 ? false : null"
-                placeholder="ETA009"
-                disabled
-              />
-            </validation-provider>
-          </b-form-group>
-          <b-button
-            variant="primary"
-            block
-            type="submit"
-            @click.prevent="save"
-            :disabled="loading === true ? true : false"
-          >
-            <div
-              v-if="loading === true"
-              class="spinner-border text-light"
-            ></div>
-            <span v-else> <feather-icon icon="SendIcon" /> Affecter</span>
-          </b-button>
-        </b-form>
-      </validation-observer>
-    </b-modal>
-    <div class="col-md-12">
-      <div class="card-body float-right pb-1 pt-0">
-        <div class="demo-inline-spacing">
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="primary"
-            v-b-modal.v-b-modal.modal-send
-            :disabled="recoverCommande.etat.title === 'Affectée' ? true : false"
-          >
-            <feather-icon icon="SendIcon" />
-            <span v-if="recoverCommande.etat.title === 'Affectée'">
-              Déjà affectée</span
-            >
-            <span v-else> Affecter</span>
-          </b-button>
-
-          <b-button
+<div class="col-md-12  mb-3">
+   <b-button class="float-right"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
-            @click="facture"
+            @click="exportToPDF"
           >
-            <feather-icon icon="PrinterIcon" />
-            Imprimer
+            <feather-icon icon="DownloadIcon" />
+            Telecharger 
           </b-button>
+</div>
 
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="danger"
-            @click="destroy(recoverCommande.id)"
-          >
-            <feather-icon icon="TrashIcon" />
-            Supprimer
-          </b-button>
-        </div>
-      </div>
+  
+  
+  <div class="row py-2" ref="document" style="background-color:white">
+
+    <div class="col-md-12 py-2">
+        <b-img fluid :src="require('@/assets/images/logo/logo-original.png')" width="50%" />
     </div>
-
+ 
     <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">
+      <div class="">
+        <div class="">
+          <h4 class="">
             <feather-icon icon="ShoppingCartIcon" />
 
             Details commandes
@@ -281,8 +170,8 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
+      <div class="">
+        <div class="">
           <h4 class="card-title">
             <feather-icon icon="UserIcon" />
 
@@ -315,93 +204,8 @@
         </div>
       </div>
     </div>
-
-    <div
-      class="col-md-6"
-      v-for="(item, index) in recoverCommande.kits"
-      :key="index.id"
-    >
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">
-            <feather-icon icon="BookOpenIcon" />
-
-            Details kit {{ index + 1 }}
-          </h4>
-          <hr />
-
-          <div class="row">
-            <div class="col-md-12">
-              <div class="row">
-                <div class="col-md-6">
-                  <h3>
-                    Code: <span class="text-success"> {{ item.code }}</span>
-                  </h3>
-                </div>
-
-                <div class="col-md-6">
-                  <h3>
-                    Montant:
-                    <span class="text-success">
-                      {{ convert(item.montant) }}</span
-                    >
-                  </h3>
-                </div>
-              </div>
-
-              <div class="row py-2">
-                <div class="col-md-12">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Article</th>
-                        <th scope="col">Quantité</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="(item, index) in item.article_commandes"
-                        :key="index.id"
-                      >
-                        <th scope="row">{{ index + 1 }}</th>
-                        <td>{{ item.title }}</td>
-                        <td>{{ item.quantite }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <!-- <p class="card-text font-weight-bold">
-                Code <br /><span
-                  class="text-success font-weight-bol"
-                >
-                  {{ item.code }}
-                </span>
-              </p>
-
-               <p class="card-text font-weight-bold">
-                Montant <br /><span
-                  class="text-success font-weight-bol"
-                >
-                  {{ item.montant }} 
-                </span>
-              </p>
-
-               <p  class="card-text font-weight-bold">
-                Article du kit <br /><span v-for="(item,index) in item.article_commandes" :key="index.id"
-                  class="text-success font-weight-bol"
-                >
-            <br> {{ item.title }} 
-                  <br><span> {{ item.quantite }} </span>
-                </span>
-              </p> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -517,12 +321,9 @@ export default {
     }
   },
 
+  
+
   methods: {
-
-facture(){
-  this.$router.push({name:'commande/facture'})
-},
-
     exportToPDF() {
       html2pdf(this.$refs.document, {
         margin: 0.25,
