@@ -82,6 +82,14 @@ const URL = {
   DASHBOARD: `${baseUrl}/web/dashboard`,
 
 
+  //promotion
+  PROMOTION_STORE: `${baseUrl}/promotion/store`,
+  PROMOTION_LIST: `${baseUrl}/promotion`,
+  PROMOTION_DESTROY: `${baseUrl}/promotion/destroy`,
+
+
+
+
 };
 
 export default URL;
