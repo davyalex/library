@@ -35,6 +35,7 @@ const URL = {
 //type parametre
   TYPEPARAMETRE: `${baseUrl}/type-parametre`,
   TYPEPARAMETRE_STORE: `${baseUrl}/type-parametre/store`,
+  TYPEPARAMETRE_UPDATE: `${baseUrl}/type-parametre/update`,
   TYPEPARAMETRE_DESTROY: `${baseUrl}/type-parametre/destroy`,
 
   //parametre
@@ -76,6 +77,8 @@ const URL = {
   LIST_COMMANDE: `${baseUrl}/commande`,
   AFFECTE: `${baseUrl}/commande_etat`,
   COMMANDE_DESTROY: `${baseUrl}/commande/destroy`,
+  COMMANDE_CANCEL: `${baseUrl}/commande/cancel`,
+  COMMANDE_DELIVERY: `${baseUrl}/commande/delivery`,
   
 
   //dashboard
@@ -86,6 +89,8 @@ const URL = {
   PROMOTION_STORE: `${baseUrl}/promotion/store`,
   PROMOTION_LIST: `${baseUrl}/promotion`,
   PROMOTION_DESTROY: `${baseUrl}/promotion/destroy`,
+  PROMOTION_UPDATE: `${baseUrl}/promotion/update`,
+
 
 
 

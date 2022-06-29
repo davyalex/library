@@ -126,12 +126,12 @@
           <b-col class="3"
             ><b-form-group label="" label-for="email">
               <label for="email"
-                >Email <span class="p-0 text-danger h6"> *</span></label
+                >Email <span class="p-0 text-danger h6"> </span></label
               >
               <validation-provider
                 #default="{ errors }"
                 name="email"
-                rules="required"
+                rules=""
               >
                 <b-form-input
                   id="email"
@@ -140,12 +140,12 @@
                   :state="errors.length > 0 ? false : null"
                   placeholder="exemple@gmail.com"
                 />
-                <small
+                <!-- <small
                   :class="valideEmail ? 'block' : 'none'"
                   class="text-danger"
                 >
                   Veuillez saisir l'email
-                </small>
+                </small> -->
               </validation-provider>
             </b-form-group>
           </b-col>
@@ -463,17 +463,17 @@ export default {
       }
     },
 
-    obligatoryEmail() {
-      if (!this.email) {
-        this.valideEmail = true;
+    // obligatoryEmail() {
+    //   if (!this.email) {
+    //     this.valideEmail = true;
 
-        this.erreur = true;
-      } else {
-        this.valideEmail = false;
+    //     this.erreur = true;
+    //   } else {
+    //     this.valideEmail = false;
 
-        this.erreur = false;
-      }
-    },
+    //     this.erreur = false;
+    //   }
+    // },
 
     obligatoryCommune() {
       if (this.selectedCommune == "Votre commune" || !this.selectedCommune) {
@@ -505,7 +505,7 @@ export default {
         this.obligatoryCommune();
         this.obligatoryQuartier();
         this.obligatoryContact();
-        this.obligatoryEmail();
+        // this.obligatoryEmail();
 
         const config = {
           headers: {

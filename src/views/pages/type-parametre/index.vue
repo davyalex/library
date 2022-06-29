@@ -57,6 +57,8 @@
             max-rows="6"
           ></b-form-textarea>
         </b-form-group>
+
+        <b-form-checkbox v-model="admin" value="1"> Admin </b-form-checkbox>
       </b-form>
     </b-modal>
 
@@ -67,10 +69,11 @@
       ok-title="Modifier"
       cancel-title="Annuler"
       centered
+      ref="modalpara"
       title="Modifier un  type parametre"
       @ok="edit"
     >
-      <b-form>
+      <b-form @submit.prevent>
         <div class="text-center">
           <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
         </div>
@@ -83,7 +86,6 @@
           >
             <b-form-input
               id="register-nom"
-              @input="validateTitle"
               v-model="editTitle"
               name="register-nom"
               :state="errors.length > 0 ? false : null"
@@ -117,6 +119,7 @@
             max-rows="6"
           ></b-form-textarea>
         </b-form-group>
+        <b-form-checkbox v-model="editAdmin" value="1"> Admin </b-form-checkbox>
       </b-form>
     </b-modal>
 
@@ -144,6 +147,15 @@
               <feather-icon icon="PlusIcon" class="mx-auto" />
               Nouveau type parametre
             </b-button>
+
+             <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="SettingsIcon"
+                size="30"
+                class="text-primary"
+                :badge="pTotal"
+              />
+            </div>
           </b-col>
 
           <!-- Search -->
@@ -183,7 +195,7 @@
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- Dropdown -->
-              <b-link v-b-modal.modal-update disabled>
+              <b-link v-b-modal.modal-update>
                 <feather-icon
                   icon="Edit3Icon"
                   :id="`invoice-row-${data.item.id}-Edit3-icon`"
@@ -352,15 +364,17 @@ export default {
       title: "",
       subtitle: "",
       description: "",
+      admin: "",
 
       editDescription: "",
       editTitle: "",
       editSubtitle: "",
+      editAdmin: "",
 
       valideTitle: false,
       msgError: "",
       typeParametre: [],
-      perPage: 30,
+      perPage: 100,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
@@ -372,7 +386,7 @@ export default {
         { key: "actions" },
       ],
       filtreTypeParametre: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
     };
   },
 
@@ -424,6 +438,7 @@ export default {
       this.editTitle = getTypeParametre.title;
       this.editSubtitle = getTypeParametre.subtitle;
       this.editDescription = getTypeParametre.description;
+      this.editAdmin = getTypeParametre.status;
     },
 
     addParametre(id, slug) {
@@ -448,6 +463,7 @@ export default {
     },
 
     async save(bvModalEvt) {
+      console.log(this.admin);
       try {
         this.validateTitle();
 
@@ -461,6 +477,7 @@ export default {
             title: this.title,
             subtitle: this.subtitle,
             description: this.description,
+            status: this.admin,
           };
           console.log(data);
           await axios
@@ -475,6 +492,7 @@ export default {
                 this.title = "";
                 this.subtitle = "";
                 this.description = "";
+                this.admin = "";
               } else if (this.msgError !== "") {
                 this.topEndE();
                 bvModalEvt.preventDefault();
@@ -487,14 +505,55 @@ export default {
       bvModalEvt.preventDefault();
     },
 
+    //edit
+    async edit() {
+      try {
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+
+        const data = {
+          id: this.getTypeParametre.id,
+          title: this.editTitle,
+          subtitle: this.editSubtitle,
+          status: this.editAdmin,
+          description: this.editDescription,
+        };
+        // this.loading = true;
+        console.log(data);
+        await axios
+          .post(URL.TYPEPARAMETRE_UPDATE + `/${data.id}`, data, config)
+          .then((response) => {
+            if (response.data) {
+              // this.loading = false;
+              // this.$refs.modalpara.hide();
+              // this.topEnd();
+              (this.editTitle = ""),
+                (this.editSubtitle = ""),
+                (this.editAdmin = ""),
+                this.typeParametre.unshift(data);
+              axios.get(URL.TYPEPARAMETRE).then((response) => {
+                this.typeParametre = response.data.liste;
+                console.log("liste", this.typeParametre);
+                this.pTotal = this.typeParametre.length;
+              });
+            }
+          });
+      } catch (error) {
+        // this.loading = false;
+      }
+    },
+
     //destroy
     async deleteTypeParametre(indentifiant) {
-      const id_delete = {
+      const id = {
         id: indentifiant,
       };
       try {
         await axios
-          .post(URL.TYPEPARAMETRE_DESTROY, id_delete)
+          .post(URL.TYPEPARAMETRE_DESTROY + `/${id.id}`)
           .then((response) => {
             response.data;
             axios.get(URL.TYPEPARAMETRE).then((response) => {

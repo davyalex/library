@@ -159,10 +159,10 @@
                     </b-form-group>
                   </b-col>
 
-                  <b-col cols="4">
+                  <b-col cols="1">
                     <b-form-group label-for="title">
                       <label for="title"
-                        >quantite
+                        >qte
                         <span class="p-0 text-danger h6"> *</span></label
                       >
 
@@ -183,7 +183,7 @@
                     </b-form-group>
                   </b-col>
 
-                  <b-col cols="4">
+                  <b-col cols="3">
                     <b-form-group label-for="title">
                       <label for="title"
                         >prix <span class="p-0 text-danger h6"> *</span></label
@@ -419,14 +419,15 @@ export default {
     },
 
     updateItemForm(index, val) {
-      const { prix } = val;
+      const { prix, quantite} = val;
       const { id } = val;
 
       const price = (this.multiArticle[index].prix = prix);
       const q = (this.multiArticle[index].id = id);
       this.pU = this.multiArticle[index].article.prix;
       this.prix = price;
-
+      this.multiArticle[index].quantite = 1
+      
       console.log("article", price, q, this.pU);
 
       // let mt =0
@@ -446,21 +447,22 @@ export default {
     },
 
     validateQte(index) {
+      console.log(index,this.multiArticle[index]);
       let mont = 0;
       for (let i = 0; i < this.multiArticle.length; i++) {
         if (
-          (i === index && parseInt(this.multiArticle[i].quantite) > 0) ||
-          (i === index && this.multiArticle[i].quantite.length > 0)
+          (i === index && parseInt(this.multiArticle[index].quantite) > 0) ||
+          (i === index && this.multiArticle[index].quantite.length > 0)
         ) {
           this.multiArticle[i].prix =
-            this.multiArticle[i].article.prix * this.multiArticle[i].quantite;
+          parseInt(  this.multiArticle[i].prix) * parseInt(this.multiArticle[i].quantite);
           //  this.montant =    mont +=Number(this.multiArticle[i].prix)
           //  console.log(this.montant);
         } else if (
-          (i === index && parseInt(this.multiArticle[i].quantite) <= 1) ||
-          (i === index && this.multiArticle[i].quantite.length <= 1)
+          (i === index && parseInt(this.multiArticle[index].quantite) <= 1) ||
+          (i === index && this.multiArticle[index].quantite.length <= 1)
         ) {
-          this.multiArticle[i].prix = this.multiArticle[i].article.prix;
+          this.multiArticle[i].prix = this.multiArticle[i].prix;
         }
       }
     },
@@ -625,6 +627,8 @@ export default {
           newFormdata.append("etablissement_id", this.etablissement.id);
 
           newFormdata.append("niveau_id", this.niveau.id);
+                              newFormdata.append("montant", this.montant);
+
 
           //         newFormdata.append("description", this.description);
           //         articles.forEach((item,index) => {

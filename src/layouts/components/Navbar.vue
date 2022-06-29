@@ -38,22 +38,22 @@
             size="40"
             variant="light-primary"
             badge
-            :src="require('@/assets/images/avatars/13-small.png')"
+            :src="require('@/assets/images/avatars/219983.png')"
             class="badge-minimal"
             badge-variant="success"
           />
         </template>
 
-        <b-dropdown-item link-class="d-flex align-items-center">
+        <!-- <b-dropdown-item link-class="d-flex align-items-center">
           <feather-icon
             size="16"
             icon="UserIcon"
             class="mr-50"
           />
           <span>Profile</span>
-        </b-dropdown-item>
+        </b-dropdown-item> -->
 
-        <b-dropdown-item link-class="d-flex align-items-center">
+        <!-- <b-dropdown-item link-class="d-flex align-items-center">
           <feather-icon
             size="16"
             icon="MailIcon"
@@ -80,7 +80,7 @@
           <span>Chat</span>
         </b-dropdown-item>
 
-        <b-dropdown-divider />
+        <b-dropdown-divider /> -->
 
         <b-dropdown-item link-class="d-flex align-items-center" @click="deconnecter">
           <feather-icon

@@ -16,24 +16,23 @@
           <!-- code de l'etablissement -->
           <b-form-group
             label="Etablissement"
-            
-            v-if="userItem === 'client' || userItem === 'etablissement'" 
+            v-if="userItem === 'etablissement'"
           >
             <validation-provider
               #default="{ errors }"
               name="code"
               rules="required"
             >
-               <v-select
-                  v-model="etablissement"
-                  @input="validateEtablissement"
-                  placeholder="Selectionnez un etablissement"
-                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  :options="etablissements"
-                  label="title"
-                  :state="errors.length > 0 ? false : null"
-                >
-                </v-select>
+              <v-select
+                v-model="etablissement"
+                @input="validateEtablissement"
+                placeholder="Selectionnez un etablissement"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="etablissements"
+                label="title"
+                :state="errors.length > 0 ? false : null"
+              >
+              </v-select>
               <small v-if="valideEtablissement" class="text-danger">
                 Veuillez choisir un etablissement'
               </small>
@@ -43,11 +42,7 @@
             </validation-provider>
           </b-form-group>
           <!-- Nom -->
-          <b-form-group
-            label="Nom"
-            label-for="nom"
-            v-if="userItem"
-          >
+          <b-form-group label="Nom" label-for="nom" v-if="userItem">
             <validation-provider
               #default="{ errors }"
               name="nom"
@@ -66,11 +61,7 @@
           </b-form-group>
 
           <!-- Prenoms -->
-          <b-form-group
-            label="Prenoms"
-            label-for="prenoms"
-            v-if="userItem"
-          >
+          <b-form-group label="Prenoms" label-for="prenoms" v-if="userItem">
             <validation-provider
               #default="{ errors }"
               name="prenoms"
@@ -216,8 +207,8 @@
         <b-form class="auth-register-form mt-2" @submit.prevent>
           <!-- code de l'etablissement -->
           <b-form-group
-            v-if="roleUser === 'client'"
-            label="code"
+            v-if="roleUser === 'etablissement'"
+            label="Etablissement"
             label-for="code"
           >
             <validation-provider
@@ -225,20 +216,20 @@
               name="code"
               rules="required"
             >
-              <b-form-input
+              <v-select
                 v-model="editCode"
                 @input="validateEtablissement"
+                placeholder="Selectionnez un etablissement"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="etablissements"
+                label="title"
                 :state="errors.length > 0 ? false : null"
-                placeholder="ETA009"
-              />
+              >
+              </v-select>
             </validation-provider>
           </b-form-group>
           <!-- Nom -->
-          <b-form-group
-            label="Nom"
-            label-for="nom"
-            v-if="roleUser !== 'etablissement'"
-          >
+          <b-form-group label="Nom" label-for="nom">
             <validation-provider
               #default="{ errors }"
               name="nom"
@@ -254,11 +245,7 @@
           </b-form-group>
 
           <!-- Prenoms -->
-          <b-form-group
-            label="Prenoms"
-            label-for="prenoms"
-            v-if="roleUser !== 'etablissement'"
-          >
+          <b-form-group label="Prenoms" label-for="prenoms">
             <validation-provider
               #default="{ errors }"
               name="prenoms"
@@ -410,7 +397,9 @@
                 @click="getName('etablissement')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold">Ajouter un chef etablissement</span>
+                <span class="align-middle ml-50 font-weight-bold"
+                  >Ajouter un chef etablissement</span
+                >
               </b-dropdown-item>
 
               <b-dropdown-item
@@ -418,7 +407,9 @@
                 @click="getName('client')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold">Ajouter un client</span>
+                <span class="align-middle ml-50 font-weight-bold"
+                  >Ajouter un client</span
+                >
               </b-dropdown-item>
 
               <b-dropdown-item
@@ -426,37 +417,103 @@
                 @click="getName('livreur')"
               >
                 <feather-icon icon="UserIcon" />
-                <span class="align-middle ml-50 font-weight-bold">Ajouter un livreur</span>
+                <span class="align-middle ml-50 font-weight-bold"
+                  >Ajouter un livreur</span
+                >
               </b-dropdown-item>
             </b-dropdown>
+            <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="UserIcon"
+                size="30"
+                class="text-primary"
+                :badge="userFiltre.length"
+              />
+            </div>
+            <span class="text-center"> </span>
           </b-col>
 
           <!-- Search -->
-          <b-col cols="12" md="6" class="mt-1">
+          <b-col cols="12" md="6" class="row mt-1">
             <div class="d-flex align-items-center justify-content-end">
-              <b-input-group class="input-group-merge">
-                <!-- <b-input-group-prepend is-text  class="px-1">
+
+                <div class="col-md-4">
+                <b-dropdown
+              id="dropdown-1"
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              :text="titre ? titre : 'Filtrer par rôle'"
+              variant="secondary"
+              class="mr-1"
+            >
+              <b-dropdown-item v-if="roleConnect==='superadmin'" @click="getRole('superadmin')">
+                <feather-icon icon="UserIcon" />
+                <span class="align-middle ml-50 text-success font-weight-bold"
+                  >Super-admin</span
+                >
+              </b-dropdown-item>
+
+              <b-dropdown-item @click="getRole('admin')">
+                <feather-icon icon="UserIcon" />
+                <span class="align-middle ml-50 text-warning font-weight-bold"
+                  >Administrateur</span
+                >
+              </b-dropdown-item>
+
+              <b-dropdown-item @click="getRole('livreur')">
+                <feather-icon icon="UserIcon" />
+                <span class="align-middle ml-50 text-primary font-weight-bold"
+                  >Livreur</span
+                >
+              </b-dropdown-item>
+
+              <b-dropdown-item @click="getRole('client')">
+                <feather-icon icon="UserIcon" />
+                <span class="align-middle ml-50 text-secondary font-weight-bold"
+                  >Client</span
+                >
+              </b-dropdown-item>
+
+                <b-dropdown-item @click="getRole('all')">
+                <feather-icon icon="UserIcon" />
+                <span class="align-middle ml-50 text-secondary font-weight-bold"
+                  >Tous les utilisateurs</span
+                >
+              </b-dropdown-item>
+
+            </b-dropdown>
+              </div>
+             
+              <div class="col-md-8">
+                <b-input-group class="input-group-merge">
+                  <!-- <b-input-group-prepend is-text  class="px-1">
                   <feather-icon icon="SearchIcon" />
                 </b-input-group-prepend> -->
-                <b-form-input
-                  v-model="filtreusers"
-                  class="d-inline-block mr-1"
-                  placeholder="Rechercher par : nom, role, date..."
-                />
-              </b-input-group>
+                  <b-form-input
+                    v-model="filtreusers"
+                    class="d-inline-block ml-2"
+                    placeholder="Rechercher par : nom, role, date..."
+                  />
+                </b-input-group>
+              </div>
+           
             </div>
           </b-col>
         </b-row>
-
+        <div class="text-center" v-if="spinner === true">
+          <b-spinner variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les users -->
         <b-table
+          v-if="spinner === false"
           hover
           responsive
           :per-page="perPage"
           :current-page="currentPage"
-          :items="users"
+          :items="userFiltre"
           :fields="tableColumns"
           :filter="filtreusers"
+          :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
           class="bg-white"
@@ -515,7 +572,7 @@
             >
               <b-pagination
                 v-model="currentPage"
-                :total-rows="pTotal"
+                :total-rows="userFiltre.length"
                 :per-page="perPage"
                 first-number
                 last-number
@@ -559,6 +616,8 @@ import {
   BFormTextarea,
   BDropdown,
   BDropdownItem,
+  BSpinner,
+  BBadge,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -571,6 +630,7 @@ import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import { tryOnUnmounted } from "@vueuse/shared";
 
 export default {
   components: {
@@ -580,6 +640,7 @@ export default {
     BFormInput,
     BButton,
     BModal,
+    BBadge,
     moment,
     BFormGroup,
     VBModal,
@@ -601,6 +662,7 @@ export default {
     BFormTextarea,
     BDropdown,
     BDropdownItem,
+    BSpinner,
   },
   mixins: [togglePasswordVisibility],
   directives: {
@@ -614,7 +676,7 @@ export default {
       phone: "",
       password: "",
       code: "",
-      etablissement:"",
+      etablissement: "",
       required,
       email,
       valideNom: false,
@@ -636,8 +698,11 @@ export default {
       editEmail: "",
       editPhone: "",
       role: "",
+      codeEta: "",
       loading: false,
       roleUser: "",
+      spinner: true,
+      roleConnect:"",
 
       // errorMsg: "",
       emailList: "",
@@ -645,9 +710,14 @@ export default {
       etablissements: [],
       userItem: [],
       recoverUserInfos: "",
-      perPage: 5,
+      recoverRole:"",
+      userFiltre:"",
+      titre:"",
+      perPage: 100,
       currentPage: 1,
       pTotal: 0,
+      currentSort: "created_at",
+      currentSortDir: "asc",
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
         { key: "nom", label: "nom", sortable: true },
@@ -659,7 +729,7 @@ export default {
         { key: "actions" },
       ],
       filtreusers: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
     };
   },
   computed: {
@@ -670,11 +740,18 @@ export default {
 
   async mounted() {
     document.title = "Utilisateur";
+    this.spinner = true;
+
+   const userConnect = JSON.parse(localStorage.getItem('user'))
+        this.roleConnect = userConnect.roles[0].name
 
     try {
       await axios.get(URL.LIST_USER).then((response) => {
+        this.spinner = false;
         this.users = response.data.liste;
-        this.pTotal = this.users.length;
+        this.userFiltre = this.users;
+        // this.pTotal = this.users.length;
+        console.log(this.users);
       });
 
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
@@ -687,6 +764,56 @@ export default {
   },
 
   methods: {
+
+    //envoi des item en localStorage
+    getRole(item) {
+      localStorage.setItem("getRole", item);
+
+      this.recoverRole = localStorage.getItem("getRole");
+        console.log('ggg',this.users[0].roles[0].name);
+      //   filtrage
+      if (this.recoverRole === "admin") {
+        const filterAdmin = this.users.filter((item) => {
+          return item.roles[0].name === 'admin';
+        });
+        this.userFiltre = filterAdmin;
+        this.titre = "Liste des administrateurs";
+        console.log(this.userFiltre, this.titre);
+      }
+        else if (this.recoverRole === "superadmin") {
+        const filterAdmin = this.users.filter((item) => {
+          return item.roles[0].name === 'superadmin';
+        });
+        this.userFiltre = filterAdmin;
+        this.titre = "Liste des super-admin";
+        console.log(this.userFiltre, this.titre);
+      }
+
+        else if (this.recoverRole === "livreur") {
+        const filterAdmin = this.users.filter((item) => {
+          return item.roles[0].name === 'livreur';
+        });
+        this.userFiltre = filterAdmin;
+        this.titre = "Liste des livreur";
+        console.log(this.userFiltre, this.titre);
+      }
+
+        if (this.recoverRole === "client") {
+        const filterAdmin = this.users.filter((item) => {
+          return item.roles[0].name === 'client';
+        });
+        this.userFiltre = filterAdmin;
+        this.titre = "Liste des clients";
+        console.log(this.userFiltre, this.titre);
+      }
+      
+       else if (this.recoverRole === "all") {
+        this.userFiltre = this.users;
+        this.titre = "";
+      }
+    },
+
+
     topEnd() {
       this.$toast({
         component: ToastificationContent,
@@ -719,11 +846,12 @@ export default {
       this.editPrenoms = this.recoverUserInfos.prenoms;
       this.editEmail = this.recoverUserInfos.email;
       this.editPhone = this.recoverUserInfos.phone;
-      const codeEta = this.etablissements.filter((item) => {
-        return item.id === this.recoverUserInfos.etablissement_id;
-      });
-      console.log("eee", codeEta[0].code);
-      this.editCode = codeEta[0].code;
+      this.editCode = this.recoverUserInfos.etablissement.title;
+      // this.codeEta = this.etablissements.filter((item) => {
+      //   return item.id === this.recoverUserInfos.etablissement_id;
+      // });
+      // console.log("eee", this.codeEta[0].code);
+      // this.editCode = this.codeEta[0].code;
 
       this.roleUser = this.recoverUserInfos.roles[0].name;
 
@@ -834,7 +962,7 @@ export default {
         this.validatePrenom();
         this.validatePhone();
 
-        if (this.userItem === "client" || this.userItem==="etablissement") {
+        if (this.userItem === "etablissement") {
           this.validateEtablissement();
         }
         const config = {
@@ -861,24 +989,22 @@ export default {
           };
           this.loading = true;
           console.log(data);
-          await axios
-            .post(URL.USER_STORE , data, config)
-            .then((response) => {
-              if (response.data) {
-                this.loading = false;
-                this.$refs.modalUser.hide();
+          await axios.post(URL.USER_STORE, data, config).then((response) => {
+            if (response.data) {
+              this.loading = false;
+              this.$refs.modalUser.hide();
 
-                (this.nom = ""),
-                  (this.prenoms = ""),
-                  (this.phone = ""),
-                  (this.email = ""),
-                  (this.password = ""),
-                  (this.etablissement = ""),
-                  this.topEnd();
-                this.users.unshift(response.data.user);
-                console.log(this.users);
-              }
-            });
+              (this.nom = ""),
+                (this.prenoms = ""),
+                (this.phone = ""),
+                (this.email = ""),
+                (this.password = ""),
+                (this.etablissement = ""),
+                this.topEnd();
+              this.users.unshift(response.data.user);
+              console.log(this.users);
+            }
+          });
         }
       } catch (error) {
         this.loading = false;
@@ -902,46 +1028,50 @@ export default {
             Accept: "application/json",
           },
         };
+        let codeEt = "";
+        if (this.editCode === this.recoverUserInfos.etablissement.title) {
+          codeEt = this.recoverUserInfos.etablissement_id;
+          console.log(codeEt);
+        } else {
+          codeEt = this.editCode.id;
+          console.log(codeEt);
+        }
 
-  
-          const data = {
-            id: this.recoverUserInfos.id,
-            nom: this.editNom,
-            prenoms: this.editPrenoms,
-            email: this.editEmail,
-            phone: this.editPhone,
-            // code: this.code,
-          };
-          this.loading = true;
-          console.log(data);
-          await axios
-            .post(URL.USER_UPDATE + `/${data.id}`, data, config)
-            .then((response) => {
-              if (response.data) {
-                this.loading = false;
-                this.$refs.modalUser.hide();
-                this.topEnd();
-                (this.editNom = ""),
-                  (this.editPrenoms = ""),
-                  (this.editEmail = ""),
-                  (this.editPhone = ""),
-                  
+        const data = {
+          id: this.recoverUserInfos.id,
+          nom: this.editNom,
+          prenoms: this.editPrenoms,
+          email: this.editEmail,
+          phone: this.editPhone,
+          etablissement_id: codeEt,
+        };
+        this.loading = true;
+        console.log(data);
+        await axios
+          .post(URL.USER_UPDATE + `/${data.id}`, data, config)
+          .then((response) => {
+            if (response.data) {
+              this.loading = false;
+              this.$refs.modalUser.hide();
+              this.topEnd();
+              (this.editNom = ""),
+                (this.editPrenoms = ""),
+                (this.editEmail = ""),
+                (this.editPhone = ""),
                 this.users.unshift(data);
-                
-                console.log(this.users);
-                 axios.get(URL.LIST_USER).then((response) => {
-              this.users = response.data.liste;
-              this.pTotal = this.users.length;
-            });
-              }
-            });
-       
+
+              console.log(this.users);
+              axios.get(URL.LIST_USER).then((response) => {
+                this.users = response.data.liste;
+                this.pTotal = this.users.length;
+              });
+            }
+          });
       } catch (error) {
         this.loading = false;
         // this.errorMsg = error.response.data.message;
         // console.log(this.errorMsg.message);
-              bvModalEvt.preventDefault();
-
+        bvModalEvt.preventDefault();
       }
     },
 

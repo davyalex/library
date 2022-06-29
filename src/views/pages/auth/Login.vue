@@ -4,7 +4,7 @@
       <!-- Brand logo-->
       <b-link class="brand-logo">
         <vuexy-logo />
-        <h2 class="brand-text text-success ml-1">Librairie siloe</h2>
+        <h2 class="brand-text text-success ml-1">Siloë-connect school</h2>
       </b-link>
       <!-- /Brand logo-->
 
@@ -54,9 +54,9 @@
               <b-form-group>
                 <div class="d-flex justify-content-between">
                   <label for="login-password">Password</label>
-                  <b-link :to="{ name: 'auth-forgot-password-v2' }">
+                  <!-- <b-link :to="{ name: 'auth-forgot-password-v2' }">
                     <small>Forgot Password?</small>
-                  </b-link>
+                  </b-link> -->
                 </div>
                 <validation-provider
                   #default="{ errors }"
@@ -89,7 +89,7 @@
               </b-form-group>
 
               <!-- checkbox -->
-              <b-form-group>
+              <!-- <b-form-group>
                 <b-form-checkbox
                   id="remember-me"
                   v-model="status"
@@ -97,7 +97,7 @@
                 >
                   Se souvenir de moi
                 </b-form-checkbox>
-              </b-form-group>
+              </b-form-group> -->
 
               <!-- submit buttons -->
               <b-button type="submit" variant="primary" block @click="save">
@@ -114,12 +114,12 @@
           </b-card-text>
 
           <!-- divider -->
-          <div class="divider my-2">
+          <!-- <div class="divider my-2">
             <div class="divider-text">or</div>
-          </div>
+          </div> -->
 
           <!-- social buttons -->
-          <div class="auth-footer-btn d-flex justify-content-center">
+          <!-- <div class="auth-footer-btn d-flex justify-content-center">
             <b-button variant="facebook" href="javascript:void(0)">
               <feather-icon icon="FacebookIcon" />
             </b-button>
@@ -132,7 +132,7 @@
             <b-button variant="github" href="javascript:void(0)">
               <feather-icon icon="GithubIcon" />
             </b-button>
-          </div>
+          </div> -->
         </b-col>
       </b-col>
       <!-- /Login-->
@@ -286,7 +286,10 @@ mounted(){
             localStorage.setItem("user", JSON.stringify(this.userData[2]));
 
             // this.$router.push({ name: "home" });
-            location.assign('/')
+            // location.assign('/')
+            setTimeout(() => { location.assign('/') }, 500)
+
+            
           }
           if (this.userData === "mauvaises informations entrées") {
             this.error_login = true;

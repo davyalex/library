@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   scrollBehavior() {
     return { x: 0, y: 0 }
@@ -264,9 +264,9 @@ const router = new VueRouter({
 
 
     {
-      path: '/parametre/:slug',
+      path: '/parametre',
       // path: '/parametre/:slug',
-      name: 'parametre/:slug',
+      name: 'parametre',
       component: () => import('@/views/pages/parametre/index.vue'),
       meta: {
         pageTitle: 'Parametre',
@@ -451,6 +451,24 @@ const router = new VueRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/views/pages/auth/Login.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+
+    {
+      path: '/CGU',
+      name: 'CGU',
+      component: () => import('@/views/pages/site/CGU.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('@/views/pages/site/about.vue'),
       meta: {
         layout: 'full',
       },

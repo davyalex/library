@@ -228,13 +228,12 @@
       ok-title="Modifier"
       cancel-title="Annuler"
       centered
-      title="Modifier un  type parametre"
+      title="Modifier un code promo"
       @ok="edit"
     >
       <b-form>
-        <div class="text-center">
-          <span class="text-danger" v-if="msgError"> {{ msgError }} </span>
-        </div>
+        <div class="text-center"></div>
+        <!-- title -->
         <b-form-group label="" label-for="register-nom">
           <label for="">Title <span class="p-0 text-danger h6">*</span></label>
           <validation-provider
@@ -244,31 +243,143 @@
           >
             <b-form-input
               id="register-nom"
-              @input="validateTitle"
               v-model="editTitle"
               name="register-nom"
               :state="errors.length > 0 ? false : null"
               placeholder=""
             />
-            <small v-if="valideTitle" class="text-danger">
+            <!-- <small v-if="valideTitle" class="text-danger">
               Vous devez renseigner le libelle
-            </small>
+            </small> -->
           </validation-provider>
         </b-form-group>
+        <!-- subtitle -->
 
-        <b-form-group label="" label-for="register-nom">
+        <!-- <b-form-group label="" label-for="register-nom">
           <label for="">Subtitle</label>
           <validation-provider #default="{ errors }" name="nom" rules="">
             <b-form-input
               id="register-nom"
-              v-model="editSubtitle"
+              v-model="subtitle"
               name="register-nom"
               :state="errors.length > 0 ? false : null"
               placeholder=""
             />
           </validation-provider>
-        </b-form-group>
+        </b-form-group> -->
 
+        <!-- pourcentage -->
+        <b-form-group label="" label-for="register-nom">
+          <label for=""
+            >Pourcentage <span class="p-0 text-danger h6">*</span></label
+          >
+          <validation-provider
+            #default="{ errors }"
+            name="pourcentage"
+            rules="required"
+          >
+            <b-form-input
+              id="register-pourcentage"
+              type="number"
+              v-model="editPourcentage"
+              name="register-pourcentage"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <!-- <small v-if="validePourcentage" class="text-danger">
+              Vous devez renseigner le pourcentage
+            </small> -->
+          </validation-provider>
+        </b-form-group>
+        <!-- coût -->
+
+        <!-- <b-form-group label="" label-for="register-Coût">
+          <label for="">Coût <span class="p-0 text-danger h6">*</span></label>
+          <validation-provider
+            #default="{ errors }"
+            name="Coût"
+            rules="required"
+          >
+            <b-form-input
+              id="register-Coût"
+              type="number"
+              @input="validateCoût;"
+              v-model="Coût"
+              name="register-Coût"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <small v-if="validePourcentage" class="text-danger">
+              Vous devez renseigner le Coût
+            </small>
+          </validation-provider>
+        </b-form-group> -->
+        <!-- commande minimum -->
+        <!-- <b-form-group label="" label-for="commande">
+          <label for=""
+            >Commande minimum <span class="p-0 text-danger h6">*</span></label
+          >
+          <validation-provider
+            #default="{ errors }"
+            name="minimum"
+            rules="required"
+          >
+            <b-form-input
+              id="register-minimum"
+              type="number"
+              @input="validateCoût;"
+              v-model="Coût"
+              name="register-minimum"
+              :state="errors.length > 0 ? false : null"
+              placeholder=""
+            />
+            <small v-if="valideCommandeMin" class="text-danger">
+              Vous devez renseigner la commande minimum
+            </small>
+          </validation-provider>
+        </b-form-group> -->
+
+        <!-- etablissement -->
+        <b-form-group label="" label-for="register-libelle">
+          <label>
+            Etablissement <span class="p-0 text-danger h6">*</span>
+          </label>
+          <validation-provider
+            #default="{ errors }"
+            name="etablissement"
+            rules="required"
+          >
+            <v-select
+              v-model="editEtablissement"
+              placeholder="Selectionnez un etablissement"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              :options="etablissementList"
+              label="title"
+              :state="errors.length > 0 ? false : null"
+            >
+            </v-select>
+            <!-- <small v-if="valideEtablissement" class="text-danger">
+              Vous devez sélectionner un etablissement
+            </small> -->
+          </validation-provider>
+        </b-form-group>
+        <!-- date d'expiration' -->
+        <b-form-group>
+          <label>
+            Date d'expiration<span class="p-0 text-danger h6">*</span>
+          </label>
+          <validation-provider>
+            <flat-pickr
+              v-model="editDateExpiration"
+              class="form-control"
+              rules="required"
+            />
+            <!-- <small v-if="valideDateExpiration" class="text-danger">
+              Vous devez renseigner la date d'expiration
+            </small> -->
+          </validation-provider>
+        </b-form-group>
+        <!-- description -->
         <b-form-group label="Description" label-for="register-description">
           <b-form-textarea
             id="textarea"
@@ -278,6 +389,52 @@
             max-rows="6"
           ></b-form-textarea>
         </b-form-group>
+        <!-- client -->
+        <!-- <b-form-group label="" label-for="register-client">
+          <label> Client <span class="p-0 text-danger h6">*</span> </label>
+          <validation-provider
+            #default="{ errors }"
+            name="client"
+            rules="required"
+          >
+            <v-select
+              v-model="client"
+              @input="validateClient"
+              placeholder="Selectionnez un client"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              :options="clientList"
+              label="title"
+              :state="errors.length > 0 ? false : null"
+            >
+            </v-select>
+            <small v-if="valideClient" class="text-danger">
+              Vous devez sélectionner un client
+            </small>
+          </validation-provider>
+        </b-form-group> -->
+        <!-- niveau -->
+        <!-- <b-form-group label="" label-for="register-niveau">
+          <label> Niveau <span class="p-0 text-danger h6">*</span> </label>
+          <validation-provider
+            #default="{ errors }"
+            name="client"
+            rules="required"
+          >
+            <v-select
+              v-model="niveau"
+              @input="validateNiveau"
+              placeholder="Selectionnez un niveau"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              :options="niveauList"
+              label="title"
+              :state="errors.length > 0 ? false : null"
+            >
+            </v-select>
+            <small v-if="valideClient" class="text-danger">
+              Vous devez sélectionner un niveau
+            </small>
+          </validation-provider>
+        </b-form-group> -->
       </b-form>
     </b-modal>
 
@@ -305,6 +462,14 @@
               <feather-icon icon="PlusIcon" class="mx-auto" />
               Nouveau code promo
             </b-button>
+             <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="WatchIcon"
+                size="30"
+                class="text-primary"
+                :badge="pTotal"
+              />
+            </div>
           </b-col>
 
           <!-- Search -->
@@ -323,9 +488,12 @@
             </div>
           </b-col>
         </b-row>
-
+  <div class="text-center" v-if="spinner===true">
+                <b-spinner  variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les typeParametre -->
         <b-table
+        v-if="spinner===false"
           hover
           responsive
           :per-page="perPage"
@@ -333,12 +501,24 @@
           :items="promotion"
           :fields="tableColumns"
           :filter="filtrePromotion"
+          :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
           class="bg-white"
         >
-          <template #cell(created_at)="data">
-            {{ format_date(data.item.created_at) }}
+          <template #cell(expiration)="data">
+            {{ format_date(data.item.expiration) }}
+          </template>
+
+          <template #cell(statut)="data">
+            <!-- <span v-if="data.item.status === 'expiré'" class="text-danger">
+              {{ data.item.status }}</span
+            >
+            <span v-if="data.item.status === 'valide'" class="text-success">
+              {{ data.item.status }}</span
+            > -->
+            {{ data.item.status }}
           </template>
 
           <template #cell(pourcentage)="data">
@@ -347,7 +527,21 @@
 
           <template #cell(code)="data">
             <span class="text-primary font-weight-bold">
-              {{ data.item.code }}</span
+              {{ data.item.code }}
+             <br> <small class="text-dark"> crée le {{ format_date(data.item.created_at) }} </small>
+              </span>
+         
+          <br>  <span
+              v-if="data.item.status === 'expiré'"
+              class="badge badge-light-danger badge-pill font-weight-bold"
+            >
+              {{ data.item.status }}</span
+            >
+           <br> <span
+              v-if="data.item.status === 'valide'"
+              class="badge badge-light-success badge-pill font-weight-bold"
+            >
+              {{ data.item.status }}</span
             >
           </template>
 
@@ -358,7 +552,7 @@
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
               <!-- Dropdown -->
-              <b-link v-b-modal.modal-update disabled>
+              <b-link v-b-modal.modal-update>
                 <feather-icon
                   icon="Edit3Icon"
                   :id="`invoice-row-${data.item.id}-Edit3-icon`"
@@ -447,6 +641,7 @@ import {
   BFormTextarea,
   BDropdown,
   BDropdownItem,
+  BSpinner
 } from "bootstrap-vue";
 
 import { VBTooltip, BButton } from "bootstrap-vue";
@@ -471,7 +666,7 @@ export default {
     BModal,
     moment,
     BFormGroup,
-    VBModal,
+    VBModal,BSpinner,
     BForm,
     BLink,
     BFormCheckbox,
@@ -504,9 +699,12 @@ export default {
       date_expiration: "",
       etablissement: "",
 
-      editDescription: "",
-      editTitle: "",
       editSubtitle: "",
+      editTitle: "",
+      editPourcentage: "",
+      editDescription: "",
+      editDateExpiration: "",
+      editEtablissement: "",
 
       valideTitle: false,
       validePourcentage: false,
@@ -514,13 +712,19 @@ export default {
       valideEtablissement: false,
       etablissementList: [],
       promotion: [],
-      perPage: 30,
+      getCodePromo: "",
+      status: "",
+      spinner:true,
+      perPage: 100,
       currentPage: 1,
+      currentSort: "created_at",
+      currentSortDir: "asc",
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
+        // { key: "statut", label: "statut", sortable: true },
         { key: "title", sortable: true },
-        { key: "slug", sortable: true },
+        // { key: "slug", sortable: true },
         { key: "description", label: "motif", sortable: true },
         // { key: "created_at", label: "crée le", sortable: true },
         { key: "pourcentage", label: "pourcentage", sortable: true },
@@ -531,14 +735,16 @@ export default {
         { key: "actions" },
       ],
       filtrePromotion: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
     };
   },
 
   async mounted() {
     document.title = "Code promo";
+    this.spinner = true
     try {
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
+        this.spinner =false
         this.etablissementList = response.data.etablissements;
         console.log("etablissement", this.etablissementList);
       });
@@ -547,6 +753,23 @@ export default {
         this.promotion = response.data.promotions;
         this.pTotal = this.promotion.length;
         console.log(this.promotion);
+        if (response.data.promotions) {
+          for (let index = 0; index < this.promotion.length; index++) {
+            const element = this.promotion[index];
+            const d = moment(String(element.expiration)).format("DD-MM-YYYY");
+            const now = moment().format("DD-MM-YYYY");
+            console.log(d, now);
+
+            element["status"] = "tes";
+            if (d >= now) {
+              element.status = "valide";
+              console.log("valide");
+            } else {
+              element.status = "expiré";
+              console.log("expiré");
+            }
+          }
+        }
       });
     } catch (error) {
       console.log(error);
@@ -565,36 +788,28 @@ export default {
       });
     },
 
-    topEndE() {
+    topEndU() {
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: "Erreur",
-          icon: "ThumbsDownIcon",
-          variant: "danger",
+          title: "Modifié avec success",
+          icon: "ThumbsUpIcon",
+          variant: "success",
         },
       });
     },
     //envoi des infos en localStorage
 
     update(data) {
-      const typePara = data;
-      localStorage.setItem("typeParametre", JSON.stringify(typePara));
-      const getTypeParametre = JSON.parse(
-        localStorage.getItem("typeParametre")
-      );
-      console.log(getTypeParametre);
+      const code = data;
+      localStorage.setItem("code", JSON.stringify(code));
+      this.getCodePromo = JSON.parse(localStorage.getItem("code"));
 
-      this.editTitle = getTypeParametre.title;
-      this.editSubtitle = getTypeParametre.subtitle;
-      this.editDescription = getTypeParametre.description;
-    },
-
-    addParametre(id, slug) {
-      const currectTp = this.typeParametre.filter((item) => item.id === id);
-
-      localStorage.setItem("typeParametre", JSON.stringify(currectTp[0]));
-      this.$router.push(`/parametre/${slug}`);
+      this.editTitle = this.getCodePromo.title;
+      this.editPourcentage = this.getCodePromo.pourcentage;
+      this.editDescription = this.getCodePromo.description;
+      this.editDateExpiration = this.getCodePromo.expiration;
+      this.editEtablissement = this.getCodePromo.etablissement.title;
     },
 
     format_date(value) {
@@ -634,7 +849,7 @@ export default {
         this.valideEtablissement = false;
       }
     },
-
+    //store
     async save(bvModalEvt) {
       try {
         this.validateTitle();
@@ -646,7 +861,14 @@ export default {
             Accept: "application/json",
           },
         };
-        if (this.title) {
+        if (
+          !this.title ||
+          !this.pourcentage ||
+          !this.date_expiration ||
+          !this.etablissement
+        ) {
+          bvModalEvt.preventDefault();
+        } else {
           const data = {
             title: this.title,
             pourcentage: this.pourcentage,
@@ -656,17 +878,75 @@ export default {
           };
           console.log(data);
           await axios
-            .post(URL.PROMOTION_STORE, data, this.config)
+            .post(URL.PROMOTION_STORE, data, config)
             .then((response) => {
-              this.userData = response.data.promotion;
+                  if (response.data) {
+                       this.userData = response.data.promotion;
               this.topEnd();
-              this.promotion.unshift(this.userData);
+              this.promotion.push(  this.userData);
               console.log(this.userData);
               this.title = "";
               this.pourcentage = "";
               this.description = "";
               this.etablissement = "";
               this.date_expiration = "";
+                  }
+            });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      bvModalEvt.preventDefault();
+    },
+
+    //update
+    async edit(bvModalEvt) {
+      try {
+        // this.validateTitle();
+        // this.validatePourcentage();
+        // this.validateDateExpiration();
+        // this.validateEtablissement();
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+        if (
+          !this.editTitle ||
+          !this.editPourcentage ||
+          !this.editDateExpiration ||
+          !this.editEtablissement
+        ) {
+          bvModalEvt.preventDefault();
+        } else {
+          let etab = "";
+          if (
+            this.editEtablissement === this.getCodePromo.etablissement.title
+          ) {
+            etab = this.getCodePromo.etablissement_id;
+            console.log(etab);
+          } else {
+            etab = this.editEtablissement.id;
+            console.log(etab);
+          }
+          const data = {
+            id: this.getCodePromo.id,
+            title: this.editTitle,
+            pourcentage: this.editPourcentage,
+            etablissement_id: etab,
+            expiration: this.editDateExpiration,
+            description: this.editDescription,
+          };
+          console.log(data);
+          await axios
+            .post(URL.PROMOTION_UPDATE + `/${data.id}`, data, config)
+            .then((response) => {
+              if (response.data) {
+                axios.get(URL.PROMOTION_LIST).then((response) => {
+                  this.promotion = response.data.promotions;
+                  this.pTotal = this.promotion.length;
+                });
+              }
             });
         }
       } catch (error) {

@@ -232,7 +232,7 @@
             </b-form-group>
           </b-col> -->
                   <!-- article jumelé -->
-                  <b-col cols="4" md="4" class="m-auto">
+                  <b-col cols="12" md="8" class="m-auto">
                     <b-form-group label="" label-for="register-libelle">
                       <label for=""
                         >Choisir un article<span
@@ -392,12 +392,13 @@ export default {
     this.prix = this.getArticle.prix;
     // this.quantite = this.getArticle.quantite
     this.categorie = this.getArticle.categorie.title;
-    this.articleJumeler = this.getArticle.jumeler;
 
+    this.articleJumeler = this.getArticle.jumeler;
     for (let index = 0; index < this.articleJumeler.length; index++) {
       this.multiJumele.push({
         articleJumele: this.articleJumeler[index].title,
-        id:this.articleJumeler[index].id
+        id: this.articleJumeler[index].id,
+        articleJumele_id:this.articleJumeler[index].id
       });
       console.log(this.multiJumele);
     }
@@ -524,7 +525,7 @@ export default {
             Accept: "application/json",
           },
         };
-        
+
         const jumele = this.multiJumele.map((item) => {
           return { jumeler_id: item.articleJumele_id };
         });
@@ -539,18 +540,32 @@ export default {
         //   newFormdata.append("quantite", `${this.quantite}`);
 
         newFormdata.append("prix", this.prix);
-        
-        if (this.getArticle.categorie) {
-          newFormdata.append("categorie_id", this.getArticle.categorie.id);
+
+        if (this.categorie === this.getArticle.categorie.title) {
+          newFormdata.append("categorie_id", this.getArticle.categorie_id);
         } else {
           newFormdata.append("categorie_id", this.categorie.id);
         }
 
         newFormdata.append("description", this.description);
-        for (let index = 0; index < jumele.length; index++) {
-          const element = jumele[index];
-          newFormdata.append(`jumele[${index}]`, jumele[index].jumeler_id);
-        }
+        // if (this.getArticle.jumeler) {
+        //   this.articleJumeler = this.getArticle.jumeler;
+        //   for (let index = 0; index < this.articleJumeler.length; index++) {
+        //     this.multiJumele.push({
+        //       articleJumele: this.articleJumeler[index].title,
+        //       id: this.articleJumeler[index].id,
+        //     });
+        //     newFormdata.append(
+        //       `jumele[${index}]`,
+        //       this.articleJumeler[index].id
+        //     );
+        //   }
+        // } else {
+          for (let index = 0; index < jumele.length; index++) {
+            const element = jumele[index];
+            newFormdata.append(`jumele[${index}]`, jumele[index].jumeler_id);
+          }
+        // }
 
         newFormdata.append("count", this.multiJumele.length);
 

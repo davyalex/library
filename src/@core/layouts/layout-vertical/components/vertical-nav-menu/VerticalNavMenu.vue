@@ -19,20 +19,20 @@
         <ul class="nav navbar-nav flex-row">
 
           <!-- Logo & Text -->
-          <li class="nav-item mr-auto">
+          <li class="nav-item mx-auto">
             <b-link
               class="navbar-brand"
               to="/"
             >
-              <span class="brand-logo">
-                <b-img
+              <span class="">
+                <b-img class="" 
                  src="@/assets/images/logo/logo-original.png"
-                  alt="logo"
+                  alt="logo" width="50%"
                 />
               </span>
-              <h2 class=" text-success brand-text">
-                Librairie siloe
-              </h2>
+              <!-- <h6 class="text-success">
+               Siloë-school connect
+              </h6> -->
             </b-link>
           </li>
 

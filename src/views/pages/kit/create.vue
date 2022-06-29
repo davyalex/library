@@ -145,10 +145,10 @@
                     </b-form-group>
                   </b-col>
 
-                  <b-col cols="4">
+                  <b-col cols="1">
                     <b-form-group label-for="title">
                       <label for="title"
-                        >quantite
+                        >Qté
                         <span class="p-0 text-danger h6"> *</span></label
                       >
 
@@ -169,10 +169,10 @@
                     </b-form-group>
                   </b-col>
 
-                  <b-col cols="4">
+                  <b-col cols="3">
                     <b-form-group label-for="title">
                       <label for="title"
-                        >prix <span class="p-0 text-danger h6"> *</span></label
+                        >Prix <span class="p-0 text-danger h6"> *</span></label
                       >
 
                       <validation-provider
@@ -582,6 +582,8 @@ console.log(this.newNiveau);
           newFormdata.append("etablissement_id", this.etablissement.id);
 
           newFormdata.append("niveau_id", this.niveau.id);
+                    newFormdata.append("montant", this.montant);
+
 
           //         newFormdata.append("description", this.description);
           //         articles.forEach((item,index) => {

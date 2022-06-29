@@ -106,13 +106,13 @@
               rules="required"
             >
               <v-select
-                @input="getEnseignements()"
                 v-model="selectedEnseignement"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 label="title"
                 :options="enseignements"
                 placeholder="Selectionner un enseignement"
               />
+                <!-- @input="getEnseignements()" -->
 
               <small
                 :class="valideEnseignement ? 'block' : 'none'"
@@ -124,12 +124,12 @@
           </b-col>
           <b-col class="3">
             <label for=""
-              >Diocèse <span class="p-0 text-danger h6"> *</span></label
+              >Diocèse <span class="p-0 text-danger h6"> </span></label
             >
             <validation-provider
               #default="{}"
               name="diocese_id"
-              rules="required"
+              rules=""
             >
               <v-select
                 @input="getSedec()"
@@ -140,19 +140,19 @@
                 placeholder="Selectionner le diocèse"
               />
 
-              <small
+              <!-- <small
                 :class="valideDiocese ? 'block' : 'none'"
                 class="text-danger"
               >
                 Veuillez selectionner le diocèse
-              </small>
+              </small> -->
             </validation-provider>
           </b-col>
           <b-col class="3">
             <label for=""
-              >Sedec <span class="p-0 text-danger h6"> *</span></label
+              >Sedec <span class="p-0 text-danger h6"> </span></label
             >
-            <validation-provider #default="{}" name="sedec_id" rules="required">
+            <validation-provider #default="{}" name="sedec_id" rules="">
               <v-select
                 v-model="selectedSedec"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -161,12 +161,12 @@
                 placeholder="Selectionner un sedec"
               />
 
-              <small
+              <!-- <small
                 :class="valideSedec ? 'block' : 'none'"
                 class="text-danger"
               >
                 Veuillez selectionner le SEDEC
-              </small>
+              </small> -->
             </validation-provider>
           </b-col>
         </b-row>
@@ -204,12 +204,12 @@
           <b-col class="3"
             ><b-form-group label="" label-for="email">
               <label for="email"
-                >Email <span class="p-0 text-danger h6"> *</span></label
+                >Email <span class="p-0 text-danger h6"> </span></label
               >
               <validation-provider
                 #default="{ errors }"
                 name="email"
-                rules="required"
+                rules=""
               >
                 <b-form-input
                   id="email"
@@ -218,12 +218,12 @@
                   :state="errors.length > 0 ? false : null"
                   placeholder="exemple@gmail.com"
                 />
-                <small
+                <!-- <small
                   :class="valideEmail ? 'block' : 'none'"
                   class="text-danger"
                 >
                   Veuillez saisir l'email
-                </small>
+                </small> -->
               </validation-provider>
             </b-form-group>
           </b-col>
@@ -249,6 +249,7 @@
           <b-col class="mt-1 4" v-for="(cycles, index) in cycle" :key="index">
             <b-form-checkbox
               :value="cycles.id"
+            @change="selectAll()" 
               class="custom-control-primary"
               v-model="selectedCycle"
             >
@@ -270,9 +271,19 @@
         </b-row>
         <!-- login button -->
         <b-col cols="12 mt-2">
-          <b-button variant="primary" type="submit" @click="save">
-            Enregistrer
-          </b-button>
+         <b-button
+                variant="primary"
+                block
+                type="submit"
+                @click.prevent="save"
+                :disabled="loading === true ? true : false"
+              >
+                <div
+                  v-if="loading === true"
+                  class="spinner-border text-light"
+                ></div>
+                <span v-else> Enregistrer</span>
+            </b-button>
         </b-col>
       </b-card>
     </b-form>
@@ -351,6 +362,8 @@ export default {
       valideSedec: false,
       valideContact: false,
       valideEmail: false,
+           loading:false,
+
 
       // file:null,
       selectedC: "",
@@ -457,6 +470,22 @@ export default {
   },
 
   methods: {
+
+  //  selectAll () {
+  //        if (this.selectedCycle) {
+  //       const selected = this.niveau.map((item) => item.id);
+  //       this.selectedNiveau = selected;
+  //     } else {
+  //       this.selectedNiveau = [];
+  //               this.selectedNiveau = false;
+
+  //     }
+  //     console.log(this.selectedNiveau);
+  //   },
+  
+
+
+    
     // validationForm() {
     //   this.$refs.simpleRules.validate().then((success) => {
     //     if (success) {
@@ -554,17 +583,17 @@ export default {
       }
     },
 
-     obligatoryEmail() {
-      if (!this.email) {
-        this.valideEmail = true;
+    //  obligatoryEmail() {
+    //   if (!this.email) {
+    //     this.valideEmail = true;
 
-        this.erreur = true;
-      } else {
-        this.valideEmail = false;
+    //     this.erreur = true;
+    //   } else {
+    //     this.valideEmail = false;
 
-        this.erreur = false;
-      }
-    },
+    //     this.erreur = false;
+    //   }
+    // },
 
     obligatoryCommune() {
       if (this.selectedCommune == "Votre commune" || !this.selectedCommune) {
@@ -593,29 +622,29 @@ export default {
       }
     },
 
-    obligatoryDiocese() {
-      if (this.selectedDiocese == "Votre diocèse" || !this.selectedDiocese) {
-        this.valideDiocese = true;
+    // obligatoryDiocese() {
+    //   if (this.selectedDiocese == "Votre diocèse" || !this.selectedDiocese) {
+    //     this.valideDiocese = true;
 
-        this.erreur = true;
-      } else {
-        this.valideDiocese = false;
+    //     this.erreur = true;
+    //   } else {
+    //     this.valideDiocese = false;
 
-        this.erreur = false;
-      }
-    },
+    //     this.erreur = false;
+    //   }
+    // },
 
-    obligatorySedec() {
-      if (this.selectedSedec == "Votre sedec " || !this.selectedSedec) {
-        this.valideSedec = true;
+    // obligatorySedec() {
+    //   if (this.selectedSedec == "Votre sedec " || !this.selectedSedec) {
+    //     this.valideSedec = true;
 
-        this.erreur = true;
-      } else {
-        this.valideSedec = false;
+    //     this.erreur = true;
+    //   } else {
+    //     this.valideSedec = false;
 
-        this.erreur = false;
-      }
-    },
+    //     this.erreur = false;
+    //   }
+    // },
 
     obligatoryQuartier() {
       if (!this.quartier) {
@@ -635,10 +664,10 @@ export default {
         this.obligatoryCommune();
         this.obligatoryQuartier();
         this.obligatoryEnseignement();
-        this.obligatoryDiocese();
-        this.obligatorySedec();
+        // this.obligatoryDiocese();
+        // this.obligatorySedec();
         this.obligatoryContact();
-        this.obligatoryEmail();
+        // this.obligatoryEmail();
 
         const config = {
           headers: {
@@ -682,12 +711,12 @@ export default {
         //   cycles: this.selectedCycle,
         //   image: this.image,
         // };
-
+ this.loading = true;
         await axios
           .post(URL.CREATE_ETABLISSEMENT, data, config)
           .then((response) => {
             this.createEtablissement = response.data;
-
+ this.loading = false;
             if (response.data) {
               (this.title = ""),
               (this.quartier = ""),
@@ -705,6 +734,7 @@ export default {
           });
       } catch (error) {
         console.log(error);
+         this.loading = false;
       }
     },
   },

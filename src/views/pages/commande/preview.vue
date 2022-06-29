@@ -101,32 +101,77 @@
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="primary"
             v-b-modal.v-b-modal.modal-send
-            :disabled="recoverCommande.etat.title === 'Affectée' ? true : false"
+            :disabled="
+              recoverCommande.etat.title === 'Affectée'
+                ? true
+                : false || recoverCommande.etat.title === 'Livrée'
+                ? true
+                : false || recoverCommande.etat.title === 'Récupérée'
+                ? true
+                : false|| recoverCommande.etat.title === 'Annulée'
+                ? true
+                : false
+                 ||
+                  recoverCommande.livraison_mode.title === 'point de retrait'
+                ? true
+                : false
+            "
           >
             <feather-icon icon="SendIcon" />
             <span v-if="recoverCommande.etat.title === 'Affectée'">
               Déjà affectée</span
             >
+
+            <span
+              v-else-if="recoverCommande.etat.title === 'Livrée'"
+              class="align-middle ml-50"
+              >Déjà livrée</span
+            >
+            <span
+              v-else-if="recoverCommande.etat.title === 'Récupérée'"
+              class="align-middle ml-50"
+              >En cour de livraison</span
+            >
+            <span
+              v-else-if="recoverCommande.etat.title === 'Annulée'"
+              class="align-middle ml-50"
+              >Commande annulée</span
+            >
+
+             <span
+              v-else-if="recoverCommande.livraison_mode.title === 'point de retrait'"
+              class="align-middle ml-50"
+              >Affectée au point de retrait</span
+            >
+
             <span v-else> Affecter</span>
           </b-button>
 
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
-            @click="facture"
-          >
-            <feather-icon icon="PrinterIcon" />
-            Imprimer
-          </b-button>
+             <b-button variant="success"
+                  v-if="recoverCommande.livraison_mode.title === 'point de retrait'"
+                  @click="delivery(recoverCommande.id)"
+                  :disabled="
+                   recoverCommande.etat.title === 'Annulée'
+                      ? true
+                      : false || recoverCommande.etat.title === 'Livrée'
+                      ? true
+                      : false || recoverCommande.etat.title === 'Récupérée'
+                      ? true
+                      : false
+                  "
+                >
+                  <feather-icon icon="ThumbsUpIcon" />
+                  <span class="align-middle ml-50">Livrer</span>
+                </b-button>
 
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="danger"
-            @click="destroy(recoverCommande.id)"
-          >
-            <feather-icon icon="TrashIcon" />
-            Supprimer
-          </b-button>
+                <b-button variant="danger"
+                  v-if="recoverCommande.livraison_mode.title === 'point de retrait'"
+                  @click="cancel(recoverCommande.id)"
+                  :disabled="recoverCommande.etat.title === 'Annulée' ? true : false"
+                >
+                  <feather-icon icon="ThumbsDownIcon" />
+                  <span class="align-middle ml-50">Annuler</span>
+                </b-button>
         </div>
       </div>
     </div>
@@ -327,6 +372,15 @@
             <feather-icon icon="BookOpenIcon" />
 
             Details kit {{ index + 1 }}
+            <b-button
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              variant="secondary"
+              class="float-right"
+              @click="facture(item)"
+            >
+              <feather-icon icon="PrinterIcon" />
+              Imprimer
+            </b-button>
           </h4>
           <hr />
 
@@ -355,8 +409,10 @@
                     <thead>
                       <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Article</th>
-                        <th scope="col">Quantité</th>
+                        <th scope="col">Art</th>
+                        <th scope="col">Qte</th>
+                        <th scope="col">Pu</th>
+                        <th scope="col">Total</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -366,12 +422,15 @@
                       >
                         <th scope="row">{{ index + 1 }}</th>
                         <td>{{ item.title }}</td>
-                        <td>{{ item.quantite }}</td>
+                        <td>{{ item.pivot_quantite }}</td>
+                        <td>{{ item.pivot_montant }}</td>
+                        <td>{{ item.pivot_total }}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
+
               <!-- <p class="card-text font-weight-bold">
                 Code <br /><span
                   class="text-success font-weight-bol"
@@ -518,10 +577,10 @@ export default {
   },
 
   methods: {
-
-facture(){
-  this.$router.push({name:'commande/facture'})
-},
+    facture(item) {
+      localStorage.setItem("factureKit", JSON.stringify(item));
+      this.$router.push({ name: "commande/facture" });
+    },
 
     exportToPDF() {
       html2pdf(this.$refs.document, {
@@ -609,6 +668,101 @@ facture(){
         this.loading = false;
       }
     },
+
+        //cancel
+    async annuler(indentifiant) {
+      const id = {
+        id: this.recoverCommande.id,
+      };
+      console.log(id);
+      const config = {
+        headers: {
+          Accept: "application/json",
+        },
+      };
+      try {
+        await axios.post(URL.COMMANDE_CANCEL, id, config).then((response) => {
+          response.data;
+          axios.get(URL.LIST_COMMANDE).then((response) => {
+            this.commandes = response.data.commande;
+            this.commandesFiltre = this.commandes;
+            console.log("commande", this.commandes);
+                          this.$router.push({ name: "commande" });
+
+          });
+        });
+      } catch (error) {
+        console.log(error.type);
+      }
+    },
+
+    cancel(id) {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: "Cette commande sera annulée définitivement !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.annuler(id);
+        }
+      });
+    },
+
+    //delivery
+    async livrer(indentifiant) {
+      const id = {
+        id: this.recoverCommande.id,
+      };
+      console.log(id);
+      const config = {
+        headers: {
+          Accept: "application/json",
+        },
+      };
+      try {
+        await axios.post(URL.COMMANDE_DELIVERY, id, config).then((response) => {
+          response.data;
+          axios.get(URL.LIST_COMMANDE).then((response) => {
+            this.commandes = response.data.commande;
+            const cmd = this.commandes.filter((item)=>{item.id ===this.recoverCommande.id})
+            this.commandesFiltre = this.commandes;
+            console.log("commande", this.commandes);
+                          this.$router.push({ name: "commande" });
+
+          });
+        });
+      } catch (error) {
+        console.log(error.type);
+      }
+    },
+
+    delivery(id) {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: "Cette commande est livrée?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.livrer(id);
+        }
+      });
+    },
+
+
 
     //destroy
     async deleteusers(indentifiant) {

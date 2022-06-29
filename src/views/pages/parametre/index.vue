@@ -50,7 +50,7 @@
 
         <!-- si diocese -->
 
-        <b-form-group
+        <!-- <b-form-group
           label=""
           label-for="register-libelle"
           v-if="this.titleParms[0].title === 'Diocese'"
@@ -78,7 +78,7 @@
               Vous devez sélectionner une commune
             </small>
           </validation-provider>
-        </b-form-group>
+        </b-form-group> -->
 
         <!-- si niveau -->
 
@@ -130,9 +130,9 @@
             <small v-if="valideTitle" class="text-danger">
               Vous devez renseigner le libelle
             </small>
-           <small v-if="titleExist.length > 0" class="text-danger">
-               {{title}} existe déjà, veuillez renseigner un autre
-              </small>
+            <small v-if="titleExist.length > 0" class="text-danger">
+              {{ title }} existe déjà, veuillez renseigner un autre
+            </small>
           </validation-provider>
         </b-form-group>
 
@@ -141,7 +141,9 @@
           label-for="register-nom"
           v-if="this.titleParms[0].title === 'Commune'"
         >
-          <label for="">Frais de livraison <span class="p-0 text-danger h6">*</span></label>
+          <label for=""
+            >Frais de livraison <span class="p-0 text-danger h6">*</span></label
+          >
           <validation-provider
             #default="{ errors }"
             name="nom"
@@ -216,7 +218,7 @@
       title="Modifier un parametre"
       @ok="edit"
     >
-    <b-form @submit.prevent>
+      <b-form @submit.prevent>
         <!-- si sedec -->
 
         <!-- si sedec -->
@@ -236,7 +238,7 @@
             rules="required"
           >
             <v-select
-              v-model="editSelectedDiocese"
+              v-model="editSelected"
               @input="evalidateSelectedDiocese"
               placeholder="Selectionnez un diocese"
               :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -256,7 +258,7 @@
 
         <!-- si diocese -->
 
-        <b-form-group
+        <!-- <b-form-group
           label=""
           label-for="register-libelle"
           v-if="this.titleParms[0].title === 'Diocese'"
@@ -268,7 +270,7 @@
             rules="required"
           >
             <v-select
-              v-model="editSelectedCommune"
+              v-model="editSelected"
               @input="evalidateSelectedCommune"
               placeholder="Selectionnez une commune"
               :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -284,7 +286,7 @@
               Vous devez sélectionner une commune
             </small>
           </validation-provider>
-        </b-form-group>
+        </b-form-group> -->
 
         <!-- si niveau -->
 
@@ -300,7 +302,7 @@
             rules="required"
           >
             <v-select
-              v-model="editSelectedCycle"
+              v-model="editSelected"
               @input="evalidateSelectedCycle"
               placeholder="Selectionnez un cycle"
               :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -336,9 +338,9 @@
             <small v-if="evalideTitle" class="text-danger">
               Vous devez renseigner le libelle
             </small>
-           <small v-if="titleExist.length > 0" class="text-danger">
-               {{title}} existe déjà, veuillez renseigner un autre
-              </small>
+            <small v-if="titleExist.length > 0" class="text-danger">
+              {{ title }} existe déjà, veuillez renseigner un autre
+            </small>
           </validation-provider>
         </b-form-group>
 
@@ -347,7 +349,9 @@
           label-for="register-nom"
           v-if="this.titleParms[0].title === 'Commune'"
         >
-          <label for="">Frais de livraison <span class="p-0 text-danger h6">*</span></label>
+          <label for=""
+            >Frais de livraison <span class="p-0 text-danger h6">*</span></label
+          >
           <validation-provider
             #default="{ errors }"
             name="nom"
@@ -457,11 +461,16 @@
           </b-col>
         </b-row>
 
+        <div class="text-center" v-if="spinner === true">
+          <b-spinner variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
+
         <!-- Le tableau affichant les Parametre -->
         <!-- <span class="text-center text-bold"
           >Parametre pour : {{ titleParms[0].title }}</span
         > -->
         <b-table
+          v-if="spinner === false"
           hover
           responsive
           :per-page="perPage"
@@ -469,12 +478,21 @@
           :items="Parametre"
           :fields="tableColumns"
           :filter="filtreParametre"
+          :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
           class="bg-white"
         >
           <template #cell(created_at)="data">
             {{ format_date(data.item.created_at) }}
+          </template>
+
+             <template #cell(title)="data">
+            {{ data.item.title }}
+            <br><small class="text-primary" v-if="data.item.subtitle"> {{ data.item.subtitle }} </small>
+                        <br><small class="text-primary" v-if="data.item.parent"> {{ data.item.parent.title }} </small>
+
           </template>
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
@@ -544,7 +562,7 @@
         </div>
       </b-card>
     </div>
-    {{ refresh }}
+    <!-- {{ refresh }} -->
   </div>
 </template>
 
@@ -569,6 +587,7 @@ import {
   BFormTextarea,
   BDropdown,
   BDropdownItem,
+  BSpinner,
 } from "bootstrap-vue";
 import { VBTooltip, BButton } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
@@ -611,6 +630,7 @@ export default {
     BFormTextarea,
     BDropdown,
     BDropdownItem,
+    BSpinner,
   },
   directives: {
     Ripple,
@@ -628,12 +648,13 @@ export default {
       selectedDiocese: "",
 
       //update
-      editTitle:"",
-      editSubtitle:"",
-      editDescription:"",
-          editSelectedCycle: "",
-      editSelectedCommune: "",
-      editSelectedDiocese: "",
+      editTitle: "",
+      editSubtitle: "",
+      editDescription: "",
+      editSelected: "",
+      // editSelectedCycle: "",
+      // editSelectedCommune: "",
+      // editSelectedDiocese: "",
 
       valideTitle: false,
       valideFrais: false,
@@ -641,13 +662,13 @@ export default {
       valideSelectedCommune: false,
       valideSelectedDiocese: false,
 
-        evalideTitle: false,
+      evalideTitle: false,
       evalideFrais: false,
       evalideSelectedCycle: false,
       evalideSelectedCommune: false,
       evalideSelectedDiocese: false,
-   
-      titleExist:"",
+
+      titleExist: "",
 
       msgError: "",
 
@@ -655,53 +676,60 @@ export default {
       commune: [],
       diocese: [],
 
-
       typePara: [],
-   getParametre:[],
+      getParametre: [],
 
       Parametre: [],
-      paramAll:[],
+      paramAll: [],
+      slug:[],
 
       titleParms: {},
-      perPage: 30,
+      spinner: true,
+      perPage: 100,
       currentPage: 1,
+      currentSort: "created_at",
+      currentSortDir: "asc",
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
         { key: "title", sortable: true },
+        
         { key: "slug", sortable: true },
         // { key: "description", label: "motif", sortable: true },
         { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
       filtreParametre: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
       error: false,
     };
   },
 
   async mounted() {
-    document.title = "parametre" + "-" + this.$route.params.slug;
-
-    console.log("slug", this.$route.params.slug);
+    document.title = "parametre" + "-" + this.slug;
+    console.log("slug", this.slug);
     this.typePara = JSON.parse(localStorage.getItem("typeParametre"));
     console.log("tttt", this.typePara);
+    this.slug =JSON.parse(localStorage.getItem("typeParaSlug"));
+        console.log("slug tp",   this.slug);
+
     this.titleParms = this.typePara.filter(
-      (parms) => parms.slug === this.$route.params.slug
+      (parms) => parms.slug === this.slug
     );
     console.log("loca", this.titleParms);
+    this.spinner = true;
     try {
       await axios.get(URL.PARAMETRE).then((response) => {
+        this.spinner = false;
         this.Parametre = response.data.parametre;
-        this.paramAll=response.data.parametre;
+        this.paramAll = response.data.parametre;
         console.log("List Parm", this.Parametre);
         const listParametre = this.Parametre.filter(
-          (item) => item.slug_type_para === this.$route.params.slug
+          (item) => item.slug_type_para === this.slug
         );
         this.Parametre = listParametre;
         this.pTotal = this.Parametre.length;
         console.log("All", this.paramAll);
-
       });
 
       await axios.get(URL.PARAMETRE_CREATE).then((response) => {
@@ -739,27 +767,19 @@ export default {
   methods: {
     //envoi des infos en localStorage
 
-  update(data) {
+    update(data) {
       const Para = data;
       localStorage.setItem("paraUpdate", JSON.stringify(Para));
-      this.getParametre = JSON.parse(
-        localStorage.getItem("paraUpdate")
-      );
-      console.log(this.getParametre.parent.title);
+      this.getParametre = JSON.parse(localStorage.getItem("paraUpdate"));
+      console.log("id", this.getParametre.id, data);
 
       this.editTitle = this.getParametre.title;
       this.editSubtitle = this.getParametre.subtitle;
       this.editDescription = this.getParametre.description;
       if (this.getParametre.parent) {
-        
-        this.editSelectedCycle = this.getParametre.parent.title
-        this.editSelectedCommune = this.getParametre.parent.title
-        this.editSelectedDiocese = this.getParametre.parent.title
+        this.editSelected = this.getParametre.parent.title;
       }
-
-
     },
-
 
     topEnd() {
       this.$toast({
@@ -772,7 +792,7 @@ export default {
       });
     },
 
-        topEndU() {
+    topEndU() {
       this.$toast({
         component: ToastificationContent,
         props: {
@@ -812,11 +832,9 @@ export default {
         return item.title === this.title;
       });
       console.log(this.titleExist.length);
-
     },
 
-
-        evalidateTitle() {
+    evalidateTitle() {
       if (!this.editTitle) {
         this.evalideTitle = true;
         this.error = true;
@@ -828,7 +846,6 @@ export default {
         return item.title === this.title;
       });
       console.log(this.titleExist.length);
-
     },
 
     validateFrais() {
@@ -843,7 +860,7 @@ export default {
       }
     },
 
-        evalidateFrais() {
+    evalidateFrais() {
       if (this.titleParms[0].title === "Commune") {
         if (!this.editSubtitle) {
           this.evalideFrais = true;
@@ -855,7 +872,6 @@ export default {
       }
     },
 
-
     validateSelectedCycle() {
       if (!this.selectedCycle) {
         this.valideSelectedCycle = true;
@@ -866,8 +882,8 @@ export default {
       }
     },
 
-     evalidateSelectedCycle() {
-      if (!this.editSelectedCycle) {
+    evalidateSelectedCycle() {
+      if (!this.editSelected) {
         this.evalideSelectedCycle = true;
         this.error = true;
       } else {
@@ -886,8 +902,8 @@ export default {
       }
     },
 
-        evalidateSelectedCommune() {
-      if (!this.editSelectedCommune) {
+    evalidateSelectedCommune() {
+      if (!this.editSelected) {
         this.evalideSelectedCommune = true;
         this.error = true;
       } else {
@@ -895,7 +911,6 @@ export default {
         this.error = false;
       }
     },
-
 
     validateSelectedDiocese() {
       if (!this.selectedDiocese) {
@@ -907,8 +922,8 @@ export default {
       }
     },
 
-        evalidateSelectedDiocese() {
-      if (!this.editSelectedDiocese) {
+    evalidateSelectedDiocese() {
+      if (!this.editSelected) {
         this.evalideSelectedDiocese = true;
         this.error = true;
       } else {
@@ -921,7 +936,7 @@ export default {
       try {
         this.validateTitle();
         this.validateSelectedCycle();
-        this.validateSelectedCommune();
+        // this.validateSelectedCommune();
         this.validateSelectedDiocese();
         this.validateFrais();
         const config = {
@@ -939,24 +954,29 @@ export default {
           selected = this.selectedDiocese.id;
         }
 
-     if (!this.title || !this.subtitle && this.titleParms[0].title === "Commune") {
+        if (
+          !this.title ||
+          (!this.subtitle && this.titleParms[0].title === "Commune")
+        ) {
           bvModalEvt.preventDefault();
-        }else if(!this.selectedCycle && this.titleParms[0].title === "Niveau"){
-   bvModalEvt.preventDefault();
-        }else if(!this.selectedDiocese && this.titleParms[0].title === "Sedec"){
-   bvModalEvt.preventDefault();
-
-        }
-
-
-      else {
+        } else if (
+          !this.selectedCycle &&
+          this.titleParms[0].title === "Niveau"
+        ) {
+          bvModalEvt.preventDefault();
+        } else if (
+          !this.selectedDiocese &&
+          this.titleParms[0].title === "Sedec"
+        ) {
+          bvModalEvt.preventDefault();
+        } else {
           const data = {
             title: this.title,
             subtitle: this.subtitle,
             quartier: this.quartier,
             parent_id: selected,
             description: this.description,
-            slug: this.$route.params.slug,
+            slug: this.slug,
           };
           console.log("dat", data);
           await axios
@@ -980,12 +1000,10 @@ export default {
       }
     },
 
-
-
     //update
 
-       async edit(bvModalEvt) {
-        console.log(this.titleParms[0].title);
+    async edit(bvModalEvt) {
+      console.log(this.titleParms[0].title);
       try {
         this.evalidateTitle();
         this.evalidateSelectedCycle();
@@ -998,49 +1016,59 @@ export default {
           },
         };
 
-        let eselected = "";
-        if (this.editSelectedCycle) {
-          eselected = this.getParametre.parent.id;
-        } else if (this.getParametre.parent.id) {
-          eselected = this.getParametre.parent.id;
-        } else if (this.editSelectedDiocese) {
-          eselected = this.getParametre.parent.id;
+        let selected = "";
+        if (this.getParametre.parent) {
+          if (this.editSelected === this.getParametre.parent.title) {
+            selected = this.getParametre.parent.id;
+          } else {
+            selected = this.editSelected.id;
+          }
+          console.log(selected);
         }
-        console.log(eselected);
-
-     if (!this.editTitle || !this.editSubtitle && this.titleParms[0].title === "Commune") {
+        if (
+          !this.editTitle ||
+          (!this.editSubtitle && this.titleParms[0].title === "Commune")
+        ) {
           bvModalEvt.preventDefault();
-        }else if(!this.editSelectedCycle && this.titleParms[0].title === "Niveau"){
-   bvModalEvt.preventDefault();
-        }else if(!this.editSelectedDiocese && this.titleParms[0].title === "Sedec"){
-   bvModalEvt.preventDefault();
-
-        }
-
-
-      else {
+        } else if (
+          !this.editSelected &&
+          this.titleParms[0].title === "Niveau"
+        ) {
+          bvModalEvt.preventDefault();
+        } else if (!this.editSelected && this.titleParms[0].title === "Sedec") {
+          bvModalEvt.preventDefault();
+        } else {
           const data = {
-            id:this.getParametre.id,
+            id: this.getParametre.id,
             title: this.editTitle,
             subtitle: this.editSubtitle,
             quartier: this.editQuartier,
-            parent_id: eselected,
+            parent_id: selected,
             description: this.editDescription,
-            slug: this.$route.params.slug,
+            slug: this.slug,
           };
           console.log("dat", data);
           await axios
-            .post(URL.PARAMETRE_UPDATE +`/${data.id}`, data, this.config)
+            .post(URL.PARAMETRE_UPDATE + `/${data.id}`, data, this.config)
             .then((response) => {
               this.userData = response.data.parametre;
-              this.Parametre.unshift(this.userData);
+              axios.get(URL.PARAMETRE).then((response) => {
+                this.Parametre = response.data.parametre;
+                const listParametre = this.Parametre.filter(
+                  (item) => item.slug_type_para === this.slug
+                );
+                this.Parametre = listParametre;
+                this.pTotal = this.Parametre.length;
+              });
               this.topEndU();
               this.editTitle = "";
               this.editSubtitle = "";
               this.editDescription = "";
-              this.editSelectedCycle = "";
-              this.editSelectedCommune = "";
-              this.editSelectedDiocese = "";
+              this.editSelected = "";
+
+              // this.editSelectedCycle = "";
+              // this.editSelectedCommune = "";
+              // this.editSelectedDiocese = "";
             });
         }
       } catch (error) {
@@ -1050,19 +1078,19 @@ export default {
 
     //destroy
     async deleteParametre(indentifiant) {
-      const id_delete = {
+      const id = {
         id: indentifiant,
       };
       try {
         await axios
-          .post(URL.PARAMETRE_DESTROY, id_delete)
+          .post(URL.PARAMETRE_DESTROY + `/${id.id}`)
           .then((response) => {
             response.data;
             axios.get(URL.PARAMETRE).then((response) => {
               this.Parametre = response.data.parametre;
               console.log("List Parm", this.Parametre);
               const listParametre = this.Parametre.filter(
-                (item) => item.slug_type_para === this.$route.params.slug
+                (item) => item.slug_type_para === this.slug
               );
               this.Parametre = listParametre;
               this.pTotal = this.Parametre.length;

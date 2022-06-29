@@ -22,11 +22,20 @@
 
             <b-button variant="primary">
               <feather-icon icon="PlusIcon" class="mx-auto" />
-              <!-- Ajouter un etablissement -->
+              <!-- Ajouter un article -->
               <b-link :to="{ name: 'article/create' }">
                 <span class="text-white">Ajouter un article </span>
               </b-link>
             </b-button>
+
+             <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="BookOpenIcon"
+                size="30"
+                class="text-primary"
+                :badge="pTotal"
+              />
+            </div>
 
             <!-- <b-link :to="{ name: 'register' }">
               <span>&nbsp;Créer un compte</span>
@@ -49,9 +58,12 @@
             </div>
           </b-col>
         </b-row>
-
+        <div class="text-center" v-if="spinner===true">
+                <b-spinner  variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les typeParametre -->
         <b-table
+        v-if="spinner===false"
           hover
           responsive
           primary-key="id"
@@ -60,6 +72,8 @@
           :items="articleList"
           :fields="tableColumns"
           :filter="filtreArticle"
+           :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
           class="bg-white"
@@ -73,6 +87,12 @@
                <template #cell(prix)="data">
                     <span> {{ convert(data.item.prix) }} </span>
                 </template>
+
+                <template #cell(created_at)="data">
+            <span>
+              {{format_date(data.item.created_at) }}
+            </span>
+          </template>
 
                   <template #cell(image)="data">
                       <img v-if="data.item.image"
@@ -207,6 +227,7 @@ import {
   BPagination,
   BTable,
   BFormTextarea,
+  BSpinner
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import {VBTooltip, BButton} from 'bootstrap-vue'
@@ -249,6 +270,7 @@ export default {
     BTable,
     BInputGroupAppend,
     BFormTextarea,
+    BSpinner
   },
   directives: {
     Ripple,
@@ -257,30 +279,36 @@ export default {
   data() {
     return {
       articleList: [],
-      perPage: 5,
+      spinner:true,
+      perPage: 100,
       currentPage: 1,
+        currentSort:'created_at',
+  currentSortDir:'asc',
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
         { key: "image", label: "image", sortable: true },
         { key: "title", label: "Nom", sortable: true },
         { key: "categorie", label: "categorie", sortable: true },
-        { key: "quantite", label: "quantite", sortable: true },
+        { key: "quantite", label: "Qte", sortable: true },
         { key: "prix", label: "prix", sortable: true },
+                { key: "created_at", label: "crée le", sortable: true },
+
         { key: "actions" },
       ],
       filtreArticle: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
       error: [],
     };
   },
 
   async mounted() {
     document.title = "Liste des articles";
-    
+    this.spinner=true
 
     try {
       await axios.get(URL.LIST_ARTICLE).then((response) => {
+        this.spinner = false
         this.articleList = response.data.article;
         //  this.articleList =  this.returnData.article
         this.pTotal = this.articleList.length;
@@ -293,7 +321,12 @@ export default {
 
   methods: {
 
-    
+       //formatage date
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
+    },
 
  convert(amount) {
       const formatter = new Intl.NumberFormat("ci-CI", {

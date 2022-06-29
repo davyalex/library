@@ -23,10 +23,19 @@
             <b-button variant="primary">
               <feather-icon icon="PlusIcon" class="mx-auto" />
               <!-- Ajouter un etablissement -->
-              <b-link :to="{ name:'create' }">
+              <b-link :to="{ name: 'create' }">
                 <span class="text-white">Ajouter un kit </span>
               </b-link>
             </b-button>
+
+             <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="BriefcaseIcon"
+                size="30"
+                class="text-primary"
+                :badge="pTotal"
+              />
+            </div>
 
             <!-- <b-link :to="{ name: 'register' }">
               <span>&nbsp;Créer un compte</span>
@@ -49,9 +58,12 @@
             </div>
           </b-col>
         </b-row>
-
+ <div class="text-center" v-if="spinner===true">
+                <b-spinner  variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les typeParametre -->
         <b-table
+        v-if="spinner===false"
           hover
           responsive
           primary-key="id"
@@ -60,23 +72,26 @@
           :items="kitList"
           :fields="tableColumns"
           :filter="filtreKit"
+          :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
           class="bg-white"
         >
           <template #cell(etablissement)="data">
-            <span>
+            <span v-if="data.item.etablissement">
               {{ data.item.etablissement.title }}
             </span>
           </template>
 
-           <template #cell(image)="data">
-                      <img v-if="data.item.image"
-                style="width: 32px; height: 32px"
-                :src="data.item.image"
-                alt=""
-              />
-                </template>
+          <template #cell(image)="data">
+            <img
+              v-if="data.item.image"
+              style="width: 32px; height: 32px"
+              :src="data.item.image"
+              alt=""
+            />
+          </template>
 
           <template #cell(niveau)="data">
             <span>
@@ -84,28 +99,25 @@
             </span>
           </template>
 
-           <template #cell(title)="data">
-                  <div class="py-50">
-                    <span
-                      variant="info"
-                      class="text-uppercase font-weight-bolder"
-                    >
-                      {{ data.item.title }}
-                    </span>
-                  </div>
-                </template>
+          <template #cell(title)="data">
+            <div class="py-50">
+              <span variant="info" class="text-uppercase font-weight-bolder">
+                {{ data.item.title }}
+              </span>
+            </div>
+          </template>
 
-                  <template #cell(created_at)="data">
-                  <div class="py-50">
-                    {{ format_date(data.item.created_at) }}
-                  </div>
-                </template>
+          <template #cell(created_at)="data">
+            <div class="py-50">
+              {{ format_date(data.item.created_at) }}
+            </div>
+          </template>
 
-                   <template #cell(montant)="data">
-                  <div class="py-50">
-                    {{ convert(data.item.montant) }}
-                  </div>
-                </template>
+          <template #cell(montant)="data">
+            <div class="py-50">
+              {{ convert(data.item.montant) }}
+            </div>
+          </template>
 
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
@@ -116,8 +128,8 @@
                 size="16"
                 class="cursor-pointer mr-1 text-primary"
                 @click="updateKit(data.item.id)"
-                  v-b-tooltip.hover.v-primary
-      title="Modifier"
+                v-b-tooltip.hover.v-primary
+                title="Modifier"
               />
               <!-- </b-link> -->
 
@@ -128,8 +140,8 @@
                   size="16"
                   class="cursor-pointer mr-1 text-success"
                   @click="preview(data.item.id)"
-                    v-b-tooltip.hover.v-success
-      title="Detail"
+                  v-b-tooltip.hover.v-success
+                  title="Detail"
                 />
               </b-link>
 
@@ -140,8 +152,8 @@
                 size="16"
                 class="cursor-pointer mr-1 text-danger"
                 @click="confirmText(data.item.id)"
-                  v-b-tooltip.hover.v-danger
-      title="Supprimer"
+                v-b-tooltip.hover.v-danger
+                title="Supprimer"
               />
             </div>
           </template>
@@ -173,8 +185,6 @@
                 prev-class="prev-item"
                 next-class="next-item"
               >
-               
-                
                 <template #prev-text>
                   <feather-icon icon="ChevronLeftIcon" size="18" />
                 </template>
@@ -207,18 +217,12 @@
             <!-- Item Form -->
             <!-- ? This will be in loop => So consider below markup for single item -->
             <b-col cols="12">
-                   <div class="d-none d-lg-flex">
+              <div class="d-none d-lg-flex">
                 <b-row class="flex-grow-1 px-1">
                   <!-- Single Item Form Headers -->
-                  <b-col cols="4" lg="4">
-                    Libelle
-                  </b-col>
-                  <b-col cols="3" lg="3">
-                    Prix
-                  </b-col>
-                  <b-col cols="5" lg="5">
-                    Quantite
-                  </b-col>
+                  <b-col cols="4" lg="4"> Libelle </b-col>
+                  <b-col cols="3" lg="3"> Prix </b-col>
+                  <b-col cols="5" lg="5"> Quantite </b-col>
                 </b-row>
                 <div class="form-item-action-col" />
               </div>
@@ -293,9 +297,10 @@ import {
   BPagination,
   BTable,
   BFormTextarea,
+  BSpinner
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
-import {VBTooltip, BButton} from 'bootstrap-vue'
+import { VBTooltip, BButton } from "bootstrap-vue";
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
@@ -333,44 +338,50 @@ export default {
     BTable,
     BInputGroupAppend,
     BFormTextarea,
+  BSpinner
+
   },
   directives: {
     Ripple,
-         'b-tooltip': VBTooltip,
-
+    "b-tooltip": VBTooltip,
   },
   data() {
     return {
       kitList: [],
       articleList: [],
-      perPage: 5,
+      spinner:true,
+      perPage: 100,
       currentPage: 1,
       pTotal: 0,
+      currentSort: "created_at",
+      currentSortDir: "asc",
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
-                { key: "image", label: "image", sortable: true },
+        { key: "image", label: "image", sortable: true },
 
         { key: "title", label: "Nom", sortable: true },
         { key: "etablissement", label: "etablissement", sortable: true },
         { key: "niveau", label: "niveau", sortable: true },
-                { key: "montant", label: "montant", sortable: true },
+        { key: "montant", label: "montant", sortable: true },
 
         { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
       filtreKit: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
       error: [],
     };
   },
 
   async mounted() {
     document.title = "Liste des kits";
+    this.spinner = true
     try {
       await axios.get(URL.LIST_KIT).then((response) => {
+            this.spinner = false
         this.kitList = response.data.kit;
         this.pTotal = this.kitList.length;
-        console.log(this.kitList);
+        console.log('kiltlIST',this.kitList);
       });
     } catch (error) {
       console.log(error);
@@ -378,17 +389,16 @@ export default {
   },
 
   methods: {
-
-     convert(amount) {
+    convert(amount) {
       const formatter = new Intl.NumberFormat("ci-CI", {
         style: "currency",
         currency: "XOF",
         minimumFractionDigits: 2,
-      }).format(parseInt(amount))
-      return formatter
-      },
+      }).format(parseInt(amount));
+      return formatter;
+    },
 
-format_date(value) {
+    format_date(value) {
       if (value) {
         return moment(String(value)).format("DD-MM-YYYY");
       }
@@ -441,12 +451,12 @@ format_date(value) {
             Accept: "application/json",
           },
         };
-        axios.post(URL.KIT_DESTROY +`/${id.id}`, config).then((response) => {
+        axios.post(URL.KIT_DESTROY + `/${id.id}`, config).then((response) => {
           if (response.data) {
-              axios.get(URL.LIST_KIT).then((response) => {
-        this.kitList = response.data.kit;
-        this.pTotal = this.kitList.length;
-      });
+            axios.get(URL.LIST_KIT).then((response) => {
+              this.kitList = response.data.kit;
+              this.pTotal = this.kitList.length;
+            });
           }
         });
         this.kitList.splice(index, 1);

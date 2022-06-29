@@ -27,6 +27,15 @@
                 <span class="text-white">Ajouter un point de retrait</span>
               </b-link>
             </b-button>
+             <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="NavigationIcon"
+                size="30"
+                class="text-primary"
+                :badge="pTotal"
+              />
+            </div>
+            
 
             <!-- <b-link :to="{ name: 'register' }">
               <span>&nbsp;Créer un compte</span>
@@ -49,9 +58,12 @@
             </div>
           </b-col>
         </b-row>
-
+ <div class="text-center" v-if="spinner===true">
+                <b-spinner  variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les typeParametre -->
         <b-table
+        v-if="spinner===false"
           hover
           responsive
           primary-key="id"
@@ -67,6 +79,12 @@
           <template #cell(categorie)="data">
             <span>
               {{ data.item.categorie.title }}
+            </span>
+          </template>
+
+                 <template #cell(created_at)="data">
+            <span>
+              {{format_date(data.item.created_at) }}
             </span>
           </template>
 
@@ -174,6 +192,7 @@ import {
   BPagination,
   BTable,
   BFormTextarea,
+  BSpinner
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -213,14 +232,16 @@ export default {
     BTable,
     BInputGroupAppend,
     BFormTextarea,
+    BSpinner
   },
   directives: {
     Ripple,
   },
   data() {
     return {
+      spinner:true,
       pointretaitListe: [],
-      perPage: 5,
+      perPage: 100,
       currentPage: 1,
       pTotal: 0,
       tableColumns: [
@@ -228,18 +249,20 @@ export default {
         { key: "title", label: "Nom", sortable: true },
         { key: "phone", label: "Contact", sortable: true },
         { key: "email", label: "email", sortable: true },
-        // { key: "prix", label: "prix", sortable: true },
+        { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
       filtrePointRetrait: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
       error: [],
     };
   },
 
   async mounted() {
     try {
+      this.spinner=true
       await axios.get(URL.LIST_POINTRETRAIT).then((response) => {
+        this.spinner = false
         this.pointretaitListe = response.data.pointRetrait;
         this.pTotal = this.pointretaitListe.length;
         console.log(this.pointretaitListe);
@@ -250,6 +273,13 @@ export default {
   },
 
   methods: {
+
+       //formatage date
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
+    },
     topEnd() {
       this.$toast({
         component: ToastificationContent,

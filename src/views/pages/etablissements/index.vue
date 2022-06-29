@@ -27,6 +27,14 @@
                 <span class="text-white">Ajouter un etablissement</span>
               </b-link>
             </b-button>
+             <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="BookIcon"
+                size="30"
+                class="text-primary"
+                :badge="totalEtablissement"
+              />
+            </div>
 
             <!-- <b-link :to="{ name: 'register' }">
               <span>&nbsp;Créer un compte</span>
@@ -43,15 +51,18 @@
                 <b-form-input
                   v-model="filtreetablissement"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : title, categorie..."
+                  placeholder="Rechercher par : code, nom,..."
                 />
               </b-input-group>
             </div>
           </b-col>
         </b-row>
-
+        <div class="text-center" v-if="spinner === true">
+          <b-spinner variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les typeParametre -->
         <b-table
+          v-if="spinner === false"
           hover
           responsive
           primary-key="id"
@@ -59,6 +70,8 @@
           :current-page="currentPage"
           :items="etablissement"
           :fields="tableColumns"
+            :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           :filter="filtreetablissement"
           show-empty
           empty-text="Aucun etablissement enregistré"
@@ -67,6 +80,12 @@
           <template #cell(categorie)="data">
             <span>
               {{ data.item.categorie.title }}
+            </span>
+          </template>
+
+          <template #cell(created_at)="data">
+            <span>
+              {{format_date(data.item.created_at) }}
             </span>
           </template>
 
@@ -174,6 +193,7 @@ import {
   BPagination,
   BTable,
   BFormTextarea,
+  BSpinner,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -213,6 +233,7 @@ export default {
     BTable,
     BInputGroupAppend,
     BFormTextarea,
+    BSpinner,
   },
   directives: {
     Ripple,
@@ -220,30 +241,35 @@ export default {
   data() {
     return {
       etablissement: [],
-      perPage: 30,
+      spinner: true,
+      perPage: 100,
       currentPage: 1,
       totalEtablissement: 0,
+       currentSort: "created_at",
+      currentSortDir: "asc",
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
         { key: "title", label: "Nom", sortable: true },
         { key: "email", label: "Email", sortable: true },
         { key: "contact", label: "Contact", sortable: true },
-        // { key: "prix", label: "prix", sortable: true },
+        { key: "created_at", label: "crée le", sortable: true },
         { key: "actions" },
       ],
       filtreetablissement: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
       error: [],
     };
   },
 
-   async mounted() {
-        document.title = "Liste des etablissements";
+  async mounted() {
+    document.title = "Liste des etablissements";
+    this.spinner = true;
     try {
       await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
+        this.spinner = false;
         this.returnData = response.data;
         this.etablissement = this.returnData.etablissements;
-        this.totalEtablissement=response.data.etablissements.length;
+        this.totalEtablissement = response.data.etablissements.length;
         this.niveau = this.returnData.etablissements;
         // this.listEtablissement = this.returnData
       });
@@ -264,6 +290,13 @@ export default {
     //   });
     // },
 
+        //formatage date
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
+    },
+
     topEnd() {
       this.$toast({
         component: ToastificationContent,
@@ -283,7 +316,6 @@ export default {
       }
     },
 
- 
     updateEtablissement(id) {
       const etat = this.etablissement.filter(
         (item) => item.id === id,
@@ -294,9 +326,8 @@ export default {
       this.$router.push({ name: "edit" });
     },
 
-
     confirmText(id) {
-       this.$swal({
+      this.$swal({
         title: "Êtes vous sûr?",
         text: "Cet etablissement sera supprimé définitivement !",
         icon: "warning",
@@ -327,21 +358,24 @@ export default {
         axios
           .post(URL.DESTROY_ETABLISSEMENT + `/${id.id}`, config)
           .then((response) => {
-            if(response.data){
-              response.data;
-              topEnd();
-              
+            if (response.data) {
+              // topEnd();
+              axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
+                this.returnData = response.data;
+                this.etablissement = this.returnData.etablissements;
+                this.totalEtablissement = response.data.etablissements.length;
+                this.niveau = this.returnData.etablissements;
+                // this.listEtablissement = this.returnData
+              });
             }
-          })
+          });
+
         this.etablissement.splice(index, 1);
       } catch (error) {
         console.log(error.type);
       }
     },
   },
-
-
-
 };
 </script>
 

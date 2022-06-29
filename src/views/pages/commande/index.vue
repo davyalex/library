@@ -149,7 +149,6 @@
               :text="titre ? titre : 'Filtrer'"
               variant="primary"
             >
-
               <b-dropdown-item @click="getName('livre')">
                 <feather-icon icon="ShoppingCartIcon" />
                 <span class="align-middle ml-50 text-success font-weight-bold"
@@ -171,13 +170,28 @@
                 >
               </b-dropdown-item>
 
-                <b-dropdown-item @click="getName('all')">
+              <b-dropdown-item @click="getName('annulé')">
+                <feather-icon icon="ShoppingCartIcon" />
+                <span class="align-middle ml-50 text-danger font-weight-bold"
+                  >Commandes annulées</span
+                >
+              </b-dropdown-item>
+
+              <b-dropdown-item @click="getName('all')">
                 <feather-icon icon="ShoppingCartIcon" />
                 <span class="align-middle ml-50 text-dark font-weight-bold"
                   >Toutes les commandes</span
                 >
               </b-dropdown-item>
             </b-dropdown>
+            <div class="demo-inline-spacing m-auto">
+              <feather-icon
+                icon="ShoppingCartIcon"
+                size="30"
+                class="text-primary"
+                :badge="commandesFiltre.length"
+              />
+            </div>
           </b-col>
 
           <!-- Search -->
@@ -190,15 +204,18 @@
                 <b-form-input
                   v-model="filtrecommandes"
                   class="d-inline-block mr-1"
-                  placeholder="Rechercher par : N°, statut, date..."
+                  placeholder="Rechercher par : N°, etat, date..."
                 />
               </b-input-group>
             </div>
           </b-col>
         </b-row>
-
+        <div class="text-center" v-if="spinner === true">
+          <b-spinner variant="success" type="grow" label="Spinning"></b-spinner>
+        </div>
         <!-- Le tableau affichant les users -->
         <b-table
+          v-if="spinner === false"
           hover
           responsive
           :per-page="perPage"
@@ -206,6 +223,8 @@
           :items="commandesFiltre"
           :fields="tableColumns"
           :filter="filtrecommandes"
+          :sort-by.sync="currentSort"
+          :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
           class="bg-white"
@@ -214,41 +233,82 @@
             {{ format_date(data.item.created_at) }}
           </template>
 
-          <template #cell(client)="data">
-                            <feather-icon size="20" icon="UserIcon" class="cursor-pointer" />
-<span> {{ data.item.client.nom }}</span>
-           
+          <template #cell(livraison_mode)="data">
+            {{ data.item.livraison_mode.title }}
           </template>
 
+          <template #cell(client)="data">
+            <feather-icon size="20" icon="UserIcon" class="cursor-pointer" />
+            <span> {{ data.item.client.nom }}</span>
+          </template>
 
- <template #cell(code)="data">
-
-         <span class="text-primary font-weight-bold">   {{ data.item.code }}</span>
+          <template #cell(code)="data">
+            <span
+              class="text-primary font-weight-bold"
+              @click="preview(data.item.id)"
+            >
+              {{ data.item.code }}</span
+            >
           </template>
           <template #cell(etat)="data">
-            <span v-if=" data.item.etat.title==='En attente'" class="badge badge-light-warning badge-pill font-weight-bold">
-              <feather-icon size="20" icon="ArrowDownIcon" class="cursor-pointer" />
-               {{ data.item.etat.title }}</span
+            <span
+              v-if="data.item.etat.title === 'En attente'"
+              class="badge badge-light-warning badge-pill font-weight-bold"
+            >
+              <feather-icon
+                v-if="data.item.livraison_mode.title === 'point de retrait'"
+                size="20"
+                icon="HomeIcon"
+                class="cursor-pointer"
+              />
+              <feather-icon
+                v-else
+                size="20"
+                icon="ArrowDownIcon"
+                class="cursor-pointer"
+              />
+              {{ data.item.etat.title }}</span
             >
 
-              <span v-if=" data.item.etat.title==='Affectée'" class="badge badge-light-primary badge-pill font-weight-bold">
+            <span
+              v-if="data.item.etat.title === 'Affectée'"
+              class="badge badge-light-primary badge-pill font-weight-bold"
+            >
               <feather-icon size="20" icon="TruckIcon" class="cursor-pointer" />
-               {{ data.item.etat.title }}</span
+              {{ data.item.etat.title }}</span
             >
 
-                <span v-if=" data.item.etat.title==='Livrée'" class="badge badge-light-success badge-pill font-weight-bold">
+            <span
+              v-if="data.item.etat.title === 'Livrée'"
+              class="badge badge-light-success badge-pill font-weight-bold"
+            >
               <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
-               {{ data.item.etat.title }}</span
+              {{ data.item.etat.title }}</span
             >
 
+            <span
+              v-if="data.item.etat.title === 'Récupérée'"
+              class="badge badge-light-success badge-pill font-weight-bold"
+            >
+              <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
+              {{ data.item.etat.title }}</span
+            >
+
+            <span
+              v-if="data.item.etat.title === 'Annulée'"
+              class="badge badge-light-danger badge-pill font-weight-bold"
+            >
+              <feather-icon size="20" icon="CheckIcon" class="cursor-pointer" />
+              {{ data.item.etat.title }}</span
+            >
           </template>
 
-             <template #cell(total_ttc)="data">
-              <span class="text-success font-weight-bold"> {{ convert(data.item.total_ttc) }}</span>
-             </template>
+          <template #cell(total_ttc)="data">
+            <span class="text-success font-weight-bold">
+              {{ convert(data.item.total_ttc) }}</span
+            >
+          </template>
 
-        
-          
           <template #cell(actions)="data">
             <div class="text-nowrap text-center">
               <!-- Dropdown -->
@@ -268,7 +328,20 @@
                 <b-dropdown-item
                   @click="affecte(data.item.id, data.item.code)"
                   v-b-modal.v-b-modal.modal-add
-                  :disabled="data.item.etat.title === 'Affectée' ? true : false"
+                  :disabled="
+                    data.item.etat.title === 'Affectée'
+                      ? true
+                      : false || data.item.etat.title === 'Livrée'
+                      ? true
+                      : false || data.item.etat.title === 'Récupérée'
+                      ? true
+                      : false || data.item.etat.title === 'Annulée'
+                      ? true
+                      : false ||
+                        data.item.livraison_mode.title === 'point de retrait'
+                      ? true
+                      : false
+                  "
                 >
                   <feather-icon icon="SendIcon" />
                   <span
@@ -276,7 +349,26 @@
                     class="align-middle ml-50"
                     >Déjà affectée</span
                   >
-                  <span v-else class="align-middle ml-50">Affecter</span>
+
+                  <span
+                    v-else-if="data.item.etat.title === 'Livrée'"
+                    class="align-middle ml-50"
+                    >Commande livrée</span
+                  >
+                  <span
+                    v-else-if="data.item.etat.title === 'Récupérée'"
+                    class="align-middle ml-50"
+                    >En cour de livraison</span
+                  >
+                  <span
+                    v-else-if="data.item.etat.title === 'Annulée'"
+                    class="align-middle ml-50"
+                    >Commande annulée</span
+                  >
+
+                  <span v-else class="align-middle ml-50"
+                    >Affecter la commande</span
+                  >
                 </b-dropdown-item>
 
                 <b-dropdown-item @click="preview(data.item.id)">
@@ -284,9 +376,30 @@
                   <span class="align-middle ml-50">Details</span>
                 </b-dropdown-item>
 
-                <b-dropdown-item @click="destroy(data.item.id)">
-                  <feather-icon icon="TrashIcon" />
-                  <span class="align-middle ml-50">Supprimer</span>
+                <b-dropdown-item
+                  v-if="data.item.livraison_mode.title === 'point de retrait'"
+                  @click="delivery(data.item.id)"
+                  :disabled="
+                    data.item.etat.title === 'Annulée'
+                      ? true
+                      : false || data.item.etat.title === 'Livrée'
+                      ? true
+                      : false || data.item.etat.title === 'Récupérée'
+                      ? true
+                      : false
+                  "
+                >
+                  <feather-icon icon="ThumbsUpIcon" />
+                  <span class="align-middle ml-50">Livrer</span>
+                </b-dropdown-item>
+
+                <b-dropdown-item
+                  v-if="data.item.livraison_mode.title === 'point de retrait'"
+                  @click="cancel(data.item.id)"
+                  :disabled="data.item.etat.title === 'Annulée' ? true : false"
+                >
+                  <feather-icon icon="ThumbsDownIcon" />
+                  <span class="align-middle ml-50">Annuler</span>
                 </b-dropdown-item>
               </b-dropdown>
             </div>
@@ -355,6 +468,7 @@ import {
   BFormTextarea,
   BDropdown,
   BDropdownItem,
+  BSpinner,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -397,6 +511,7 @@ export default {
     BFormTextarea,
     BDropdown,
     BDropdownItem,
+    BSpinner,
   },
   mixins: [togglePasswordVisibility],
   directives: {
@@ -413,10 +528,11 @@ export default {
       commande_id: "",
       commande_code: "",
 
-      titre:"",
+      titre: "",
 
       role: "",
       loading: false,
+      spinner: true,
 
       // errorMsg: "",
       users: [],
@@ -424,10 +540,12 @@ export default {
       recoverCommande: "",
       recover: "",
       recoverItem: "",
-      commandesFiltre:[],
+      commandesFiltre: [],
 
-      perPage: 30,
+      perPage: 100,
       currentPage: 1,
+      currentSort: "created_at",
+      currentSortDir: "asc",
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
@@ -436,6 +554,7 @@ export default {
         { key: "total_ttc", label: "montant", sortable: true },
         // { key: "quantite", label: "quantite", sortable: true },
         // { key: "status", label: "statut", sortable: true },
+        { key: "livraison_mode", label: "mode de livraison", sortable: true },
         { key: "etat", label: "etat", sortable: true },
 
         // { key: "phone", label: "contact", sortable: true },
@@ -443,17 +562,19 @@ export default {
         { key: "actions" },
       ],
       filtrecommandes: "",
-      perPageOptions: [30, 50, 100],
+      perPageOptions: [100, 200, 300],
     };
   },
 
   async mounted() {
     document.title = "Commande";
-
+    this.spinner = true;
     try {
       await axios.get(URL.LIST_COMMANDE).then((response) => {
+        this.spinner = false;
+
         this.commandes = response.data.commande;
-        this.commandesFiltre = this.commandes
+        this.commandesFiltre = this.commandes;
         // this.pTotal = this.commandes.length;
         console.log("commande", this.commandes);
       });
@@ -468,15 +589,14 @@ export default {
   },
 
   methods: {
-
-     convert(amount) {
+    convert(amount) {
       const formatter = new Intl.NumberFormat("ci-CI", {
         style: "currency",
         currency: "XOF",
         minimumFractionDigits: 2,
-      }).format(parseInt(amount))
-      return formatter
-      },
+      }).format(parseInt(amount));
+      return formatter;
+    },
 
     topEnd() {
       this.$toast({
@@ -495,9 +615,9 @@ export default {
         return moment(String(value)).format("DD-MM-YYYY");
       }
     },
+    
     //envoi des item en localStorage
     getName(item) {
-
       localStorage.setItem("Item", item);
 
       this.recoverItem = localStorage.getItem("Item");
@@ -508,33 +628,34 @@ export default {
           return item.etat_id === 16;
         });
         this.commandesFiltre = filterLivre;
-                this.titre = "Liste des commandes livrées"
+        this.titre = "Liste des commandes livrées";
 
-        console.log(this.commandesFiltre,this.titre);
-      }
-      
-      else if (this.recoverItem === "affecte") {
-       const filterAffecte = this.commandes.filter((item) => {
+        console.log(this.commandesFiltre, this.titre);
+      } else if (this.recoverItem === "affecte") {
+        const filterAffecte = this.commandes.filter((item) => {
           return item.etat_id === 14;
         });
         this.commandesFiltre = filterAffecte;
-                        this.titre = "Liste des commandes affectées"
+        this.titre = "Liste des commandes affectées";
 
-                console.log(this.commandesFiltre,this.titre);
-
-      }
-      
-      else if (this.recoverItem === "attente") {
+        console.log(this.commandesFiltre, this.titre);
+      } else if (this.recoverItem === "attente") {
         const filterAttente = this.commandes.filter((item) => {
           return item.etat_id === 13;
         });
         this.commandesFiltre = filterAttente;
-             this.titre = "Liste des commandes en attentes"
-            console.log(this.commandesFiltre,this.titre);
-
-      }else if (this.recoverItem === "all") {
-                      this.commandesFiltre = this.commandes;
-            this.titre =""
+        this.titre = "Liste des commandes en attentes";
+        console.log(this.commandesFiltre, this.titre);
+      } else if (this.recoverItem === "annulé") {
+        const filterAnnule = this.commandes.filter((item) => {
+          return item.etat_id === 17;
+        });
+        this.commandesFiltre = filterAnnule;
+        this.titre = "Liste des commandes annulées";
+        console.log(this.commandesFiltre, this.titre);
+      } else if (this.recoverItem === "all") {
+        this.commandesFiltre = this.commandes;
+        this.titre = "";
       }
     },
 
@@ -613,41 +734,35 @@ export default {
       }
     },
 
-    //destroy
-    async deletecmd(indentifiant) {
+    //cancel
+    async annuler(indentifiant) {
       const id = {
         id: indentifiant,
       };
+      console.log(id);
       const config = {
         headers: {
           Accept: "application/json",
         },
       };
       try {
-        await axios
-          .post(URL.COMMANDE_DESTROY + `/${id.id}`, config)
-          .then((response) => {
-            response.data;
-            axios.get(URL.LIST_USER).then((response) => {
-              this.commandes = response.data.commande;
-              this.pTotal = this.commandes.length;
-            });
-          })
-          .catch((error) => {
-            if (error.response) {
-              console.log(error.response.data);
-            }
+        await axios.post(URL.COMMANDE_CANCEL, id, config).then((response) => {
+          response.data;
+          axios.get(URL.LIST_COMMANDE).then((response) => {
+            this.commandes = response.data.commande;
+            this.commandesFiltre = this.commandes;
+            console.log("commande", this.commandes);
           });
-        this.commandes.splice(index, 1);
+        });
       } catch (error) {
         console.log(error.type);
       }
     },
 
-    destroy(id) {
+    cancel(id) {
       this.$swal({
         title: "Êtes vous sûr?",
-        text: "Cette commande sera supprimé définitivement !",
+        text: "Cette commande sera annulée définitivement !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Oui",
@@ -658,7 +773,51 @@ export default {
         buttonsStyling: false,
       }).then((result) => {
         if (result.value) {
-          this.deletecmd(id);
+          this.annuler(id);
+        }
+      });
+    },
+
+    //delivery
+    async livrer(indentifiant) {
+      const id = {
+        id: indentifiant,
+      };
+      console.log(id);
+      const config = {
+        headers: {
+          Accept: "application/json",
+        },
+      };
+      try {
+        await axios.post(URL.COMMANDE_DELIVERY, id, config).then((response) => {
+          response.data;
+          axios.get(URL.LIST_COMMANDE).then((response) => {
+            this.commandes = response.data.commande;
+            this.commandesFiltre = this.commandes;
+            console.log("commande", this.commandes);
+          });
+        });
+      } catch (error) {
+        console.log(error.type);
+      }
+    },
+
+    delivery(id) {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: "Cette commande est livrée?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.livrer(id);
         }
       });
     },

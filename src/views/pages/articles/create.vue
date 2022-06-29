@@ -218,7 +218,7 @@
             </b-form-group>
           </b-col> -->
                   <!-- article jumelé -->
-                  <b-col cols="4" md="4" class="m-auto">
+                  <b-col cols="12" md="8" class="m-auto">
                     <b-form-group label="" label-for="register-libelle">
                       <label for=""
                         >Choisir un article<span

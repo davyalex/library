@@ -1,0 +1,1 @@
+rsync -av ./ nx6sq_qenium@nx6sq.ftp.infomaniak.com:~/admin  --exclude '.vscodev'
