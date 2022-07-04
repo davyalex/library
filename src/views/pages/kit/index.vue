@@ -107,10 +107,13 @@
             </div>
           </template>
 
-          <template #cell(created_at)="data">
-            <div class="py-50">
+            <template #cell(created_at)="data">
+            <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`"
+            >
               {{ format_date(data.item.created_at) }}
-            </div>
+            </span>
           </template>
 
           <template #cell(montant)="data">
@@ -203,8 +206,9 @@
       cancel-variant="outline-secondary"
       ok-title="Valider"
       cancel-title="Annuler"
+      size="lg"
       centered
-      title=" Liste des articles du kit"
+      :title=" 'Liste des articles du kit'+ ' '+ '(' + articleList.length + ')' + 'articles'"
     >
       <b-card no-body class="invoice-padding form-item-section">
         <div ref="form" class="repeater-form">
@@ -217,23 +221,23 @@
             <!-- Item Form -->
             <!-- ? This will be in loop => So consider below markup for single item -->
             <b-col cols="12">
-              <div class="d-none d-lg-flex">
-                <b-row class="flex-grow-1 px-1">
+              <!-- <div class="d-none d-lg-flex">
+                <b-row class="flex-grow-1 px-1"> -->
                   <!-- Single Item Form Headers -->
-                  <b-col cols="4" lg="4"> Libelle </b-col>
+                  <!-- <b-col cols="4" lg="4"> Libelle </b-col>
                   <b-col cols="3" lg="3"> Prix </b-col>
                   <b-col cols="5" lg="5"> Quantite </b-col>
                 </b-row>
                 <div class="form-item-action-col" />
-              </div>
+              </div> -->
 
               <div class="d-flex border rounded">
                 <b-row class="flex-grow-1 p-2">
                   <!-- Single Item Form Headers -->
                   <b-col cols="12" lg="12">
                     <b-row class="d-flex justify-items-center">
-                      <b-col cols="4" lg="4">
-                        <label class="d-inline d-lg-none">Libelle</label>
+                      <b-col cols="12" lg="12">
+                        <label for="title">Libelle</label>
 
                         <b-form-input
                           v-model="item.title"
@@ -243,7 +247,7 @@
                         />
                       </b-col>
                       <b-col cols="4" lg="4">
-                        <label class="d-inline d-lg-none">Prix</label>
+                        <label for="title" class="">Prix unitaire</label>
 
                         <b-form-input
                           v-model="item.prix"
@@ -253,10 +257,21 @@
                         />
                       </b-col>
                       <b-col cols="4" lg="4">
-                        <label class="d-inline d-lg-none">Quantité</label>
+                        <label for="title" class="">Quantité</label>
 
                         <b-form-input
                           v-model="item.pivot.quantite"
+                          type="text"
+                          class="mb-2"
+                          readonly
+                        />
+                      </b-col>
+
+                       <b-col cols="4" lg="4">
+                        <label for="title" class="">Prix total</label>
+
+                        <b-form-input
+                          v-model="item.pivot.montant"
                           type="text"
                           class="mb-2"
                           readonly
@@ -309,6 +324,7 @@ import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import "moment/locale/fr";
 
 export default {
   components: {
@@ -364,7 +380,7 @@ export default {
         { key: "niveau", label: "niveau", sortable: true },
         { key: "montant", label: "montant", sortable: true },
 
-        { key: "created_at", label: "crée le", sortable: true },
+        { key: "created_at", label: "crée", sortable: true },
         { key: "actions" },
       ],
       filtreKit: "",
@@ -398,18 +414,27 @@ export default {
       return formatter;
     },
 
+    //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
       }
     },
 
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
+      }
+    },
     preview(id) {
       this.articleList = this.kitList.filter((item) => {
         return item.id === id;
       });
       this.articleList = this.articleList[0].articles;
-      console.log("articleList", this.articleList);
+      console.log("articleList", this.articleList.length);
     },
 
     updateKit(id) {

@@ -112,7 +112,7 @@
                 :options="enseignements"
                 placeholder="Selectionner un enseignement"
               />
-                <!-- @input="getEnseignements()" -->
+              <!-- @input="getEnseignements()" -->
 
               <small
                 :class="valideEnseignement ? 'block' : 'none'"
@@ -124,13 +124,9 @@
           </b-col>
           <b-col class="3">
             <label for=""
-              >Diocèse <span class="p-0 text-danger h6"> </span></label
-            >
-            <validation-provider
-              #default="{}"
-              name="diocese_id"
-              rules=""
-            >
+              >Diocèse <span class="p-0 text-danger h6"> </span
+            ></label>
+            <validation-provider #default="{}" name="diocese_id" rules="">
               <v-select
                 @input="getSedec()"
                 v-model="selectedDiocese"
@@ -150,8 +146,8 @@
           </b-col>
           <b-col class="3">
             <label for=""
-              >Sedec <span class="p-0 text-danger h6"> </span></label
-            >
+              >Sedec <span class="p-0 text-danger h6"> </span
+            ></label>
             <validation-provider #default="{}" name="sedec_id" rules="">
               <v-select
                 v-model="selectedSedec"
@@ -204,13 +200,9 @@
           <b-col class="3"
             ><b-form-group label="" label-for="email">
               <label for="email"
-                >Email <span class="p-0 text-danger h6"> </span></label
-              >
-              <validation-provider
-                #default="{ errors }"
-                name="email"
-                rules=""
-              >
+                >Email <span class="p-0 text-danger h6"> </span
+              ></label>
+              <validation-provider #default="{ errors }" name="email" rules="">
                 <b-form-input
                   id="email"
                   type="email"
@@ -249,7 +241,7 @@
           <b-col class="mt-1 4" v-for="(cycles, index) in cycle" :key="index">
             <b-form-checkbox
               :value="cycles.id"
-            @change="selectAll()" 
+         
               class="custom-control-primary"
               v-model="selectedCycle"
             >
@@ -271,19 +263,19 @@
         </b-row>
         <!-- login button -->
         <b-col cols="12 mt-2">
-         <b-button
-                variant="primary"
-                block
-                type="submit"
-                @click.prevent="save"
-                :disabled="loading === true ? true : false"
-              >
-                <div
-                  v-if="loading === true"
-                  class="spinner-border text-light"
-                ></div>
-                <span v-else> Enregistrer</span>
-            </b-button>
+          <b-button
+            variant="primary"
+            block
+            type="submit"
+            @click.prevent="save"
+            :disabled="loading === true ? true : false"
+          >
+            <div
+              v-if="loading === true"
+              class="spinner-border text-light"
+            ></div>
+            <span v-else> Enregistrer</span>
+          </b-button>
         </b-col>
       </b-card>
     </b-form>
@@ -362,8 +354,7 @@ export default {
       valideSedec: false,
       valideContact: false,
       valideEmail: false,
-           loading:false,
-
+      loading: false,
 
       // file:null,
       selectedC: "",
@@ -380,7 +371,7 @@ export default {
   },
 
   async mounted() {
-            document.title = "Créer un etablissement";
+    document.title = "Créer un etablissement";
 
     try {
       // await axios.get(URL.LIST_ETABLISSEMENT).then((response) => {
@@ -394,16 +385,14 @@ export default {
       //   this.niveaux = response.data;
       // });
 
-       await axios
+      await axios
         .get(URL.PARAMETRE + `?type_parametre=commune`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.communes = this.returnDatas;
-
         });
 
-
-         await axios
+      await axios
         .get(URL.PARAMETRE + `?type_parametre=enseignement`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
@@ -412,7 +401,7 @@ export default {
           // console.log(this.enseignements);
         });
 
-         await axios
+      await axios
         .get(URL.PARAMETRE + `?type_parametre=diocese`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
@@ -420,8 +409,8 @@ export default {
           this.diocesesCache = this.returnDatas;
           console.log(this.dioceses);
         });
-        
-         await axios
+
+      await axios
         .get(URL.PARAMETRE + `?type_parametre=sedec`)
         .then((response) => {
           this.returnDatas = response.data.parametre;
@@ -429,7 +418,6 @@ export default {
           this.sedecsCache = this.returnDatas;
           // console.log(this.sedecs);
         });
-        
 
       const __Niveau = [];
 
@@ -470,22 +458,35 @@ export default {
   },
 
   methods: {
+    //  selectAll () {
+    //        if (this.selectedCycle) {
+    //       const selected = this.niveau.map((item) => item.id);
+    //       this.selectedNiveau = selected;
+    //     } else {
+    //       this.selectedNiveau = [];
+    //               this.selectedNiveau = false;
 
-  //  selectAll () {
-  //        if (this.selectedCycle) {
-  //       const selected = this.niveau.map((item) => item.id);
-  //       this.selectedNiveau = selected;
-  //     } else {
-  //       this.selectedNiveau = [];
-  //               this.selectedNiveau = false;
+    //     }
+    //     console.log(this.selectedNiveau);
+    //   },
 
-  //     }
-  //     console.log(this.selectedNiveau);
-  //   },
-  
+    // selectAll() {
+    //   this.selectedNiveau = [];
+    //   // if (this.selectedCycle) {
+    //     for (let index = 0; index < this.selectedCycle.length; index++) {
+    //       this.selectC = this.selectedCycle[index];
+    //                this.selectedN = this.niveau.filter((item) => {
+    //         return item.parent_id === this.selectC;
+    //       });
+    //       this.selectedNiveau.push(this.selectedN)
+        
+    //       // this.selectedNiveau =  this.selectedN
+    //     }
 
+    //       console.log(this.selectedNiveau);
+    //   // }
+    // },
 
-    
     // validationForm() {
     //   this.$refs.simpleRules.validate().then((success) => {
     //     if (success) {
@@ -571,7 +572,7 @@ export default {
       }
     },
 
-     obligatoryContact() {
+    obligatoryContact() {
       if (!this.contact) {
         this.valideContact = true;
 
@@ -711,22 +712,22 @@ export default {
         //   cycles: this.selectedCycle,
         //   image: this.image,
         // };
- this.loading = true;
+        this.loading = true;
         await axios
           .post(URL.CREATE_ETABLISSEMENT, data, config)
           .then((response) => {
             this.createEtablissement = response.data;
- this.loading = false;
+            this.loading = false;
             if (response.data) {
               (this.title = ""),
-              (this.quartier = ""),
-              (this.contact = ""),
-              (this.email = ""),
-              (this.selectedCommune = ""),
-              (this.SelectedEnseignement = ""),
-              (this.selectedDiocese = ""),
-              (this.selectedSedec = ""),
-              this.topEnd();
+                (this.quartier = ""),
+                (this.contact = ""),
+                (this.email = ""),
+                (this.selectedCommune = ""),
+                (this.SelectedEnseignement = ""),
+                (this.selectedDiocese = ""),
+                (this.selectedSedec = ""),
+                this.topEnd();
               this.$router.push("/etablissement");
 
               // console.log(this.selectedCommune);
@@ -734,7 +735,7 @@ export default {
           });
       } catch (error) {
         console.log(error);
-         this.loading = false;
+        this.loading = false;
       }
     },
   },

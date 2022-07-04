@@ -155,13 +155,13 @@
             v-for="(item, index) in multiJumele"
             :key="index"
             ref="row"
-            class="pb-2"
+            class="pb-1"
           >
             <!-- Item Form -->
             <!-- ? This will be in loop => So consider below markup for single item -->
-            <b-col cols="12">
+            <b-col cols="12" class="m-auto">
               <div class="d-flex border rounded">
-                <b-row class="flex-grow-1 p-2">
+                <b-row class="flex-grow-1 p-4">
                   <!-- <b-col cols="4">
             <b-form-group label-for="title">
               <label for="title"
@@ -232,14 +232,14 @@
             </b-form-group>
           </b-col> -->
                   <!-- article jumelé -->
-                  <b-col cols="12" md="8" class="m-auto">
-                    <b-form-group label="" label-for="register-libelle">
+                  <b-col cols="8" md="" class="m-auto" style="">
+                    <b-form-group label="" label-for="register-libelle" class="">
                       <label for=""
                         >Choisir un article<span
                           class="p-0 text-danger h6"
                         ></span
                       ></label>
-                      <v-select
+                      <v-select  class=""
                         v-model="item.articleJumele"
                         placeholder="Selectionnez un article"
                         :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -266,8 +266,7 @@
               </div>
             </b-col>
           </b-row>
-        </div>
-        <b-row>
+           
           <b-col cols="12" class="text-center" style="">
             <b-button
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -278,10 +277,12 @@
               Jumeler un article
             </b-button>
           </b-col>
-        </b-row>
+       
+        </div>
+      
 
         <!-- login button -->
-        <b-col cols="12 mt-2">
+        <b-col cols="12 mt-2" style="">
           <b-button
             variant="primary"
             block
@@ -369,6 +370,8 @@ export default {
       file: "",
       categorieList: [],
       getArticle: [],
+            articleList: [],
+
 
       multiJumele: [],
       articleJumeler: [],

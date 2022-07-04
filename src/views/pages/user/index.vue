@@ -519,7 +519,12 @@
           class="bg-white"
         >
           <template #cell(created_at)="data">
-            {{ format_date(data.item.created_at) }}
+            <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`"
+            >
+              {{ format_date(data.item.created_at) }}
+            </span>
           </template>
 
           <template #cell(role)="data">
@@ -625,12 +630,14 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
 import URL from "@/views/pages/request";
 import { togglePasswordVisibility } from "@core/mixins/ui/forms";
+import { VBTooltip } from "bootstrap-vue";
 
 import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import { tryOnUnmounted } from "@vueuse/shared";
+import "moment/locale/fr";
 
 export default {
   components: {
@@ -667,6 +674,8 @@ export default {
   mixins: [togglePasswordVisibility],
   directives: {
     Ripple,
+        "b-tooltip": VBTooltip,
+
   },
   data() {
     return {
@@ -725,7 +734,7 @@ export default {
         { key: "email", label: "email", sortable: true },
         { key: "phone", label: "contact", sortable: true },
         { key: "role", label: "role", sortable: true },
-        { key: "created_at", label: "crée le", sortable: true },
+        { key: "created_at", label: "crée", sortable: true },
         { key: "actions" },
       ],
       filtreusers: "",
@@ -858,10 +867,19 @@ export default {
       console.log(this.roleUser);
     },
 
-    //formatage date
+  //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
+      }
+    },
+
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
       }
     },
     //envoi des item en localStorage

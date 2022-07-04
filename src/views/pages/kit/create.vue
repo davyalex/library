@@ -148,8 +148,7 @@
                   <b-col cols="1">
                     <b-form-group label-for="title">
                       <label for="title"
-                        >Qté
-                        <span class="p-0 text-danger h6"> *</span></label
+                        >Qté <span class="p-0 text-danger h6"> *</span></label
                       >
 
                       <validation-provider
@@ -168,7 +167,6 @@
                       </validation-provider>
                     </b-form-group>
                   </b-col>
-
                   <b-col cols="3">
                     <b-form-group label-for="title">
                       <label for="title"
@@ -325,7 +323,7 @@ export default {
       niveauList: [],
       articleList: [],
       niveauListFilter: [],
-      newNiveau:[],
+      newNiveau: [],
 
       multiArticle: [],
 
@@ -394,7 +392,7 @@ export default {
       this.pU = this.multiArticle[index].article.prix;
       this.prix = price;
 
-      console.log("article", price, q, this.pU);
+      console.log("article", price, q, this.pU, this.prix);
 
       // let mt =0
       // for (let index = 0; index < this.multiArticle.length; index++) {
@@ -422,7 +420,9 @@ export default {
           this.multiArticle[i].prix =
             this.multiArticle[i].article.prix * this.multiArticle[i].quantite;
           //  this.montant =    mont +=Number(this.multiArticle[i].prix)
-          //  console.log(this.montant);
+          this.pU =  this.multiArticle[i].prix
+          console.log('montant_t',this.pU);
+           console.log(this.multiArticle[i].prix);
         } else if (
           (i === index && parseInt(this.multiArticle[i].quantite) <= 1) ||
           (i === index && this.multiArticle[i].quantite.length <= 1)
@@ -474,11 +474,11 @@ export default {
     //message validation
 
     validateEtablissement() {
-    localStorage.setItem('etab',JSON.stringify(this.etablissement))
-    this.newNiveau = JSON.parse(localStorage.getItem('etab'))
-this.newNiveau = this.newNiveau.niveaux
-   
-console.log(this.newNiveau);
+      localStorage.setItem("etab", JSON.stringify(this.etablissement));
+      this.newNiveau = JSON.parse(localStorage.getItem("etab"));
+      this.newNiveau = this.newNiveau.niveaux;
+
+      console.log(this.newNiveau);
 
       if (!this.etablissement) {
         this.valideEtablissement = true;
@@ -569,8 +569,8 @@ console.log(this.newNiveau);
           this.multiArticle.length > 0 ||
           this.multiArticle[0].prix
         ) {
-          const articles = this.multiArticle.map((item) => {
-            return { id: item.id, quantite: item.quantite, montant: this.pU };
+          const articles = this.multiArticle.map((item,index) => {
+            return { id: item.id, quantite: item.quantite, montant: this.multiArticle[index].prix};
           });
 
           const newFormdata = new FormData();
@@ -582,8 +582,7 @@ console.log(this.newNiveau);
           newFormdata.append("etablissement_id", this.etablissement.id);
 
           newFormdata.append("niveau_id", this.niveau.id);
-                    newFormdata.append("montant", this.montant);
-
+          newFormdata.append("montant", this.montant);
 
           //         newFormdata.append("description", this.description);
           //         articles.forEach((item,index) => {
@@ -611,28 +610,29 @@ console.log(this.newNiveau);
           };
 
           this.loading = true;
-          await axios.post(URL.KIT_STORE, newFormdata, config).then((response) => {
-            this.topEnd();
-                          this.$router.push("/kit");
+          await axios
+            .post(URL.KIT_STORE, newFormdata, config)
+            .then((response) => {
+              this.topEnd();
+              this.$router.push("/kit");
 
-            this.title = "";
-            this.etablissement = "";
-            this.niveau = "";
-            this.description = "";
-            this.prix = "";
-            this.quantite = "";
+              this.title = "";
+              this.etablissement = "";
+              this.niveau = "";
+              this.description = "";
+              this.prix = "";
+              this.quantite = "";
 
-            for (let index = 0; index < this.multiArticle.length; index++) {
-              this.multiArticle[index].article = "";
-              this.multiArticle[index].prix = "";
-              this.multiArticle[index].quantite = "";
-            }
-            if (response.data) {
-              this.kitList.unshift(data);
-              this.loading = false;
-
-            }
-          });
+              for (let index = 0; index < this.multiArticle.length; index++) {
+                this.multiArticle[index].article = "";
+                this.multiArticle[index].prix = "";
+                this.multiArticle[index].quantite = "";
+              }
+              if (response.data) {
+                this.kitList.unshift(data);
+                this.loading = false;
+              }
+            });
         }
       } catch (error) {
         console.log(error);

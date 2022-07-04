@@ -214,8 +214,13 @@
           empty-text=""
           class="bg-white"
         >
-          <template #cell(created_at)="data">
-            {{ format_date(data.item.created_at) }}
+              <template #cell(created_at)="data">
+            <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`"
+            >
+              {{ format_date(data.item.created_at) }}
+            </span>
           </template>
 
           <template #cell(client)="data">
@@ -380,6 +385,13 @@
                   <feather-icon icon="ThumbsDownIcon" />
                   <span class="align-middle ml-50">Annuler</span>
                 </b-dropdown-item>
+
+                  <b-dropdown-item
+                  @click="confirmDelete(data.item.id)"
+                >
+                  <feather-icon icon="TrashIcon" />
+                  <span class="align-middle ml-50">Supprimer</span>
+                </b-dropdown-item>
               </b-dropdown>
             </div>
           </template>
@@ -448,6 +460,7 @@ import {
   BDropdown,
   BDropdownItem,
   BSpinner,
+  VBTooltip
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
@@ -460,6 +473,8 @@ import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import "moment/locale/fr";
+
 
 export default {
   components: {
@@ -495,6 +510,8 @@ export default {
   mixins: [togglePasswordVisibility],
   directives: {
     Ripple,
+        "b-tooltip": VBTooltip,
+
   },
   data() {
     return {
@@ -588,10 +605,19 @@ export default {
       });
     },
 
-    //formatage date
+   //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
+      }
+    },
+
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
       }
     },
     //envoi des item en localStorage
@@ -803,6 +829,55 @@ export default {
           this.livrer(id);
         }
       });
+    },
+
+//destroy
+       confirmDelete(id) {
+      this.$swal({
+        title: "Êtes vous sûr?",
+        text: "Cette commande sera supprimé définitivement",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
+        },
+        buttonsStyling: false,
+      }).then((result) => {
+        if (result.value) {
+          this.destroy(id);
+        }
+      });
+    },
+
+     destroy(identifiant) {
+      try {
+        const id = {
+          id: identifiant,
+        };
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+        axios.post(URL.COMMANDE_DESTROY + `/${id.id}`, config).then((response) => {
+          if (response.data) {
+              axios.get(URL.LIST_COMMANDE +
+            `?filter_field=created_at&filter_value=DESC&limit=10`).then((response) => {
+        this.spinner = false;
+
+        this.commandes = response.data.commande;
+        this.commandesFiltre = this.commandes;
+        // this.pTotal = this.commandes.length;
+        console.log("commande", this.commandes);
+      });
+          }
+        });
+        this.commandes.splice(index, 1);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

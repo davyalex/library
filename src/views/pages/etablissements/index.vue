@@ -83,11 +83,15 @@
             </span>
           </template>
 
-          <template #cell(created_at)="data">
-            <span>
-              {{format_date(data.item.created_at) }}
+        <template #cell(created_at)="data">
+            <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`"
+            >
+              {{ format_date(data.item.created_at) }}
             </span>
           </template>
+
 
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
@@ -195,6 +199,7 @@ import {
   BFormTextarea,
   BSpinner,
 } from "bootstrap-vue";
+import { VBTooltip } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
@@ -204,6 +209,7 @@ import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import "moment/locale/fr";
 
 export default {
   components: {
@@ -237,6 +243,8 @@ export default {
   },
   directives: {
     Ripple,
+            "b-tooltip": VBTooltip,
+
   },
   data() {
     return {
@@ -252,7 +260,7 @@ export default {
         { key: "title", label: "Nom", sortable: true },
         { key: "email", label: "Email", sortable: true },
         { key: "contact", label: "Contact", sortable: true },
-        { key: "created_at", label: "crée le", sortable: true },
+        { key: "created_at", label: "crée", sortable: true },
         { key: "actions" },
       ],
       filtreetablissement: "",
@@ -290,12 +298,22 @@ export default {
     //   });
     // },
 
-        //formatage date
+    //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
       }
     },
+
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
+      }
+    },
+    
 
     topEnd() {
       this.$toast({

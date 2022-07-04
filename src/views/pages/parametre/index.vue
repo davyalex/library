@@ -484,8 +484,13 @@
           empty-text=""
           class="bg-white"
         >
-          <template #cell(created_at)="data">
-            {{ format_date(data.item.created_at) }}
+         <template #cell(created_at)="data">
+            <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`"
+            >
+              {{ format_date(data.item.created_at) }}
+            </span>
           </template>
 
              <template #cell(title)="data">
@@ -600,6 +605,7 @@ import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import { watch, computed, onBeforeMount } from "@vue/composition-api";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import "moment/locale/fr";
 
 export default {
   components: {
@@ -814,9 +820,19 @@ export default {
       });
     },
 
+  //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
+      }
+    },
+
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
       }
     },
     //

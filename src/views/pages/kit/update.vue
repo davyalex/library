@@ -351,6 +351,7 @@ export default {
         quantite: 1,
         prix: "",
         montant: "",
+         prix_unitaire:"",
       },
       loading: false,
     };
@@ -366,6 +367,7 @@ export default {
     this.articleKit = this.getKit.articles;
     for (let index = 0; index < this.articleKit.length; index++) {
       this.multiArticle.push({
+        prix_unitaire: this.articleKit[index].prix,
         article: this.articleKit[index].title,
         prix: this.articleKit[index].pivot.montant,
         quantite: this.articleKit[index].pivot.quantite,
@@ -422,10 +424,10 @@ export default {
       const { prix, quantite} = val;
       const { id } = val;
 
-      const price = (this.multiArticle[index].prix = prix);
+      const price = (this.multiArticle[index].prix_unitaire = prix);
       const q = (this.multiArticle[index].id = id);
       this.pU = this.multiArticle[index].article.prix;
-      this.prix = price;
+      this.multiArticle[index].prix  = price;
       this.multiArticle[index].quantite = 1
       
       console.log("article", price, q, this.pU);
@@ -446,7 +448,9 @@ export default {
       }
     },
 
-    validateQte(index) {
+ 
+
+     validateQte(index) {
       console.log(index,this.multiArticle[index]);
       let mont = 0;
       for (let i = 0; i < this.multiArticle.length; i++) {
@@ -455,14 +459,14 @@ export default {
           (i === index && this.multiArticle[index].quantite.length > 0)
         ) {
           this.multiArticle[i].prix =
-          parseInt(  this.multiArticle[i].prix) * parseInt(this.multiArticle[i].quantite);
+          parseInt(  this.multiArticle[i].prix_unitaire) * parseInt(this.multiArticle[i].quantite);
           //  this.montant =    mont +=Number(this.multiArticle[i].prix)
           //  console.log(this.montant);
         } else if (
           (i === index && parseInt(this.multiArticle[index].quantite) <= 1) ||
           (i === index && this.multiArticle[index].quantite.length <= 1)
         ) {
-          this.multiArticle[i].prix = this.multiArticle[i].prix;
+          this.multiArticle[i].prix = this.multiArticle[i].prix_unitaire;
         }
       }
     },
@@ -614,8 +618,8 @@ export default {
           this.multiArticle.length > 0 ||
           this.multiArticle[0].prix
         ) {
-          const articles = this.multiArticle.map((item) => {
-            return { id: item.id, quantite: item.quantite, montant: item.prix};
+          const articles = this.multiArticle.map((item,index) => {
+            return { id: item.id, quantite: item.quantite, montant: this.multiArticle[index].prix};
           });
 
           const newFormdata = new FormData();

@@ -508,8 +508,15 @@
           class="bg-white"
         >
           <template #cell(expiration)="data">
-            {{ format_date(data.item.expiration) }}
+          <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.expiration) }`"
+            >
+              {{ format_date(data.item.expiration) }}
+            </span>
           </template>
+
+           
 
           <template #cell(statut)="data">
             <!-- <span v-if="data.item.status === 'expiré'" class="text-danger">
@@ -528,10 +535,11 @@
           <template #cell(code)="data">
             <span class="text-primary font-weight-bold">
               {{ data.item.code }}
-             <br> <small class="text-dark"> crée le {{ format_date(data.item.created_at) }} </small>
+             <br> <small   v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`" class="text-dark"> crée {{ format_date(data.item.created_at) }} </small>
               </span>
          
-          <br>  <span
+          <span
               v-if="data.item.status === 'expiré'"
               class="badge badge-light-danger badge-pill font-weight-bold"
             >
@@ -546,7 +554,7 @@
           </template>
 
           <template #cell(etablissement)="data">
-            <span class=""> {{ data.item.etablissement.title }}</span>
+            <span v-if="data.item.etablissement" class=""> {{ data.item.etablissement.title }}</span>
           </template>
 
           <template #cell(actions)="data">
@@ -655,6 +663,7 @@ import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import "moment/locale/fr";
 
 export default {
   components: {
@@ -812,9 +821,19 @@ export default {
       this.editEtablissement = this.getCodePromo.etablissement.title;
     },
 
+    //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
+      }
+    },
+
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
       }
     },
     //

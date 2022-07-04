@@ -58,6 +58,7 @@ const URL = {
   LIST_ARTICLE: `${baseUrl}/article`,
   ARTICLE_STORE: `${baseUrl}/article/store`,
   ARTICLE_UPDATE: `${baseUrl}/article/update`,
+  ARTICLE_DESTROY:`${baseUrl}/article/destroy`,
 
 
   //kit

@@ -28,7 +28,7 @@
               </b-link>
             </b-button>
 
-             <div class="demo-inline-spacing m-auto">
+            <div class="demo-inline-spacing m-auto">
               <feather-icon
                 icon="BookOpenIcon"
                 size="30"
@@ -58,12 +58,12 @@
             </div>
           </b-col>
         </b-row>
-        <div class="text-center" v-if="spinner===true">
-                <b-spinner  variant="success" type="grow" label="Spinning"></b-spinner>
+        <div class="text-center" v-if="spinner === true">
+          <b-spinner variant="success" type="grow" label="Spinning"></b-spinner>
         </div>
         <!-- Le tableau affichant les typeParametre -->
         <b-table
-        v-if="spinner===false"
+          v-if="spinner === false"
           hover
           responsive
           primary-key="id"
@@ -72,7 +72,7 @@
           :items="articleList"
           :fields="tableColumns"
           :filter="filtreArticle"
-           :sort-by.sync="currentSort"
+          :sort-by.sync="currentSort"
           :sort-desc.sync="currentSortDir"
           show-empty
           empty-text=""
@@ -84,59 +84,66 @@
             </span>
           </template>
 
-               <template #cell(prix)="data">
-                    <span> {{ convert(data.item.prix) }} </span>
-                </template>
+          <template #cell(prix)="data">
+            <span> {{ convert(data.item.prix) }} </span>
+          </template>
 
-                <template #cell(created_at)="data">
-            <span>
-              {{format_date(data.item.created_at) }}
+          <template #cell(created_at)="data">
+            <span
+             v-b-tooltip.hover.v-primary
+                :title="`${ format_dateB(data.item.created_at) }`"
+            >
+              {{ format_date(data.item.created_at) }}
             </span>
           </template>
 
-                  <template #cell(image)="data">
-                      <img v-if="data.item.image"
-                style="width: 32px; height: 32px"
-                :src="data.item.image"
-                alt=""
-              />
-                </template>
+          <template #cell(image)="data">
+            <img
+              v-if="data.item.image"
+              style="width: 32px; height: 32px"
+              :src="data.item.image"
+              alt=""
+            />
+          </template>
 
-            <template #cell(title)="data">
-                  <div class="py-50">
+          <template #cell(title)="data">
+            <div class="py-50">
+              <span variant="info" class="text-uppercase font-weight-bolder">
+                {{ data.item.title }}
+                <small>
+                  <div
+                    class="py-50"
+                    v-for="(item, index) in data.item.jumeler"
+                    :key="index"
+                  >
                     <span
                       variant="info"
-                      class="text-uppercase font-weight-bolder"
-                    >
-                      {{ data.item.title }}
-                      <small>
-                         <div class="py-50" v-for="(item, index) in data.item.jumeler" :key="index" >
-                    <span 
-                      variant="info"
                       class="text-capitalize text-secondary"
-                      v-if="data.item.jumeler.length >0"
+                      v-if="data.item.jumeler.length > 0"
                     >
-                      {{ item.title + ' ' + '(jumelé)' }}
+                      {{ item.title + " " + "(jumelé)" }}
                     </span>
                   </div>
-                      </small>
-                    </span>
-                  </div>
-                </template>
-                
-           
+                </small>
+              </span>
+            </div>
+          </template>
 
-                 <template #cell(jumeler)="data">
-                  <div class="py-50" v-for="(item, index) in data.item.jumeler" :key="index" >
-                    <span 
-                      variant="info"
-                      class="text-uppercase font-weight-bolder"
-                      v-if="data.item.jumeler.length >0"
-                    >
-                      {{ item.title }}
-                    </span>
-                  </div>
-                </template>
+          <template #cell(jumeler)="data">
+            <div
+              class="py-50"
+              v-for="(item, index) in data.item.jumeler"
+              :key="index"
+            >
+              <span
+                variant="info"
+                class="text-uppercase font-weight-bolder"
+                v-if="data.item.jumeler.length > 0"
+              >
+                {{ item.title }}
+              </span>
+            </div>
+          </template>
 
           <template #cell(actions)="data">
             <div class="text-nowrap py-1">
@@ -145,11 +152,10 @@
                 icon="Edit3Icon"
                 :id="`invoice-row-${data.item.id}-Edit3-icon`"
                 size="16"
-                class="cursor-pointer  mr-2 text-primary"
+                class="cursor-pointer mr-2 text-primary"
                 @click="update(data.item)"
-                    v-b-tooltip.hover.v-primary
-      title="Modifier"
-
+                v-b-tooltip.hover.v-primary
+                title="Modifier"
               />
 
               <!-- <b-link :to="{ name: 'create' }"> -->
@@ -157,10 +163,10 @@
                 icon="TrashIcon"
                 :id="`invoice-row-${data.item.id}-Trash-icon`"
                 size="16"
-                class="cursor-pointer  text-danger"
+                class="cursor-pointer text-danger"
                 @click="confirmText(data.item.id)"
-                  v-b-tooltip.hover.v-danger
-      title="Supprimer"
+                v-b-tooltip.hover.v-danger
+                title="Supprimer"
               />
             </div>
           </template>
@@ -192,7 +198,6 @@
                 prev-class="prev-item"
                 next-class="next-item"
               >
-              
                 <template #prev-text>
                   <feather-icon icon="ChevronLeftIcon" size="18" />
                 </template>
@@ -227,11 +232,10 @@ import {
   BPagination,
   BTable,
   BFormTextarea,
-  BSpinner
+  BSpinner,
 } from "bootstrap-vue";
 import Ripple from "vue-ripple-directive";
-import {VBTooltip, BButton} from 'bootstrap-vue'
-
+import { VBTooltip, BButton } from "bootstrap-vue";
 
 import { required, email } from "@validations";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
@@ -241,7 +245,7 @@ import axios from "axios";
 import moment from "moment";
 import flatPickr from "vue-flatpickr-component";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
-
+import "moment/locale/fr";
 export default {
   components: {
     flatPickr,
@@ -270,20 +274,20 @@ export default {
     BTable,
     BInputGroupAppend,
     BFormTextarea,
-    BSpinner
+    BSpinner,
   },
   directives: {
     Ripple,
-      'b-tooltip': VBTooltip,
+    "b-tooltip": VBTooltip,
   },
   data() {
     return {
       articleList: [],
-      spinner:true,
+      spinner: true,
       perPage: 100,
       currentPage: 1,
-        currentSort:'created_at',
-  currentSortDir:'asc',
+      currentSort: "created_at",
+      currentSortDir: "asc",
       pTotal: 0,
       tableColumns: [
         { key: "code", label: "Code", sortable: true },
@@ -292,7 +296,7 @@ export default {
         { key: "categorie", label: "categorie", sortable: true },
         { key: "quantite", label: "Qte", sortable: true },
         { key: "prix", label: "prix", sortable: true },
-                { key: "created_at", label: "crée le", sortable: true },
+        { key: "created_at", label: "crée", sortable: true },
 
         { key: "actions" },
       ],
@@ -304,11 +308,11 @@ export default {
 
   async mounted() {
     document.title = "Liste des articles";
-    this.spinner=true
+    this.spinner = true;
 
     try {
       await axios.get(URL.LIST_ARTICLE).then((response) => {
-        this.spinner = false
+        this.spinner = false;
         this.articleList = response.data.article;
         //  this.articleList =  this.returnData.article
         this.pTotal = this.articleList.length;
@@ -320,23 +324,30 @@ export default {
   },
 
   methods: {
-
-       //formatage date
+    //formatage date(il y'a xxxx)
     format_date(value) {
       if (value) {
-        return moment(String(value)).format("DD-MM-YYYY");
+        moment.locale("fr");
+        return moment(String(value)).fromNow();
       }
     },
 
- convert(amount) {
+    //formatage data_brute(23-32-20)
+    format_dateB(value) {
+      if (value) {
+        moment.locale("fr");
+        return moment(String(value)).format("dddd, Do MMMM YYYY");
+      }
+    },
+
+    convert(amount) {
       const formatter = new Intl.NumberFormat("ci-CI", {
         style: "currency",
         currency: "XOF",
         minimumFractionDigits: 2,
-      }).format(parseInt(amount))
-      return formatter
-      },
-
+      }).format(parseInt(amount));
+      return formatter;
+    },
 
     topEnd() {
       this.$toast({
@@ -368,12 +379,12 @@ export default {
         buttonsStyling: false,
       }).then((result) => {
         if (result.value) {
-          this.destroyEtablisement(id);
+          this.delete(id);
         }
       });
     },
 
-    destroyEtablisement(identifiant, index) {
+    delete(identifiant) {
       try {
         const id = {
           id: identifiant,
@@ -383,15 +394,20 @@ export default {
             Accept: "application/json",
           },
         };
-        axios.post(URL.DESTROY_ETABLISSEMENT, id, config).then((response) => {
-          if (response.data) {
-            response.data;
-            topEnd();
-          }
-        });
-        this.etablissement.splice(index, 1);
+        axios
+          .post(URL.ARTICLE_DESTROY + `/${id.id}`, config)
+          .then((response) => {
+            if (response.data) {
+              axios.get(URL.LIST_ARTICLE).then((response) => {
+                this.spinner = false;
+                this.articleList = response.data.article;
+                this.pTotal = this.articleList.length;
+              });
+            }
+          });
+        this.articleList.splice(index, 1);
       } catch (error) {
-        console.log(error.type);
+        console.log(error);
       }
     },
   },
