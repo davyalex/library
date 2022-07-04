@@ -555,8 +555,7 @@ export default {
                 (this.description = ""),
                 (this.selectedCommune = ""),
                 this.topEnd();
-
-              // console.log(this.selectedCommune);
+                 this.$router.push("/point-retrait");
             }
           });
       } catch (error) {

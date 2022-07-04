@@ -282,7 +282,7 @@ export default {
         // this.listEtablissement = this.returnData
       });
 
-      console.log(this.niveau);
+      // console.log(this.niveau);
     } catch (error) {
       console.log(error);
     }
@@ -337,11 +337,11 @@ export default {
     updateEtablissement(id) {
       const etat = this.etablissement.filter(
         (item) => item.id === id,
-        console.log(etat)
+        // console.log(etat)
       );
 
       localStorage.setItem("etablissement", JSON.stringify(etat[0]));
-      this.$router.push({ name: "edit" });
+      this.$router.push({ name: "etablissement/edit" });
     },
 
     confirmText(id) {

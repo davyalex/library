@@ -318,7 +318,7 @@ const router = new VueRouter({
 
     {
       path: '/etablissement/edit',
-      name: 'edit',
+      name: 'etablissement/edit',
       component: () => import('@/views/pages/etablissements/edit.vue'),
       meta: {
         pageTitle: 'Modifier',

@@ -49,7 +49,7 @@
                 label="title"
                 placeholder="Selectionner une commune"
                 id="commune"
-                :options="communes"
+                :options="communeList"
                 type="text"
                 v-model="selectedCommune"
                 :state="errors.length > 0 ? false : null"
@@ -236,10 +236,11 @@ export default {
   },
   data() {
     return {
-      selectedCommune: "Votre commune",
+      selectedCommune: "",
       selectedEnseignement: "Votre enseignement",
       selectedDiocese: "Votre diocèse",
       selectedSedec: "Votre sedec ",
+      communeList: [],
       communes: [],
       typeEnseignement: [],
       enseignements: [],
@@ -301,6 +302,12 @@ export default {
         .then((response) => {
           this.returnDatas = response.data.parametre;
           this.communes = this.returnDatas;
+          this.communeList = this.returnDatas;
+          
+          this.communes = this.communes.filter((commune) => {
+            return commune.id === this.getPointRetrait.commune_id;
+          });
+          this.selectedCommune = this.communes[0].title;
         });
 
       await axios
@@ -338,8 +345,8 @@ export default {
           this.returnDatas = response.data.parametre;
           this.cycle = this.returnDatas;
           this.datas = this.returnDatas;
-
-          console.log(this.returnDatas);
+  
+          // console.log(this.returnDatas);
 
           for (let index = 0; index < this.datas.length; index++) {
             let element = this.datas[index];
@@ -349,8 +356,6 @@ export default {
 
               this.niveau.push(elementS);
             }
-
-            // console.log(this.datas.childrens[index].title)
           }
 
           console.log(this.niveau);
