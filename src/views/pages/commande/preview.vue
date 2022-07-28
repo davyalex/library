@@ -108,10 +108,9 @@
                 ? true
                 : false || recoverCommande.etat.title === 'Récupérée'
                 ? true
-                : false|| recoverCommande.etat.title === 'Annulée'
+                : false || recoverCommande.etat.title === 'Annulée'
                 ? true
-                : false
-                 ||
+                : false ||
                   recoverCommande.livraison_mode.title === 'point de retrait'
                 ? true
                 : false
@@ -138,8 +137,10 @@
               >Commande annulée</span
             >
 
-             <span
-              v-else-if="recoverCommande.livraison_mode.title === 'point de retrait'"
+            <span
+              v-else-if="
+                recoverCommande.livraison_mode.title === 'point de retrait'
+              "
               class="align-middle ml-50"
               >Affectée au point de retrait</span
             >
@@ -147,31 +148,33 @@
             <span v-else> Affecter</span>
           </b-button>
 
-             <b-button variant="success"
-                  v-if="recoverCommande.livraison_mode.title === 'point de retrait'"
-                  @click="delivery(recoverCommande.id)"
-                  :disabled="
-                   recoverCommande.etat.title === 'Annulée'
-                      ? true
-                      : false || recoverCommande.etat.title === 'Livrée'
-                      ? true
-                      : false || recoverCommande.etat.title === 'Récupérée'
-                      ? true
-                      : false
-                  "
-                >
-                  <feather-icon icon="ThumbsUpIcon" />
-                  <span class="align-middle ml-50">Livrer</span>
-                </b-button>
+          <b-button
+            variant="success"
+            v-if="recoverCommande.livraison_mode.title === 'point de retrait'"
+            @click="delivery(recoverCommande.id)"
+            :disabled="
+              recoverCommande.etat.title === 'Annulée'
+                ? true
+                : false || recoverCommande.etat.title === 'Livrée'
+                ? true
+                : false || recoverCommande.etat.title === 'Récupérée'
+                ? true
+                : false
+            "
+          >
+            <feather-icon icon="ThumbsUpIcon" />
+            <span class="align-middle ml-50">Livrer</span>
+          </b-button>
 
-                <b-button variant="danger"
-                  v-if="recoverCommande.livraison_mode.title === 'point de retrait'"
-                  @click="cancel(recoverCommande.id)"
-                  :disabled="recoverCommande.etat.title === 'Annulée' ? true : false"
-                >
-                  <feather-icon icon="ThumbsDownIcon" />
-                  <span class="align-middle ml-50">Annuler</span>
-                </b-button>
+          <b-button
+            variant="danger"
+            v-if="recoverCommande.livraison_mode.title === 'point de retrait'"
+            @click="cancel(recoverCommande.id)"
+            :disabled="recoverCommande.etat.title === 'Annulée' ? true : false"
+          >
+            <feather-icon icon="ThumbsDownIcon" />
+            <span class="align-middle ml-50">Annuler</span>
+          </b-button>
         </div>
       </div>
     </div>
@@ -279,7 +282,7 @@
                 Point de retrait <br /><span
                   class="text-success font-weight-bol"
                 >
-                  {{ convert(recoverCommande.point_retrait.title) }}
+                  {{ recoverCommande.point_retrait.title }}
                 </span>
               </p>
 
@@ -388,43 +391,53 @@
             <div class="col-md-12">
               <div class="row">
                 <div class="col-md-6">
-                  <h3>
+                  <h5>
                     Code: <span class="text-success"> {{ item.code }}</span>
-                  </h3>
+                  </h5>
+                  <h5>
+                    Quantité:
+                    <span class="text-success"> {{ item.pivot_quantite }}</span>
+                  </h5>
                 </div>
 
                 <div class="col-md-6">
-                  <h3>
+                  <h5>
                     Montant:
                     <span class="text-success">
                       {{ convert(item.montant) }}</span
                     >
-                  </h3>
+                  </h5>
+                  <h5>
+                    Etablissement:
+                    <span class="text-success">
+                      {{ item.etablissement.title }}</span
+                    >
+                  </h5>
                 </div>
               </div>
 
               <div class="row py-2">
                 <div class="col-md-12">
-                  <table class="table table-striped">
+                  <table class="table table-responsive">
                     <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Art</th>
-                        <th scope="col">Qte</th>
-                        <th scope="col">Pu</th>
-                        <th scope="col">Total</th>
+                      <tr class="">
+                        <th scope="" class="m-0">#</th>
+                        <th scope=""><span style="">Art</span></th>
+                        <th scope=""><span style="">Qte</span></th>
+                        <th scope=""><span style="">Pu</span></th>
+                        <th scope=""><span style="">Total</span></th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr
-                        v-for="(item, index) in item.article_commandes"
+                        v-for="(item, index) in item.article_commande2"
                         :key="index.id"
                       >
                         <th scope="row">{{ index + 1 }}</th>
                         <td>{{ item.title }}</td>
                         <td>{{ item.pivot_quantite }}</td>
-                        <td>{{ item.pivot_montant }}</td>
-                        <td>{{ item.pivot_total }}</td>
+                        <td>{{ convert(item.pivot_montant) }}</td>
+                        <td>{{ convert(item.pivot_total) }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -669,7 +682,7 @@ export default {
       }
     },
 
-        //cancel
+    //cancel
     async annuler(indentifiant) {
       const id = {
         id: this.recoverCommande.id,
@@ -687,8 +700,7 @@ export default {
             this.commandes = response.data.commande;
             this.commandesFiltre = this.commandes;
             console.log("commande", this.commandes);
-                          this.$router.push({ name: "commande" });
-
+            this.$router.push({ name: "commande" });
           });
         });
       } catch (error) {
@@ -731,11 +743,12 @@ export default {
           response.data;
           axios.get(URL.LIST_COMMANDE).then((response) => {
             this.commandes = response.data.commande;
-            const cmd = this.commandes.filter((item)=>{item.id ===this.recoverCommande.id})
+            const cmd = this.commandes.filter((item) => {
+              item.id === this.recoverCommande.id;
+            });
             this.commandesFiltre = this.commandes;
             console.log("commande", this.commandes);
-                          this.$router.push({ name: "commande" });
-
+            this.$router.push({ name: "commande" });
           });
         });
       } catch (error) {
@@ -761,8 +774,6 @@ export default {
         }
       });
     },
-
-
 
     //destroy
     async deleteusers(indentifiant) {

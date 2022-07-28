@@ -131,7 +131,7 @@
             <p v-if="recoverCommande.point_retrait">
               Point de retrait:
               <span class="font-weight-bold">{{
-                convert(recoverCommande.point_retrait.title)
+                recoverCommande.point_retrait.title
               }}</span>
             </p>
             <p v-if="recoverCommande.mode_paiement">
@@ -144,6 +144,13 @@
               Livreur:
               <span class="font-weight-bold">{{
                 recoverCommande.livreur.nom
+              }}</span>
+            </p>
+
+             <p>
+              Etablissement:
+              <span class="font-weight-bold">{{
+                kitFacture.etablissement.title
               }}</span>
             </p>
           </div>
@@ -165,7 +172,7 @@
               </thead>
               <tbody>
                 <tr class=""
-                  v-for="(item, index) in kitFacture.article_commandes"
+                  v-for="(item, index) in kitFacture.article_commandes2"
                   :key="index.id"
                 >
                   <th scope="col" class="col-md-1">{{ index + 1 }}</th>
@@ -192,7 +199,7 @@
                     <p>
                       <strong
                         ><i class="fa fa-inr"></i>
-                        {{ convert(recoverCommande.total_ht) }}</strong
+                        {{  convert( kitFacture.pivot_total) }}</strong
                       >
                     </p>
                     <!-- <p v-if="recoverCommande.total_remise">
@@ -210,7 +217,7 @@
                     <h2>
                       <strong class="text-danger"
                         ><i class="fa fa-inr"></i>
-                        {{ convert(recoverCommande.total_ttc) }}</strong
+                        {{  convert( kitFacture.pivot_total) }}</strong
                       >
                     </h2>
                   </td>

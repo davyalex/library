@@ -375,6 +375,20 @@ export default {
   computed: {},
 
   methods: {
+    //swal doublon
+    doublon() {
+      this.$swal({
+        title: "Attention!",
+        text: " Vous avez déjà ajouté l'article sélectionné!",
+        icon: "warning",
+        confirmButtonText: "Fermer!",
+        customClass: {
+          confirmButton: "btn btn-warning",
+        },
+        buttonsStyling: false,
+      });
+    },
+
     processFile(event) {
       this.file = event.target.files[0];
 
@@ -399,6 +413,28 @@ export default {
       //  this.montant= mt += Number(this.multiArticle[index].article.prix);
       // }
       // console.log('montant',this.montant)
+
+      // this.multiArticle.forEach(element => {
+      //   if (element.id === id) {
+      //     console.log('article doublé')
+      //   }else{
+      //               console.log('article non-doublé')
+
+      //   }
+      // });
+
+
+//doublons
+      const doublon = this.multiArticle.filter((item, index) => {
+        return item.id === id;
+      });
+      if (doublon.length > 1) {
+        this.doublon();
+        this.multiArticle.splice(index, 1);
+        this.trTrimHeight(this.$refs.row[0].offsetHeight);
+      } else {
+        console.log("non-doublon");
+      }
     },
 
     validateArticle() {
@@ -420,9 +456,9 @@ export default {
           this.multiArticle[i].prix =
             this.multiArticle[i].article.prix * this.multiArticle[i].quantite;
           //  this.montant =    mont +=Number(this.multiArticle[i].prix)
-          this.pU =  this.multiArticle[i].prix
-          console.log('montant_t',this.pU);
-           console.log(this.multiArticle[i].prix);
+          this.pU = this.multiArticle[i].prix;
+          console.log("montant_t", this.pU);
+          console.log(this.multiArticle[i].prix);
         } else if (
           (i === index && parseInt(this.multiArticle[i].quantite) <= 1) ||
           (i === index && this.multiArticle[i].quantite.length <= 1)
@@ -569,8 +605,12 @@ export default {
           this.multiArticle.length > 0 ||
           this.multiArticle[0].prix
         ) {
-          const articles = this.multiArticle.map((item,index) => {
-            return { id: item.id, quantite: item.quantite, montant: this.multiArticle[index].prix};
+          const articles = this.multiArticle.map((item, index) => {
+            return {
+              id: item.id,
+              quantite: item.quantite,
+              montant: this.multiArticle[index].prix,
+            };
           });
 
           const newFormdata = new FormData();

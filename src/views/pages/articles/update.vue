@@ -430,6 +430,36 @@ export default {
   },
 
   methods: {
+
+  //swal doublon
+    doublon() {
+      this.$swal({
+        title: "Attention!",
+        text: " Vous avez déjà ajouté l'article sélectionné!",
+        icon: "warning",
+        confirmButtonText: "Fermer!",
+        customClass: {
+          confirmButton: "btn btn-warning",
+        },
+        buttonsStyling: false,
+      });
+    },
+
+      //swal auto_jumelage
+    autoJumelage() {
+      this.$swal({
+        title: "Attention!",
+        text: " Vous ne pouvez pas jumeler le même article!",
+        icon: "warning",
+        confirmButtonText: "Fermer!",
+        customClass: {
+          confirmButton: "btn btn-warning",
+        },
+        buttonsStyling: false,
+      });
+    },
+
+
     processFile(event) {
       this.file = event.target.files[0];
 
@@ -442,6 +472,33 @@ export default {
       const { id } = val;
       const j = (this.multiJumele[index].articleJumele_id = id);
       console.log("jumele", j);
+
+    console.log('autoj___',this.title, this.multiJumele)
+
+          //doublons
+        const doublon = this.multiJumele.filter((item, index) => {
+        return item.articleJumele_id === id;
+      });
+      // console.log(this.multiJumele);
+      if (doublon.length > 1) {
+        this.doublon();
+        this.multiJumele.splice(index, 1);
+        this.trTrimHeight(this.$refs.row[0].offsetHeight);
+      } else {
+        console.log("non-doublon");
+      }
+
+      //empêcher l'auto jumelage
+        for (let index = 0; index < this.multiJumele.length; index++) {
+          this.element = this.multiJumele[index].articleJumele.title;
+        }
+          // console.log('auto++++',this.element.articleJumele.title);
+
+          if (this.element ===this.title) {
+             this.autoJumelage();
+              this.multiJumele.splice(index, 1);
+        this.trTrimHeight(this.$refs.row[0].offsetHeight);
+          }
     },
 
     //duplicateur

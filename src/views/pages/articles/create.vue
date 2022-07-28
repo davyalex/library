@@ -316,6 +316,7 @@ import {
   BCard,
 } from "bootstrap-vue";
 import { required } from "@validations";
+import { forEach } from 'postcss-rtl/lib/affected-props';
 
 export default {
   components: {
@@ -407,6 +408,21 @@ export default {
       const { id } = val;
       const j = (this.multiJumele[index].articleJumele_id = id);
       console.log("jumele", j);
+
+
+
+          //doublons
+        const doublon = this.multiJumele.filter((item, index) => {
+        return item.articleJumele_id === id;
+      });
+      console.log(this.multiJumele);
+      if (doublon.length > 1) {
+        this.doublon();
+        this.multiJumele.splice(index, 1);
+        this.trTrimHeight(this.$refs.row[0].offsetHeight);
+      } else {
+        console.log("non-doublon");
+      }
     },
 
     //duplicateur
@@ -436,6 +452,20 @@ export default {
       });
     },
 
+    //swal doublon
+    doublon() {
+      this.$swal({
+        title: "Attention!",
+        text: " Vous avez déjà ajouté l'article sélectionné!",
+        icon: "warning",
+        confirmButtonText: "Fermer!",
+        customClass: {
+          confirmButton: "btn btn-warning",
+        },
+        buttonsStyling: false,
+      });
+    },
+
     //message
     topEnd() {
       this.$toast({
@@ -456,6 +486,29 @@ export default {
       } else {
         this.valideTitle = false;
       }
+
+      // for (let index = 0; index < this.articleList.length; index++) {
+      //   const element = this.articleList[index];
+      //   console.log(element.title);
+      //     if (this.title ===element.title) {
+      //           this.doublon();
+      //           this.title = "";
+
+      // }
+      // }
+
+    
+
+      //    const doublon = this.articleList.filter((item, index) => {
+      //   return item.title === this.title;
+      // });
+      
+      // if (doublon.length > 1) {
+      //   this.doublon();
+      // } else {
+      //   console.log("non-doublon");
+      // }
+
     },
 
     validatePrix() {
