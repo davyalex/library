@@ -172,7 +172,7 @@
               </thead>
               <tbody>
                 <tr class=""
-                  v-for="(item, index) in kitFacture.article_commandes2"
+                  v-for="(item, index) in kitFacture.article_commande2"
                   :key="index.id"
                 >
                   <th scope="col" class="col-md-1">{{ index + 1 }}</th>
